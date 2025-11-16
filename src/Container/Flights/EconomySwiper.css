@@ -1,0 +1,78 @@
+/* Target your specific swiper instance */
+.offer-swiper {
+  position: relative; /* ensures the buttons position relative to this */
+  padding-bottom: 50px;
+  transition: all 0.3 ease; /* add space below cards if needed */
+}
+
+/* Navigation Buttons */
+.offer-swiper .swiper-button-next,
+.offer-swiper .swiper-button-prev {
+  color: #0059ff !important;
+  height: 25px !important;
+  width: 25px !important;
+  background-color: #ffffff !important;
+  border-radius: 50% !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Move buttons upward */
+.offer-swiper .swiper-button-next {
+  bottom: 0 !important;
+  top: auto !important;
+  right: 10px !important;
+  transform: translateY(-63px); 
+
+}
+
+.offer-swiper .swiper-button-prev {
+  bottom: 0 !important;
+  top: auto !important;
+  left: 10px !important;
+  transform: translateY(-63px); 
+}
+
+.swiper-button-prev svg,
+.swiper-button-next svg {
+  width: 13px !important;
+  height: 13px !important;
+  fill: #0078ff !important;     /* for SVG arrows */
+}
+
+
+.dateswiper .swiper-button-next{
+  color: #0066ff !important;
+  background: #fff;
+  width: 32px !important;
+  height: 51.8px !important;
+  /* box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15); */
+  border: 1px solid #ccc;
+  transform: translateY(-9px);
+  right: -.1px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  top: 30.8px;
+  
+}
+.dateswiper .swiper-button-prev {
+  color: #0066ff !important;
+  background: #fff;
+  width: 32px !important;
+  height: 52.3px !important;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  /* box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15); */
+  border: 1px solid #ccc;
+  transform: translateY(-9px);
+  left: -.2px;
+  top: 30.8px;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 12px !important;
+  font-weight: bold;
+}

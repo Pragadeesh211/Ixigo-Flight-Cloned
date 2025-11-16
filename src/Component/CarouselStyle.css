@@ -1,0 +1,48 @@
+.offer-carousel-container {
+  width: 95%;
+  margin: 30px auto;
+}
+
+.offer-swiper {
+  padding-bottom: 40px; /* space for pagination dots */
+}
+
+.offer-card {
+  margin-top: 10px;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+  height: 160px;
+}
+    
+
+.offer-card img {
+  width: 100%;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+/* Swiper arrows */
+.swiper-button-prev,
+.swiper-button-next {
+  color: #fcfbfb;
+  height: 25px;
+  width: 35px;
+}
+
+.swiper-pagination-bullet {
+  background-color: #aaa !important;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #000 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .offer-card img {
+    border-radius: 10px;
+  }
+}
