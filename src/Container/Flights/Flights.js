@@ -9,7 +9,7 @@ import CardCarousel from "../../Component/Carousel";
 import { image } from "fontawesome";
 import FlightTabs from "../../Component/FlightTabs";
 import FlightSearchCard from "../../Component/FlightSearchCard";
-
+import LoginPage from "../../Component/LoginPage";
 
 const gridStyle = {
   width: '25%',
@@ -345,6 +345,7 @@ const Flights = () => {
     </div>
     
     <h3 style={{marginTop:10}}></h3>
+    <LoginPage/>
     </>
   );
 };

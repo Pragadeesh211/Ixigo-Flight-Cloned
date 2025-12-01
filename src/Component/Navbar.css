@@ -13,6 +13,8 @@
   z-index: 1000;
 }
 
+
+
 .navbar-scrolled {
   height: 80px; /* shrink effect */
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -46,8 +48,12 @@
 
 .right-menu {
   display: flex;
-  margin-right: 50px;
-  font-size: 14px;
-  font-weight: 500;
+  margin-right: 60px;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  gap: 5;
+  
 }
 

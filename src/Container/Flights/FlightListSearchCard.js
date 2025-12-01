@@ -24,7 +24,6 @@ import {
   setTravelClass,
 } from "../../Redux/Slices/FlightSearchSlice";
 import { faL } from "@fortawesome/free-solid-svg-icons";
-import { curling } from "fontawesome";
 
 const { Text } = Typography;
 const CheckboxGroup = Checkbox.Group;
@@ -613,8 +612,8 @@ const FlightListSearchCard = () => {
   const handleAirportInput = () => {
     dispatch(setFromCode(from.split(" ")[0]))
     dispatch(setToCode(to.split(" ")[0]))
-    dispatch(setFromCity(from.split(" ")[2]))
-    dispatch(setToCity(to.split(" ")[2]))
+    dispatch(setFromCity(from.split(" - ")[1]))
+    dispatch(setToCity(to.split(" - ")[1]))
     dispatch(setFromAirport(fromAirpotValue))
     dispatch(setToAirport(toAirpotValue))
 
@@ -644,8 +643,17 @@ const FlightListSearchCard = () => {
   }
 console.log("nansd",travelClass);
 
+const [disabled,setdisabled] = useState(true)
+useEffect(() => {
+  
+  
+setdisabled(true)
+  const timer = setTimeout(() => {
+    setdisabled(false)
+  }, 1500);
 
-
+  return () => clearTimeout(timer);
+}, [toCity, fromCity]);
 
   return (
     <>
@@ -1051,7 +1059,7 @@ console.log("nansd",travelClass);
                             borderTopRightRadius: "10px",
                             borderBottomRightRadius: "10px",
                             borderLeftRadius: "none",
-                            background: "orange",
+                            background: "#ff7a00",
                             border: "none",
                             color: "white",
                             cursor: "pointer",
@@ -1061,6 +1069,7 @@ console.log("nansd",travelClass);
 
                           }}
                           onClick={handleSearch}
+                          disabled={disabled}
                         >
                           Search <RightOutlined style={{ fontSize: 18 }} />
                         </button>

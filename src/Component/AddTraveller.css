@@ -1,0 +1,69 @@
+.custom-modal .ant-modal-content {
+  border-radius: 10px;
+  padding: 0;
+  overflow: hidden;
+  border-top: 5px solid #ec5b24; /* orange top bar */
+}
+
+/* Remove default header */
+.custom-modal .ant-modal-header {
+  border: none;
+  padding: 0;
+}
+
+/* Date rows */
+.date-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 40px;
+  font-size: 18px;
+}
+
+.col {
+  width: 33%;
+  text-align: center;
+}
+
+.divider {
+  width: 100%;
+  border-top: 2px solid #ec5b24;
+}
+
+/* Footer */
+.footer-row {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding: 20px 0 30px 0;
+}
+
+/* Buttons */
+.cancel-btn {
+  background: transparent;
+  border: none;
+  color: #ec5b24;
+  font-size: 15px;
+  cursor: pointer;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.confirm-btn {
+  background: #ec5b24;
+  border: none;
+  color: white;
+  padding: 6px 28px;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+  font-weight: 500;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+}
+
+.hidden-datepicker {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+}

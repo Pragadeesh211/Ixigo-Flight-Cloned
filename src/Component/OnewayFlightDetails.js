@@ -1,565 +1,63 @@
-import React, { useState, useMemo } from "react";
-import { Dropdown, Input, Typography, Divider } from "antd";
-import { ClockCircleOutlined, SwapOutlined } from "@ant-design/icons";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
+import Cabin from "../Images/Cabin.png";
+import CheckIn from "../Images/Chech-in.png";
+import AirlineSeat from "../Images/AirlineSeat.png"
+import FlightEngineFilledIcon from "../Images/FlightEngineFilledIcon.png"
+import NoFoodIcon from "../Images/NoFoodIcon.png"
+import WifiOffIcon from "../Images/wifi.png"
+import NoPowerIcon from "../Images/NoPowerIcon.png"
+import NoVideoIcon from "../Images/NoVideoIcon.png"
+import { Typography, Tooltip } from "antd";
+import { ArrowRightOutlined,AppstoreOutlined } from "@ant-design/icons";
+
+dayjs.extend(duration);
 
 const { Text } = Typography;
 
-const FlightSearchDropdown = () => {
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
-  const [openFrom, setOpenFrom] = useState(false);
-  const [openTo, setOpenTo] = useState(false);
-  const [queryFrom, setQueryFrom] = useState("");
-  const [queryTo, setQueryTo] = useState("");
-
-  const recentSearches = [
-    { from: "DEL", to: "HYD", date: "Sun, 19 Oct", details: "1 Traveller • Economy" },
-    { from: "DEL", to: "HYD", date: "Sat, 18 Oct", details: "1 Traveller • Economy" },
-  ];
-
-  const popularAirports = [
-    { code: "DEL", city: "New Delhi, Delhi, India", airport: "Indira Gandhi International Airport" },
-    { code: "BOM", city: "Mumbai, Maharashtra, India", airport: "Chhatrapati Shivaji Maharaj International Airport" },
-    { code: "HYD", city: "Hyderabad, Telangana, India", airport: "Rajiv Gandhi International Airport" },
-    { code: "BLR", city: "Bengaluru, Karnataka, India", airport: "Kempegowda International Airport" },
-    { code: "MAA", city: "Chennai, Tamil Nadu, India", airport: "Chennai International Airport" },
-    { code: "CCU", city: "Kolkata, West Bengal, India", airport: "Netaji Subhas Chandra Bose International Airport" },
-  ];
-
-  // Filter helpers (search by code or city)
-  const filteredAirportsFrom = useMemo(() => {
-    const q = queryFrom.trim().toLowerCase();
-    if (!q) return popularAirports;
-    return popularAirports.filter(
-      (a) =>
-        a.code.toLowerCase().includes(q) ||
-        a.city.toLowerCase().includes(q) ||
-        a.airport.toLowerCase().includes(q)
-    );
-  }, [queryFrom, popularAirports]);
-
-  const filteredAirportsTo = useMemo(() => {
-    const q = queryTo.trim().toLowerCase();
-    if (!q) return popularAirports;
-    return popularAirports.filter(
-      (a) =>
-        a.code.toLowerCase().includes(q) ||
-        a.city.toLowerCase().includes(q) ||
-        a.airport.toLowerCase().includes(q)
-    );
-  }, [queryTo, popularAirports]);
-
-  const makeDropdownContent = (isFrom = true) => {
-    const recent = recentSearches;
-    const filtered = isFrom ? filteredAirportsFrom : filteredAirportsTo;
-
-    return (
-      <div
-        style={{
-          padding: 12,
-          width: 360,
-          background: "#fff",
-          borderRadius: 10,
-          boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-        }}
-      >
-        <Text strong style={{ fontSize: 14 }}>
-          Recent Searches
-        </Text>
-
-        {recent.map((item, i) => (
-          <div
-            key={i}
-            onMouseDown={(e) => e.preventDefault()} // prevent input blur
-            onClick={() => {
-              if (isFrom) {
-                setFrom(`${item.from} → ${item.to}`);
-                setOpenFrom(false);
-                setQueryFrom("");
-              } else {
-                setTo(`${item.from} → ${item.to}`);
-                setOpenTo(false);
-                setQueryTo("");
-              }
-            }}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "10px 0",
-              borderBottom: "1px solid #f0f0f0",
-              gap: 12,
-              cursor: "pointer",
-            }}
-          >
-            <ClockCircleOutlined style={{ fontSize: 18, color: "#555" }} />
-            <div>
-              <Text strong>{`${item.from} → ${item.to}`}</Text>
-              <br />
-              <Text type="secondary" style={{ fontSize: 12 }}>
-                {item.date} • {item.details}
-              </Text>
-            </div>
-          </div>
-        ))}
-
-        <Divider style={{ margin: "10px 0" }} />
-
-        <Text strong style={{ fontSize: 14 }}>
-          Popular Airports
-        </Text>
-
-        {filtered.map((airport, idx) => (
-          <div
-            key={idx}
-            onMouseDown={(e) => e.preventDefault()} // prevents dropdown closing on click
-            onClick={() => {
-              const value = `${airport.code} - ${airport.city.split(",")[0]}`;
-              if (isFrom) {
-                setFrom(value);
-                setOpenFrom(false);
-                setQueryFrom("");
-              } else {
-                setTo(value);
-                setOpenTo(false);
-                setQueryTo("");
-              }
-            }}
-            style={{
-              display: "flex",
-              alignItems: "flex-start",
-              gap: 12,
-              padding: "10px 0",
-              cursor: "pointer",
-            }}
-          >
-            <div
-              style={{
-                border: "1px solid #e6e6e6",
-                borderRadius: 8,
-                padding: "6px 8px",
-                minWidth: 44,
-                textAlign: "center",
-                fontWeight: 700,
-                color: "#333",
-              }}
-            >
-              {airport.code}
-            </div>
-
-            <div>
-              <Text strong style={{ display: "block" }}>
-                {airport.city}
-              </Text>
-              <Text type="secondary" style={{ fontSize: 12 }}>
-                {airport.airport}
-              </Text>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  return (
-    <div style={{ display: "flex", gap: 12, alignItems: "center", justifyContent: "center", padding: 20 }}>
-      {/* FROM */}
-      <Dropdown
-        overlay={makeDropdownContent(true)}
-        trigger={[]}
-        visible={openFrom}
-        onVisibleChange={(v) => setOpenFrom(v)}
-      >
-        <Input
-          value={from}
-          placeholder="From"
-          onChange={(e) => {
-            setFrom(e.target.value);
-            setQueryFrom(e.target.value);
-            setOpenFrom(true);
-          }}
-          onFocus={() => setOpenFrom(true)}
-          onBlur={() => setTimeout(() => setOpenFrom(false), 150)} // small delay to allow clicks
-          style={{
-            width: 320,
-            background: "#f2f4f7",
-            borderRadius: 10,
-            border: "1px solid transparent",
-            padding: "10px 12px",
-            fontWeight: 600,
-          }}
-        />
-      </Dropdown>
-
-      {/* Swap */}
-      <div
-        onClick={() => {
-          setFrom((prev) => {
-            setTo((t) => prev);
-            return to;
-          });
-        }}
-        style={{
-          background: "#fff",
-          borderRadius: "50%",
-          width: 40,
-          height: 40,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-          cursor: "pointer",
-        }}
-      >
-        <SwapOutlined style={{ transform: "rotate(90deg)", color: "#0056D2" }} />
-      </div>
-
-      {/* TO */}
-      <Dropdown
-        overlay={makeDropdownContent(false)}
-        trigger={[]}
-        visible={openTo}
-        onVisibleChange={(v) => setOpenTo(v)}
-      >
-        <Input
-          value={to}
-          placeholder="To"
-          onChange={(e) => {
-            setTo(e.target.value);
-            setQueryTo(e.target.value);
-            setOpenTo(true);
-          }}
-          onFocus={() => setOpenTo(true)}
-          onBlur={() => setTimeout(() => setOpenTo(false), 150)}
-          style={{
-            width: 320,
-            background: "#f2f4f7",
-            borderRadius: 10,
-            border: "1px solid transparent",
-            padding: "10px 12px",
-            fontWeight: 600,
-          }}
-        />
-      </Dropdown>
-    </div>
-  );
-};
-
-export default FlightSearchDropdown;
-
-
-<Modal
-                                          open={openDOB}
-                                          footer={null}
-                                          onCancel={() => setOpenDOB(false)}
-                                          centered
-                                          width={450}
-                                          className="custom-modal"
-                                        >
-                                          <div className="date-row">
-                                            
-                                              <DatePicker defaultValue={dayjs('Feb', monthFormat)} format={monthFormat} picker="month" 
-                                              className="hidden-datepicker"/>
-                                            
-                                           
-                                          </div>
-
-                                          <div className="divider"></div>
-
-                                          {/* <div className="date-row">
-                                            <div className="col">28</div>
-                                            <div className="col">October</div>
-                                            <div className="col">2024</div>
-                                          </div>
-
-                                          <div className="divider"></div>
-
-                                          <div className="date-row">
-                                            <div className="col">29</div>
-                                            <div className="col">November</div>
-                                            <div className="col">2025</div>
-                                          </div> */}
-
-                                          <div className="footer-row">
-                                            <button className="cancel-btn" onClick={() => setOpenDOB(false)}>
-                                              CANCEL
-                                            </button>
-
-                                            <button className="confirm-btn">CONFIRM</button>
-                                          </div>
-                                        </Modal>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// style={{
-//               display: "flex",
-//               flexDirection: "column",
-//               background: "#fff",
-//               padding: 15,
-//               paddingBottom: "70px",
-//               borderRadius: 20,
-//               boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-//             }}
-
-
-
-          {/* Left Card */}
-          <div
-            
-          >
-            <Text style={{
-              fontSize: "24px",
-              fontWeight: 700
-            }}>Offers For You</Text>
-
-            <div
-              style={{
-                height: "45px",
-                border: "1px solid #8a8a8a",
-                marginTop: 10,
-                borderRadius: 10,
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "row",
-                paddingLeft: "10px",
-                paddingRight: "10px",
-                background: "#fff",
-              }}
-            >
-              <Input
-                placeholder="Have a promocode? Redeem here"
-                variant="borderless"
-                style={{
-                  fontSize: "16px",
-                  fontWeight: 500,
-                  width: 300,
-                }}
-                value={promoCodeValue}
-                onChange={(e) => {
-                  const text = e.target.value || "";
-                  setPromoCodeValue(text.toLocaleUpperCase());
-                }}
-              />
-
-              {promoCodeValue ? (
-                <button
-                  style={{
-                    color: "#0770e4",
-                    border: "none",
-                    background: "none",
-                    fontSize: "16px",
-                    fontWeight: 500,
-                    cursor: "pointer",
-                  }}
-                >
-                  Apply
-                </button>
-              ) : null}
-            </div>
-            <div style={{
-              marginTop: 15,
-              borderBottom: "1px solid #b8b8bcff"
-            }}>
-              <Radio.Group
-                value={radioValue}
-
-                style={{ color: "black" }}
-              >
-                <Space direction="vertical">
-                  {promoOfferList.map((item, idx) => (
-
-                    idx <= 2 && (
-                      <div key={idx} style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        width: "100%",
-
-                      }}>
-                        <div style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          padding: "5px 0",
-                          justifyContent: "space-between",
-                          width: 395
+const OnewayFlightDetails = () =>{
+    const {
+    from,
+  fromAirport,
+  to,
+  fromCode,
+  toCode,
+  fromCity,
+  toCity,
+  toAirport,
+  returnTrip,
+  returnTripUI,
+  departure,
+  returnDate,
+  travellers,
+  travellerValue,
+  travelClass,
+    onewaySelectedFlight,
+    returnSelectedFlight
+  } = useSelector((state) => state.flightSearch);
+
+  const formatDate = (date) => {
+      if (!date) return { day: "", month: "", weekday: "" };
+      const d = dayjs(date);
+      return {
+        day: d.format("DD"),
+        month: d.format("MMM"),
+        weekday: d.format("ddd"),
+      };
+    };
+    
+    const dep = formatDate(departure)
+
+
+  return(
+    <>
+    <div>
+        { onewaySelectedFlight.map((item,idx)=>(
+                        <div key={idx} style={{
+                        //   width:"900px"
                         }}>
-                          <>
-                            <style>
-                              {`
-                .custom-radio .ant-radio-inner {
-                    border: 1px solid #848794 !important;
-                }
-
-                .custom-radio.ant-radio-wrapper-checked .ant-radio-inner {
-                    border: 1px solid #0770e4 !important; /* selected border (blue) */
-                }
-                `}
-                            </style>
-
-                            <ConfigProvider>
-                              <Radio value={idx} className="custom-radio" style={{
-                                fontSize: "16px",
-                                fontWeight: 600, textTransform: "uppercase", fontFamily: "Roboto"
-                              }}
-                                onChange={() => handleRadioValue(idx)}>
-                                {item.name}
-                              </Radio>
-                            </ConfigProvider>
-                          </>
-
-                          <div style={{
-                            flex: 1, textAlign: "end"
-                          }}>{item.amount >= 0 ? (<Text style={{
-                            fontSize: "14px", fontWeight: 700
-                          }}><span style={{
-                            fontSize: 14, fontWeight: 700
-                          }}>₹</span> {item.amount} Off</Text>) : null}
-                          </div>
-
-                        </div>
-                        <Text style={{
-                          position: "relative",
-                          left: 25,
-                          width: 360,
-                          color: radioValue === idx ? "green" : "black",
-                          fontFamily: "Roboto",
-                          fontSize: 14.5,
-                          bottom: 10
-                        }}>
-                          {item.descriptions}
-                        </Text>
-                      </div>)
-                  )
-                  )}
-
-                </Space>
-              </Radio.Group>
-
-
-
-
-
-            </div>
-            <button
-              style={{
-                color: "#fc790d",
-                border: "none",
-                background: "none",
-                fontSize: "15px",
-                fontWeight: 500,
-                cursor: "pointer",
-                position: "relative",
-                top: 20,
-                textAlign:"start"
-
-              }}
-              onClick={()=>
-                setViewOffers(true)
-              }
-            >
-              View All Offer <RightOutlined style={{
-                fontSize: "13px", position: "relative", top: 1
-              }} />
-            </button>
-          </div>
-
-            //   style={{
-            //   display:"flex",
-            //   background:"#fff",
-            //   width:"70%",
-            //   borderRadius: "20px",
-            //   padding: "20px",
-            //   boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-            //   // minHeight: "auto"
-            // }}
-
-
-{/* Right Section */}
-          <div
-            
-            
-          >
-            { onewaySelectedFlight.map((item,idx)=>(
-                        <div key={idx}>
                           <Text  style={{
                         fontSize:"23px",
                         fontWeight:"bold"
@@ -573,7 +71,7 @@ export default FlightSearchDropdown;
                       <Text style={{
                         fontWeight:700,
                         fontSize:"15px"
-                      }}>{departure}</Text> <Text strong style={{
+                      }}>{dep.weekday}, {dep.day} {dep.month}</Text> <Text strong style={{
                       fontSize:"30px",
                       position:"relative",
                         bottom:"4px"
@@ -634,7 +132,7 @@ export default FlightSearchDropdown;
                         color:"grey",
                         fontSize:"14px"
             
-                      }}>{departure}</Text>
+                      }}>{dep.weekday}, {dep.day} {dep.month}</Text>
                       <br />
                       <Text style={{
                         fontSize:"30px",
@@ -697,7 +195,7 @@ export default FlightSearchDropdown;
                         color:"grey",
                         fontSize:"14px"
             
-                      }}>{departure}</Text></div>}
+                      }}>{dep.weekday}, {dep.day} {dep.month}</Text></div>}
                       <Text style={{
                         fontSize:"30px",
                         fontWeight:"bold"
@@ -852,7 +350,8 @@ export default FlightSearchDropdown;
                             width:"100%",
                             textAlign:"center",
                             flexDirection:"column",
-                            marginTop:"40px"
+                            marginTop:"40px",
+                            
                           }}>
                           <div style={{
                             
@@ -895,7 +394,7 @@ export default FlightSearchDropdown;
                 )}
                        {/* 1 stop design */}
                         {item.stops === "1 stop"?(<div style={{
-                          marginTop:"30px"
+                          marginTop:"30px",marginBottom:-195
                         }}>
                           <div style={{
                   display: "flex",
@@ -933,7 +432,7 @@ export default FlightSearchDropdown;
                         color:"grey",
                         fontSize:"14px"
             
-                      }}>{departure}</Text>
+                      }}>{dep.weekday}, {dep.day} {dep.month}</Text>
                       <br />
                       <Text style={{
                         fontSize:"30px",
@@ -991,7 +490,7 @@ export default FlightSearchDropdown;
                         color:"grey",
                         fontSize:"14px"
             
-                      }}>{departure}</Text></div>}
+                      }}>{dep.weekday}, {dep.day} {dep.month}</Text></div>}
                       <Text style={{
                         fontSize:"30px",
                         fontWeight:"bold"
@@ -1140,4 +639,9 @@ export default FlightSearchDropdown;
                         </div>
                        ))
                         }
-          </div>
+    </div>
+    </>
+  )
+}
+
+export default OnewayFlightDetails;

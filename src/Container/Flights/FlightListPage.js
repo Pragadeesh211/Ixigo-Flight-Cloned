@@ -16,6 +16,8 @@ import {
   setTravellers,
   setTravelClass,
  } from "../../Redux/Slices/FlightSearchSlice";
+import LoginPage from "../../Component/LoginPage";
+
 
 const FlightListPage = () =>{
     const dispatch = useDispatch();
@@ -56,6 +58,7 @@ const FlightListPage = () =>{
             {travelClass === "Premium Economy" &&(<p>Hi</p>)}
             </div>
         </div>
+        <LoginPage/>
         </>
     )
 }

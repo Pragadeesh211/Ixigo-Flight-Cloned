@@ -20,7 +20,9 @@ import {
   setTravellerValue,
   setTravelClass,
   setCancelFeeAdd,
-  setRescheduleFeeAdd
+  setRescheduleFeeAdd,
+  setOnewaySelectedFlight,
+  setReturnSelectedFlight,
  } from "../../Redux/Slices/FlightSearchSlice";
  import {Swiper,SwiperSlide} from "swiper/react";
  import 'swiper/css';
@@ -40,8 +42,9 @@ import NoFoodIcon from "../../Images/NoFoodIcon.png"
 import WifiOffIcon from "../../Images/wifi.png"
 import NoPowerIcon from "../../Images/NoPowerIcon.png"
 import NoVideoIcon from "../../Images/NoVideoIcon.png"
-import { image } from "fontawesome";
-
+import OnewayFlightDetails from "../../Component/OnewayFlightDetails";
+import ReturnFlightDetails from "../../Component/ReturnFlightDetails";
+import CancellationDetails from "../../Component/CancellationDetails";
 
 
 dayjs.extend(duration);
@@ -83,13 +86,28 @@ const EconomyReturn = () =>{
       
       const navigate = useNavigate();
 
+      
+
 
       const depart = dayjs(departure).format("YYYY-MM-DD");
       const returnpart = dayjs(returnDate).add(1,"day").format("YYYY-MM-DD");
         const [selectedDate, setSelectedDate] = useState(depart);
         const [selectedReturnDate, setSelectedReturnDate] = useState(returnpart)
+
+        useEffect(() => {
+                const minReturnDate = dayjs(selectedDate).add(1, "day").format("YYYY-MM-DD");
+
+                
+                if (dayjs(selectedReturnDate).isBefore(minReturnDate)) {
+                  setSelectedReturnDate(minReturnDate);
+                  dispatch(setReturnDate(minReturnDate));
+                }
+              }, [selectedDate]);
+
+              console.log()
+
       
-        // console.log(departure.length)
+        console.log("ABCD",returnDate)
         // console.log(fromA)
         const [dateFareData, setDateFareData] = useState([]);
         const [dateFareData1, setDateFareData1] = useState([]);
@@ -100,7 +118,7 @@ const EconomyReturn = () =>{
         const daysArray = Array.from({ length: 18 }, (_, i) => {
           const date = new Date(today);
           date.setDate(today.getDate() + i);
-      
+          
           const formattedDate = date.toLocaleDateString("en-GB", {
             weekday: "short",
             day: "2-digit",
@@ -120,6 +138,7 @@ const EconomyReturn = () =>{
         setDateFareData(daysArray);
         
       }, []);
+      
       
       // console.log("Ran price",dateFareData.price);
       
@@ -143,7 +162,7 @@ const EconomyReturn = () =>{
     
 
     
-    setSelectedDate(todayMatch ? todayMatch.label : dateFareData[0].label);
+    setSelectedDate(todayMatch ? todayMatch.date : dateFareData[0].date);
     const finalPrice = todayMatch ? todayMatch.price : dateFareData[0].price;
     setStartPrice(finalPrice);
 
@@ -152,58 +171,90 @@ const EconomyReturn = () =>{
   }
 }, [dateFareData, departure]);
 
+
 //Return Date start
 
+// Format label
+const formattedDate = (date) => {
+  const d = dayjs(date);
+  return `${d.format("ddd")} ${d.format("DD")} ${d.format("MMM")}`;
+};
+
+// Generate return date array
 useEffect(() => {
-  const startDate = new Date(); 
-  startDate.setDate(startDate.getDate() + 1); 
+  if (!selectedDate) return;
+
+  const base = dayjs(selectedDate).toDate();
+  base.setDate(base.getDate() + 1);
 
   const daysArray = Array.from({ length: 18 }, (_, i) => {
-    const date = new Date(startDate);
-    date.setDate(startDate.getDate() + i);
-
-    const formattedDate = date.toLocaleDateString("en-GB", {
-      weekday: "short",
-      day: "2-digit",
-      month: "short",
-    });
+    const date = new Date(base);
+    date.setDate(base.getDate() + i);
 
     const randomPrice = Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500;
 
     return {
-      date: date.toISOString(),
-      label: formattedDate,
+      date: date.toISOString(),        // STORED REAL DATE
+      label: formattedDate(date),      // DISPLAY LABEL
       price: randomPrice,
     };
   });
 
   setDateFareData1(daysArray);
-}, []);
+}, [selectedDate]);
+
+// Select correct return date
+useEffect(() => {
+  if (dateFareData1.length > 0 && returnDate) {
+    const match = dateFareData1.find(
+      d => dayjs(d.date).isSame(returnDate, "day")
+    );
+
+
+    setSelectedReturnDate(match ? match.date : dateFareData1[0].date);
+
+
+  }
+}, [dateFareData1, returnDate]);
+
+// const today3 = new Date()
+//       const date = new Date(dayjs(selectedDate));
+//       const check = date.setDate(date.getDate() +1);  
+//       const formattedDate1 = date.toLocaleDateString("en-GB", {
+//             weekday: "short",
+//             day: "2-digit",
+//             month: "short",
+//           }); 
+//       console.log("helooooo",selectedReturnDate) 
+
+console.log("collapse",dateFareData[0]?.date)
 
 const [startReturnPrice,setStartReturnPrice] = useState(dateFareData1[0]?.price)
 const [endReturnPrice,setEndReturnPrice] = useState(51275)
 
 useEffect(() => {
   if (dateFareData1.length > 0 && returnDate) {
-    const dep = new Date(returnDate);
+    const ret = new Date(returnDate);
 
     const tomorrowMatch = dateFareData1.find((d) => {
       const dt = new Date(d.date);
       return (
-        dt.getDate() === dep.getDate() &&
-        dt.getMonth() === dep.getMonth() &&
-        dt.getFullYear() === dep.getFullYear()
+        dt.getDate() === ret.getDate() &&
+        dt.getMonth() === ret.getMonth() &&
+        dt.getFullYear() === ret.getFullYear()
       );
     });
 
     
 
     
-    setSelectedReturnDate(tomorrowMatch ? tomorrowMatch.label : dateFareData1[0].label);
+    setSelectedReturnDate(tomorrowMatch ? tomorrowMatch.date : dateFareData1[0].date);
     const finalPrice = tomorrowMatch ? tomorrowMatch.price : dateFareData1[0].price;
     setStartReturnPrice(finalPrice);
   }
 }, [dateFareData1,returnDate]);
+
+
 
 
       
@@ -245,9 +296,14 @@ useEffect(() => {
           weekday: d.format("ddd"),
         };
       };
+    
       
+
       const dep = formatDate(selectedDate)
       const ret = formatDate(selectedReturnDate)
+     
+
+      
       
       const [currentTime,setCurrentTime] = useState(time)
 
@@ -882,22 +938,66 @@ useEffect(() => {
 
       const [selectedFlightId, setSelectedFlightId] = useState(null);
       const [selectedFlightReturnId, setSelectedFlightReturnId] = useState(null);
-      useEffect(() => {
-        if (filteredFlights.length > 0) {
-          setSelectedFlightId(filteredFlights[0].id); 
-        }
-         if (filteredFlightsReturn.length > 0) {
-          setSelectedFlightReturnId(filteredFlightsReturn[0].id); 
-        }
-      }, [filteredFlights,filteredFlightsReturn]);
-
+      
 
       const [openDrawer, setOpenDrawer] = useState(false);
         const [loadingDrawer, setLoadingDrawer] = useState(true);
-        const [selectedFlights,setSelectedFlights] = useState([])
-        const showLoading = (item) => {
+        
+        const [selectedOnwards,setSelectedOnwards] = useState([])
+        const [selectedReturn,setSelectedReturn] = useState([]);
+
+        const showOnwards = (item) =>{
+          setSelectedFlightId(item.id)
+          setSelectedOnwards([item])
+          dispatch(setOnewaySelectedFlight([item]))
+        }
+
+        const showReturn = (item) =>{
+          setSelectedFlightReturnId(item.id)
+          setSelectedReturn([item])
+          dispatch(setReturnSelectedFlight([item]))
+        }
+
+        useEffect(() => {
+        if (filteredFlights.length > 0) {
+          setSelectedFlightId(filteredFlights[0].id);
+          setSelectedOnwards([filteredFlights[0]]);
+          dispatch(setOnewaySelectedFlight([filteredFlights[0]]))
+        }
+         if (filteredFlightsReturn.length > 0) {
+          setSelectedFlightReturnId(filteredFlightsReturn[0].id);
+          setSelectedReturn([filteredFlightsReturn[0]]);
+          dispatch(setReturnSelectedFlight([filteredFlightsReturn[0]])) 
+        }
+      }, [filteredFlights,filteredFlightsReturn]);
+
+      const [fullAmount,setFullAmount] = useState(0)
+      const [fullDiscount,setFullDiscount] = useState(0)
+
+      const CalculateFullAmount = () =>{
+        const a = selectedOnwards[0]?.price;
+        const b = selectedReturn[0]?.price;
+        setFullAmount(a+b)
+      }
+
+      const CalculateFullDiscount = () =>{
+        const a = selectedOnwards[0]?.discount;
+        const b = selectedReturn[0]?.discount;
+        setFullDiscount(a+b)
+      }
+
+      useEffect(() => {
+        CalculateFullAmount();
+        CalculateFullDiscount();
+      }, [selectedOnwards, selectedReturn]);
+
+
+
+
+
+        const showLoading = () => {
           setLoadingDrawer(true);
-          setSelectedFlights([item]);
+          // setselectedOnwards([item]);
           setOpenDrawer(true);
           
           setTimeout(() => setLoadingDrawer(false), 700);
@@ -911,7 +1011,7 @@ useEffect(() => {
           }
         }, [openDrawer]);
         
-          console.log("selectefddd",selectedFlights)
+          console.log("selectefddd",selectedOnwards)
         
           const [open, setOpen] = useState(false);
            const [openReTerm, setOpenReTerm] = useState(false);
@@ -924,13 +1024,13 @@ useEffect(() => {
           if (!contentRef.current) return;
         
           setHeight(`${contentRef.current.scrollHeight}px`);
-        }, [open,selectedFlights]);
+        }, [open,selectedOnwards]);
         
           useEffect(() => {
           if (!contentRef1.current) return;
         
           setHeight1(`${contentRef1.current.scrollHeight}px`);
-        }, [openReTerm,selectedFlights]);
+        }, [openReTerm,selectedOnwards]);
 
 
         const [cancelFee,setCancelFee] = useState(259);
@@ -941,6 +1041,8 @@ useEffect(() => {
           if (price > 3500) return 359;
           return 259;
         };
+
+        
         
           const getRescheduleFee = (price) => {
           if (price > 6000) return 1019;
@@ -950,11 +1052,107 @@ useEffect(() => {
         };
 
 
-        const getTotalTraveller = (price) =>{
-            if(travellerValue>1) return price * travellerValue;
+        const getTotalTraveller = () =>{
+            if(travellerValue>1) return fullAmount * travellerValue;
+        
+          return fullAmount;
+        }
+
+        const getTotalOnwardsTraveller = (price) =>{
+          if(travellerValue>1) return price * travellerValue;
+        
+          return price;
+
+        }
+
+        const getTotalReturnTraveller = (price) =>{
+          if(travellerValue>1) return price * travellerValue;
         
           return price;
         }
+
+        const [lessday,setLessDay] = useState()
+        
+
+        const get8HrsCancelTime = (departureTime) =>{
+            const [h1, m1] = departureTime.split(":").map(Number);
+            const t2= "08:00";
+            const [h2, m2] = t2.split(":").map(Number);
+
+            let totalMinutes1 = h1 * 60 + m1;
+            let totalMinutes2 = h2 * 60 + m2;
+
+            let diff = totalMinutes1 - totalMinutes2;
+
+            
+            const days = Math.floor(diff / (24 * 60));
+            
+            diff = diff % (24 * 60);
+
+            
+            if (diff < 0) diff += 24 * 60;
+
+            const hours = Math.floor(diff / 60);
+            const minutes = diff % 60;
+
+            const finalTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+
+
+            return { finalTime, days };
+          }
+
+          useEffect(() => {
+            if (!selectedOnwards[0]?.departureTime) return;
+          
+            const { finalTime, days } = get8HrsCancelTime(selectedOnwards[0]?.departureTime);
+          
+            const newDate = dayjs(departure).add(days, "day").format("YYYY-MM-DD");
+            setLessDay(newDate);
+          
+          }, [selectedOnwards[0]?.departureTime]);
+
+          const [lessReturnday,setLessReturnDay] = useState()
+
+          const get8HrsCancelReturnTime = (departureTime) =>{
+            const [h1, m1] = departureTime.split(":").map(Number);
+            const t2= "08:00";
+            const [h2, m2] = t2.split(":").map(Number);
+
+            let totalMinutes1 = h1 * 60 + m1;
+            let totalMinutes2 = h2 * 60 + m2;
+
+            let diff = totalMinutes1 - totalMinutes2;
+
+            
+            const days = Math.floor(diff / (24 * 60));
+            
+            diff = diff % (24 * 60);
+
+            
+            if (diff < 0) diff += 24 * 60;
+
+            const hours = Math.floor(diff / 60);
+            const minutes = diff % 60;
+
+            const finalTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+
+
+            return { finalTime, days };
+          }
+
+          useEffect(() => {
+            if (!selectedReturn[0]?.departureTime) return;
+          
+            const { finalTime, days } = get8HrsCancelReturnTime(selectedReturn[0]?.departureTime);
+          
+            const newDate = dayjs(returnDate).add(days, "day").format("YYYY-MM-DD");
+            setLessReturnDay(newDate);
+          
+          }, [selectedReturn[0]?.departureTime]);
+          
+          const lessdep = formatDate(lessday);
+          const lessret = formatDate(lessReturnday);
+        
         
         const getIxigoCancelFee = ()=>{
           if(travellerValue>1) return 300 * travellerValue;
@@ -976,16 +1174,15 @@ useEffect(() => {
             setRemoveFeeAdd(false);
             setRemoveRescheduleAdd(false)
           }
+          
         
         },[travellerValue,from,to,departure,returnDate,returnTrip,returnTripUI,travelClass])
 
 
-        const handleAddCancelFee = (price,calculateCancel) =>{
-        const final = price + calculateCancel
+
+        const handleAddCancelFee = (calculateCancel) =>{
+        const final = fullAmount + calculateCancel
         setFinalAmount(final)
-        //  animateValue(finalAmount, final, 600, (val) => {
-        //     setFinalAmount(val);
-        //   });
         
         setRemoveFeeAdd(true)
         if(removeRescheduleAdd){
@@ -995,8 +1192,8 @@ useEffect(() => {
         
         }
         
-        const handleAddRescheduleFee = (price,calculateReschedule) =>{
-        const final = price + calculateReschedule
+        const handleAddRescheduleFee = (calculateReschedule) =>{
+        const final = fullAmount + calculateReschedule
         setFinalAmount(final)
         //  animateValue(finalAmount, final, 600, (val) => {
         //     setFinalAmount(val);
@@ -1007,27 +1204,41 @@ useEffect(() => {
         if(removeFeeAdd){
           setRemoveFeeAdd(false)
         }
+
         
         
         }
         
         useEffect(() => {
-          if (!selectedFlights || selectedFlights.length === 0) return;
+          if (!selectedOnwards || selectedOnwards.length === 0) return;
         
-          const price = selectedFlights[0]?.price || 0;
-          const cancelFee = getIxigoCancelFee(selectedFlights[0]?.price);
-          const rescheduleFee = getIxigoRescheduleFee(selectedFlights[0]?.price);
+          const price = selectedOnwards[0]?.price || 0;
+          const cancelFee = getIxigoCancelFee(selectedOnwards[0]?.price);
+          const rescheduleFee = getIxigoRescheduleFee(selectedOnwards[0]?.price);
         
           if (removeFeeAdd) {
-            handleAddCancelFee(price, cancelFee);
+            handleAddCancelFee(cancelFee);
           } else if (removeRescheduleAdd) {
-            handleAddRescheduleFee(price, rescheduleFee);
+            handleAddRescheduleFee(rescheduleFee);
           } else {
             setFinalAmount(price);
           }
-        }, [selectedFlights]);
-        
+        }, [selectedOnwards]);
 
+        const [swapButton,setSwapButton] = useState(false)
+
+        const handleOnwardSwap = () =>{
+          setSwapButton(false)
+        }
+        const handleReturnSwap = () =>{
+          setSwapButton(true)
+        }
+        useEffect(()=>{
+          if(!openDrawer){
+            setSwapButton(false)
+          }
+        },[openDrawer])
+        console.log("toooCity",toCity)
         const items = [
             {
               key: "details",
@@ -1036,589 +1247,18 @@ useEffect(() => {
                 <div style={{
                   fontFamily:"Roboto"
                 }}>
-                  
-                   { selectedFlights.map((item,idx)=>(
-                    <div key={idx}>
-                      <Text  style={{
-                    fontSize:"23px",
-                    fontWeight:"bold"
-                  }}>{fromCity} <ArrowRightOutlined style={{
-                    fontSize:"18px"
-                  }}/> {toCity}</Text> <br />
                   <div style={{
-                    position:"relative",
-                    bottom:"25px"
+                    borderBottom: "1px solid #ccccccff",
+                    paddingBottom:30
                   }}>
-                  <Text style={{
-                    fontWeight:700,
-                    fontSize:"15px"
-                  }}>{selectedDate}</Text> <Text strong style={{
-                  fontSize:"30px",
-                  position:"relative",
-                    bottom:"4px"
-                }}>.</Text>
-                <Text  style={{
-                          fontSize:"14px",
-                          fontWeight:500,
-                          color:"#2e2e2eff",
-                          position:"relative",
-                          left:"3px"
-                        }}>{item.stops} <Text strong style={{
-                  fontSize:"30px",
-                  position:"relative",
-                    bottom:"4px"
-                }}>.</Text> <Text>
-                          {item.durations}
-                        </Text> <Text strong style={{
-                  fontSize:"30px",
-                  position:"relative",
-                    bottom:"4px",
-                    fontWeight:500
-                }}>.</Text> {travelClass}
-                </Text>
-                </div>
-                <div style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              flex: 1,
-              minWidth: "20%",
-            }}>
-                  <img src={item.logo} alt={item.airline} style={{ height: 35 }} />
-                  <Text strong style={{
-                    fontSize:"16px"
-                  }}>{item.airline}</Text> <Text strong style={{
-                    color:"grey"
-                  }}>
-                    | {item.stops === "1 stop"
-          ? item?.flightCodes?.[0]?.code || "--"
-          : item?.flightCodes || "--"}
-        
-                    
-                    
-                  
-                  </Text>
-                </div>
-                <div style={{
-                  display:"flex",
-                  flexDirection:"row",
-                  marginTop:"15px",
-                  gap:35
-                }}>
-                  
-                <div style={{
-                  width:"140px"
-                }}>
-                  <Text strong style={{
-                    color:"grey",
-                    fontSize:"14px"
-        
-                  }}>{selectedDate}</Text>
-                  <br />
-                  <Text style={{
-                    fontSize:"30px",
-                    fontWeight:"bold"
-                  }}>
-                    {/* {selectedFlights?.flightCodes?.[0]?.departureTime} */}
-                    {item.stops === "1 stop"
-          ?item?.flightCodes?.[0]?.departureTime1 || "--":item?.departureTime || "--"}
-        
-        </Text>
-                  <br />
-                  <Text strong>
-                    {from}
-                  </Text>
-                  <Text strong style={{
-                    whiteSpace: "wrap",
-                  overflow: "hidden",
-                  color:"grey",
-                  display: "inline-block",
-                  maxWidth: "155px",
-                  fontSize:"12px",
-                  
-                  }}>
-                    {fromAirport}
-                  </Text>
-                  <br />
-                  <Text strong style={{
-                    fontSize:"12px "
-                  }}>
-                    Terminal {item.fromTerminal}
-                  </Text>
+                   <OnewayFlightDetails/>
                   </div>
-                  <div style={{
-                    marginTop:"30px",
-                    display:"flex",
-                    flexDirection:"column",
-                    textAlign:"center"
-                  }}>
-                    <Text style={{
-                      color:"gray",
-                      fontWeight:400
-                    }}>{item.stops === "1 stop"
-          ?item?.flightCodes?.[0]?.duration1 || "--":item?.durations || "--"}</Text>
-                    <img src="https://edge.ixigo.com/st/vimaan/_next/static/media/line.9641f579.svg">
-                    </img>
-                  </div>
-                  <div style={{
-                    textAlign:"right",
-                    width:"140px"
-                  }}>
-                    {item.nextDayArrival === true ?(<div>
-                      <Text strong style={{
-                    color:"grey",
-                    fontSize:"14px"
-        
-                  }}
-                      >{dayjs(selectedDate).add(1, "day").format("YYYY-MM-DD")}</Text>
-                    
-                  </div>):<div><Text strong style={{
-                    color:"grey",
-                    fontSize:"14px"
-        
-                  }}>{selectedDate}</Text></div>}
-                  <Text style={{
-                    fontSize:"30px",
-                    fontWeight:"bold"
-                  }}>{item.stops === "1 stop"
-          ?item?.flightCodes?.[0]?.arrivalTime1 || "--":item?.arrivalTime || "--"}</Text>
-                  <br />
-                  <Text strong>
-                    {item.stops === "1 stop"
-          ?`${item?.flightCodes?.[0]?.to} - ${item?.flightCodes?.[0]?.toCity}` || "--":to}
-                  </Text>
-                  <br />
-                  <Text strong style={{
-                    whiteSpace: "wrap",
-                  overflow: "hidden",
-                  color:"grey",
-                  display: "inline-block",
-                  maxWidth: "155px",
-                  fontSize:"12px",
-                  
-                  }}>
-                    {item.stops === "1 stop"
-                  ?item?.flightCodes?.[0]?.toAirport1 || "--":toAirport}
-                  </Text>
-                  <br />
-                  <Text strong style={{
-                    fontSize:"12px "
-                  }}>
-                    Terminal {item.stops === "1 stop"
-          ?item?.flightCodes?.[0]?.toTerminal1 || "--":item.toTerminal}
-                  </Text>
-                  </div>
-                  <div>
-                    <Text strong style={{
-                      fontSize:"14px",
-                      color:"grey"
-                    }}>
-                      Baggage
-                    </Text>
-        
-                    <br />
+
                     <div style={{
-                      display:"flex",
-                      gap:8
+                      marginTop:20
                     }}>
-                      
-                    <img src={Cabin} style={{
-                      height:"20px",
-                      width:"20px",
-                      marginTop:"20px"
-                    }}>
-                    </img>  <div style={{
-                            marginTop:"17px"
-                    }}>
-                      <Text style={{
-                      fontWeight:500
-                    }}>Cabin : </Text> <Text style={{
-                      fontWeight:700
-                    }}>
-                      7 kg per adult
-                    </Text>
+                      <ReturnFlightDetails/>
                     </div>
-                    </div>
-                    <div style={{
-                      display:"flex",
-                      gap:8
-                    }}>
-                    <img src={CheckIn} style={{
-                      height:"20px",
-                      width:"20px",
-                      marginTop:"20px"
-                    }}>
-                    </img>  <div style={{
-                            marginTop:"17px"
-                    }}>
-                      <Text style={{
-                      fontWeight:500
-                    }}>Check-in : </Text> <Text style={{
-                      fontWeight:700
-                    }}>
-                      15 kg per adult
-                    </Text>
-                    </div>
-                    </div>
-                    
-                    
-                  </div>
-                  
-        
-                </div>
-                <div style={{
-                  marginTop:"15px",
-                  display:"flex",
-                  textAlign:"center",
-                  gap:10
-                }}>
-                      <img src={FlightEngineFilledIcon} style={{
-                        height:"20px",
-                      }}/>  <Text strong style={{
-                        fontSize:"12px"
-                      }}>
-                        Airbus A320
-                      </Text>
-                      <img src={AirlineSeat} style={{
-                        height:"15px",
-                      }}/>  <Text strong style={{
-                        fontSize:"12px"
-                      }}>
-                        Narrow
-                      </Text>
-                      <AppstoreOutlined />  <Text strong style={{
-                        fontSize:"12px"
-                      }}>
-                        Narrow (Limited seat tilt)
-                      </Text>
-                      <Tooltip title="Fresh Food - Chargeable" >
-                      <img src={NoFoodIcon} style={{
-                        height:"20px",
-                        cursor:"pointer"
-                      }}/></Tooltip>
-                      <Tooltip title="No Wi-Fi" >
-                      <img src={WifiOffIcon} style={{
-                        height:"15px",
-                        marginTop:2,
-                        cursor:"pointer"
-                      }}/>
-                      </Tooltip>
-                      <Tooltip title="No power outlet" >
-                      <img src={NoPowerIcon} style={{
-                        height:"15px",
-                        marginTop:2,
-                        cursor:"pointer",
-                        color:"gray"
-                      }}/>
-                      </Tooltip>
-                      <Tooltip title="No Entertainment" >
-                      <img src={NoVideoIcon} style={{
-                        height:"18px",
-                        marginTop:2,
-                        cursor:"pointer",
-                        color:"gray"
-                      }}/>
-                      </Tooltip>
-                      
-        
-                    </div>
-        
-                    {item.stops ==="1 stop" &&  (
-                      <div style={{
-                        display:"flex",
-                        justifyContent:"center",
-                        alignItems:"center",
-                        width:"100%",
-                        textAlign:"center",
-                        flexDirection:"column",
-                        marginTop:"40px"
-                      }}>
-                      <div style={{
-                        
-                        width:"85%",
-                        border:"1px solid rgb(204, 204, 204)",
-                        
-                      }}>
-        
-                      </div>
-                      
-                     
-              <div
-                style={{
-                  textAlign: "center",
-                  background: "#ffffffff",
-                  
-                  borderRadius: "20px",
-                  position:"relative",
-                  display: "inline-block",
-                  bottom:"12px",
-                  border:"1px solid #d1d1d1ff",
-                  width:"60%"
-                  
-                }}
-              >
-                <Text style={{
-                  color: "#ad6800",
-                  fontSize:"12px",
-                  fontWeight:500
-                }}>Change of Planes •</Text> <Text style={{
-                  color: "black",
-                  fontSize:"13px",
-                  fontWeight:700
-                }}>{item.flightCodes[0].waitTime}</Text> <Text style={{
-                  fontSize:"13px",
-                  fontWeight:500
-                }}> layover in {item.flightCodes[0].toCity}  {selectedFlights.layoverCity}</Text>
-              </div>
-              </div>
-            )}
-                   {/* 1 stop design */}
-                    {item.stops === "1 stop"?(<div style={{
-                      marginTop:"30px"
-                    }}>
-                      <div style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              flex: 1,
-              minWidth: "20%",
-            }}>
-                  <img src={item.logo} alt={item.airline} style={{ height: 35 }} />
-                  <Text strong style={{
-                    fontSize:"16px"
-                  }}>{item.airline}</Text> <Text strong style={{
-                    color:"grey"
-                  }}>
-                    | {item.stops === "1 stop"
-          ? item?.flightCodes?.[0]?.code || "--"
-          : item?.flightCodes || "--"}
-        
-                    
-                    
-                  
-                  </Text>
-                </div>
-                      <div style={{
-                  display:"flex",
-                  flexDirection:"row",
-                  marginTop:"15px",
-                  gap:35
-                }}>
-                  
-                <div style={{
-                  width:"140px"
-                }}>
-                  <Text strong style={{
-                    color:"grey",
-                    fontSize:"14px"
-        
-                  }}>{selectedDate}</Text>
-                  <br />
-                  <Text style={{
-                    fontSize:"30px",
-                    fontWeight:"bold"
-                  }}>{item?.flightCodes?.[1]?.departureTime2 || "--"}</Text>
-                  <br />
-                  <Text strong>
-                    {
-          `${item?.flightCodes?.[0]?.to} - ${item?.flightCodes?.[0]?.toCity}` || "--"}
-                  </Text>
-                  <Text strong style={{
-                    whiteSpace: "wrap",
-                  overflow: "hidden",
-                  color:"grey",
-                  display: "inline-block",
-                  maxWidth: "155px",
-                  fontSize:"12px",
-                  
-                  }}>
-                    {item?.flightCodes?.[1]?.toAirport2 || "--"}
-                  </Text>
-                  <br />
-                  <Text strong style={{
-                    fontSize:"12px "
-                  }}>
-                    Terminal {item?.flightCodes?.[1]?.fromTerminal2 || "--"}
-                  </Text>
-                  </div>
-                  <div style={{
-                    marginTop:"30px",
-                    display:"flex",
-                    flexDirection:"column",
-                    textAlign:"center"
-                  }}>
-                    <Text style={{
-                      color:"gray",
-                      fontWeight:400
-                    }}>{item?.flightCodes?.[1]?.duration2 || "--"}</Text>
-                    <img src="https://edge.ixigo.com/st/vimaan/_next/static/media/line.9641f579.svg">
-                    </img>
-                  </div>
-                  <div style={{
-                    textAlign:"right",
-                    width:"140px"
-                  }}>
-                    {item.nextDayArrival === true ?(<div>
-                      <Text strong style={{
-                    color:"grey",
-                    fontSize:"14px"
-        
-                  }}
-                      >{dayjs(selectedDate).add(1, "day").format("YYYY-MM-DD")}</Text>
-                    
-                  </div>):<div><Text strong style={{
-                    color:"grey",
-                    fontSize:"14px"
-        
-                  }}>{selectedDate}</Text></div>}
-                  <Text style={{
-                    fontSize:"30px",
-                    fontWeight:"bold"
-                  }}>{item.arrivalTime}</Text>
-                  <br />
-                  <Text strong>
-                    {to}
-                  </Text>
-                  <br />
-                  <Text strong style={{
-                    whiteSpace: "wrap",
-                  overflow: "hidden",
-                  color:"grey",
-                  display: "inline-block",
-                  maxWidth: "155px",
-                  fontSize:"12px",
-                  
-                  }}>
-                    {toAirport}
-                  </Text>
-                  <br />
-                  <Text strong style={{
-                    fontSize:"12px "
-                  }}>
-                    Terminal {item?.flightCodes?.[1]?.toTerminal2 || "--"}
-                  </Text>
-                  </div>
-                  <div>
-                    <Text strong style={{
-                      fontSize:"14px",
-                      color:"grey"
-                    }}>
-                      Baggage
-                    </Text>
-        
-                    <br />
-                    <div style={{
-                      display:"flex",
-                      gap:8
-                    }}>
-                      
-                    <img src={Cabin} style={{
-                      height:"20px",
-                      width:"20px",
-                      marginTop:"20px"
-                    }}>
-                    </img>  <div style={{
-                            marginTop:"17px"
-                    }}>
-                      <Text style={{
-                      fontWeight:500
-                    }}>Cabin : </Text> <Text style={{
-                      fontWeight:700
-                    }}>
-                      7 kg per adult
-                    </Text>
-                    </div>
-                    </div>
-                    <div style={{
-                      display:"flex",
-                      gap:8
-                    }}>
-                    <img src={CheckIn} style={{
-                      height:"20px",
-                      width:"20px",
-                      marginTop:"20px"
-                    }}>
-                    </img>  <div style={{
-                            marginTop:"17px"
-                    }}>
-                      <Text style={{
-                      fontWeight:500
-                    }}>Check-in : </Text> <Text style={{
-                      fontWeight:700
-                    }}>
-                      15 kg per adult
-                    </Text>
-                    </div>
-                    </div>
-                    
-                    
-                  </div>
-                  
-        
-                </div>
-                <div style={{
-                  marginTop:"15px",
-                  display:"flex",
-                  textAlign:"center",
-                  gap:10
-                }}>
-                      <img src={FlightEngineFilledIcon} style={{
-                        height:"20px",
-                      }}/>  <Text strong style={{
-                        fontSize:"12px"
-                      }}>
-                        Airbus A320
-                      </Text>
-                      <img src={AirlineSeat} style={{
-                        height:"15px",
-                      }}/>  <Text strong style={{
-                        fontSize:"12px"
-                      }}>
-                        Narrow
-                      </Text>
-                      <AppstoreOutlined />  <Text strong style={{
-                        fontSize:"12px"
-                      }}>
-                        Narrow (Limited seat tilt)
-                      </Text>
-                      <Tooltip title="Fresh Food - Chargeable" >
-                      <img src={NoFoodIcon} style={{
-                        height:"20px",
-                        cursor:"pointer"
-                      }}/></Tooltip>
-                      <Tooltip title="No Wi-Fi" >
-                      <img src={WifiOffIcon} style={{
-                        height:"15px",
-                        marginTop:2,
-                        cursor:"pointer"
-                      }}/>
-                      </Tooltip>
-                      <Tooltip title="No power outlet" >
-                      <img src={NoPowerIcon} style={{
-                        height:"15px",
-                        marginTop:2,
-                        cursor:"pointer",
-                        color:"gray"
-                      }}/>
-                      </Tooltip>
-                      <Tooltip title="No Entertainment" >
-                      <img src={NoVideoIcon} style={{
-                        height:"18px",
-                        marginTop:2,
-                        cursor:"pointer",
-                        color:"gray"
-                      }}/>
-                      </Tooltip>
-                      
-        
-                    </div>
-                    <div style={{
-                      marginTop:200
-                    }}></div>
-                    </div>):null}
-                    </div>
-                   ))
-                    }
                   
           
                  
@@ -1631,17 +1271,66 @@ useEffect(() => {
               children: (
                 <div>
                 
-                {selectedFlights.map((items,idx)=>{
+                {selectedOnwards.map((items,idx)=>{
                 const calculateCancel = getCancelFee(items.price);
                 const calTotalTravellerRefund = getTotalTraveller(items.price);
+                const calTotalTravellerOnwardsRefund = getTotalOnwardsTraveller(items.price);
+                const calTotalTravellerReturnRefund = getTotalReturnTraveller(selectedReturn[0].price);
+                const cal8HrsCancelTime = get8HrsCancelTime(items.departureTime)
+                const cal8HrsCancelReturnTime = get8HrsCancelReturnTime(selectedReturn[0].departureTime)
                 const ixigoCancelFee = getIxigoCancelFee() 
+                console.log("cancelfee",calculateCancel)
                 return(
                   <div style={{
                   fontFamily:"Roboto"
                 }}>
                   
                   <Text style={{fontWeight:500}}>*Cancellation charges applicable (Airline fee + ixigo fee)</Text>
-                  {removeFeeAdd?(
+                  <div style={{ display: "flex", justifyContent: "space-evenly", width: "250px",marginTop:10}}>
+                              <Button shape="round" size="medium" 
+                                onClick={handleOnwardSwap} 
+                                style={{
+                                  fontFamily: "Roboto",
+                                  fontSize: 16,
+                                  color:swapButton?"black":"#288ee7ff",
+                                  backgroundColor:swapButton?"white":"#f2f9ff",
+                                  borderColor:swapButton?null:"#288ee7ff",
+                                  transition:"all 0.15 cubic-bezier(.4,0,.2,1)",
+                  
+                                }}
+                                onMouseEnter={(e) => {
+                                                e.currentTarget.style.background = swapButton?"#eeeeeeff":"#f2f9ff";
+                                                e.currentTarget.style.color = swapButton?"black":"#288ee7ff";
+                                               
+                                              }}
+                                              onMouseLeave={(e) => {
+                                                e.currentTarget.style.background = "white";
+                                                e.currentTarget.style.color = swapButton?"black":"288ee7ff";
+                                              }}>{`${fromCode} - ${toCode}`}</Button>
+                              <Button shape="round" size="medium" type={swapButton ? "primary" : "default"}
+                                onClick={handleReturnSwap}
+                                style={{
+                                  fontFamily: "Roboto",
+                                  fontSize: 16,
+                                  color:!swapButton?"black":"#288ee7ff",
+                                  backgroundColor:!swapButton?"white":"#f2f9ff",
+                                  borderColor:!swapButton?null:"#288ee7ff",
+                                  transition:"all 0.15 cubic-bezier(.4,0,.2,1)",
+                  
+                                }}
+                                onMouseEnter={(e) => {
+                                                e.currentTarget.style.background = !swapButton?"#eeeeeeff":"#f2f9ff";
+                                                e.currentTarget.style.color = !swapButton?"black":"#288ee7ff";
+                                               
+                                              }}
+                                              onMouseLeave={(e) => {
+                                                e.currentTarget.style.background = "white";
+                                                e.currentTarget.style.color = !swapButton?"black":"288ee7ff";
+                                              }}>{`${toCode} - ${fromCode}`}</Button>
+                            </div>
+                            {!swapButton?(
+                              <div>
+                                {removeFeeAdd?(
                     <div>
                       <div style={{
                         display:"flex",
@@ -1659,7 +1348,7 @@ useEffect(() => {
                           fontWeight:500,
                       fontSize:"15px",
                         }}>
-                          Full refund of ₹{items.price.toLocaleString("en-IN")}
+                          Full refund of ₹{calTotalTravellerOnwardsRefund.toLocaleString("en-IN")}
                         </Text>
                         <br/>
                         <Text style={{
@@ -1669,7 +1358,7 @@ useEffect(() => {
                         }}>(<span style={{
                           color:"green",
                 
-                        }}>₹0</span> <span><s>₹{calTotalTravellerRefund.toLocaleString("en-IN")}</s>
+                        }}>₹0</span> <span><s>₹{calTotalTravellerOnwardsRefund.toLocaleString("en-IN")}</s>
                           </span> + ₹{ixigoCancelFee.toLocaleString("en-IN")})* </Text>
                         </div>
                         <div>
@@ -1810,14 +1499,14 @@ useEffect(() => {
                       fontSize:"14px",
                       fontWeight:500
                     }}>
-                      {dep.day} {dep.month}
+                      {lessdep.day} {lessdep.month}
                     </Text>
                     <br />
                     <Text type="secondary" strong style={{
                       position:"relative",
                       fontSize:"12px",
                       //before 8
-                    }}>{currentTime}</Text>
+                    }}>{cal8HrsCancelTime.finalTime}</Text>
                     </div>
                     <div style={{
                       flex:1,
@@ -1945,6 +1634,317 @@ useEffect(() => {
                   </div>
                   </div>
                   )}
+                              </div>
+                            ):(
+                              <div>
+                                {removeFeeAdd?(
+                    <div>
+                      <div style={{
+                        display:"flex",
+                        justifyContent:"space-between",
+                        width:"60%",
+                        alignItems:"center",
+                        position:"relative",
+                        top:25,
+                        left:"20%"
+                      }}>
+                        <div style={{
+                          textAlign:"center"
+                        }}>
+                        <Text style={{
+                          fontWeight:500,
+                      fontSize:"15px",
+                        }}>
+                          Full refund of ₹{calTotalTravellerReturnRefund.toLocaleString("en-IN")}
+                        </Text>
+                        <br/>
+                        <Text style={{
+                          fontSize:"12px",
+                          fontWeight:500,
+                          color:"#5e616e"
+                        }}>(<span style={{
+                          color:"green",
+                
+                        }}>₹0</span> <span><s>₹{calTotalTravellerReturnRefund.toLocaleString("en-IN")}</s>
+                          </span> + ₹{ixigoCancelFee.toLocaleString("en-IN")})* </Text>
+                        </div>
+                        <div>
+                        <Text style={{
+                          fontWeight:500,
+                      fontSize:"15px",
+                      textAlign:"center"
+                        }}>Non Refundable</Text>
+                        </div>
+                      </div>
+                      <div style={{
+                        display:"flex",
+                        flexDirection:"column",
+                        
+                      }}>
+                        <div style={{
+                    
+                    marginTop:"50px",
+                    textAlign:"center",
+                    height:"4px",
+                    width:"50%",
+                    backgroundImage:"linear-gradient(to right, rgb(43, 153, 80), rgb(238, 154, 153))"
+                  }}>
+                    </div>
+                    <div style={{
+                    position:"relative",
+                    // marginTop:"10px",
+                    textAlign:"center",
+                    height:"4px",
+                    width:"50%",
+                    backgroundImage:"linear-gradient(to right, rgb(238, 154, 153), rgb(220, 53, 50))",
+                    left:"50%",
+                    bottom:4
+                  }}></div>
+                      </div>
+                      
+                    
+                      
+                  
+                  
+                  <div style={{
+                    display:"flex",
+                    justifyContent:"space-between"
+                  }}>
+                    <div>
+                    <div style={{
+                      background:"rgb(107, 184, 133)",
+                      height:"30px",
+                      width:"30px",
+                      display:"flex",
+                      alignItems:"center",
+                      justifyContent:"center",
+                      borderRadius:"50px",
+                      position:"relative",
+                      right:7,
+                      bottom:21
+                    }}>
+                    <img src={FlightTicketFilledIcon} style={{
+                      
+                      height:"20px"
+                    }}>
+                    </img>
+                    </div>
+                    <div style={{
+                      background:"rgb(231, 114, 112)",
+                      height:"15px",
+                      width:"15px",
+                      display:"flex",
+                      alignItems:"center",
+                      justifyContent:"center",
+                      borderRadius:"50px",
+                      position:"relative",
+                      left:410,
+                      bottom:44
+                    }}></div>
+                    
+                    
+                    </div>
+                    
+                    <div>
+                    
+                    <div style={{
+                      background:"rgb(220, 53, 50)",
+                      height:"30px",
+                      width:"30px",
+                      display:"flex",
+                      alignItems:"center",
+                      justifyContent:"center",
+                      borderRadius:"50px",
+                      position:"relative",
+                      // left:50,
+                      bottom:21
+                    }}>
+                    <img src={FlightTakeoffFilledIcon} style={{
+                      
+                      height:"20px"
+                    }}>
+                    </img>
+                    </div>
+                    
+                    </div>
+                    
+                  </div>
+                  <div style={{
+                    display:"flex",
+                    justifyContent:"space-between",
+                    position:"relative",
+                    bottom:18
+                  }}>
+                    <div style={{
+                      flex:1,
+                      textAlign:"left",
+                      position:"relative",
+                      right:6,
+                      bottom:8
+                    }}>
+                    <Text style={{
+                      fontSize:"14px",
+                      fontWeight:500
+                    }}>
+                      Now
+                    </Text>
+                    <br />
+                    <Text type="secondary" strong style={{
+                      position:"relative",
+                      
+                      fontSize:"12px",
+                    }}>{currentTime}</Text>
+                    </div>
+                    <div style={{
+                      flex:1,
+                      textAlign:"center",
+                      position:"relative",
+                      left:5,
+                      bottom:8
+                    }}>
+                    <Text style={{
+                      fontSize:"14px",
+                      fontWeight:500
+                    }}>
+                      {lessret.day} {lessret.month}
+                    </Text>
+                    <br />
+                    <Text type="secondary" strong style={{
+                      position:"relative",
+                      fontSize:"12px",
+                      //before 8
+                    }}>{cal8HrsCancelReturnTime.finalTime}</Text>
+                    </div>
+                    <div style={{
+                      flex:1,
+                      textAlign:"right",
+                      position:"relative",
+                      bottom:8
+                    }}>
+                    <Text style={{
+                      fontSize:"14px",
+                      fontWeight:500
+                    }}>
+                      Departure
+                    </Text>
+                    <br />
+                    <Text type="secondary" strong style={{
+                      position:"relative",
+                      
+                      fontSize:"12px",
+                    }}>{ret.day} {ret.month}, {selectedReturn[0].departureTime}</Text>
+                    </div>
+                  </div>
+                  </div>
+                  ):(
+                    <div>
+                  <div style={{
+                    flex:1,
+                    marginTop:"50px",
+                    textAlign:"center",
+                    height:"4px",
+                    width:"98%",
+                    backgroundImage:"linear-gradient(to right, rgb(238, 154, 153), rgb(220, 53, 50))"
+                  }}>
+                    <Text style={{fontWeight:500,
+                      fontSize:"15px",
+                      position:"relative",
+                      textAlign:"center",
+                      bottom:35}}>Non Refundable</Text>
+                      
+                  </div>
+                  <div style={{
+                    display:"flex",
+                    justifyContent:"space-between"
+                  }}>
+                    <div>
+                    <div style={{
+                      background:"rgb(231, 114, 112)",
+                      height:"30px",
+                      width:"30px",
+                      display:"flex",
+                      alignItems:"center",
+                      justifyContent:"center",
+                      borderRadius:"50px",
+                      position:"relative",
+                      right:7,
+                      bottom:17
+                    }}>
+                    <img src={FlightTicketFilledIcon} style={{
+                      
+                      height:"20px"
+                    }}>
+                    </img>
+                    </div>
+                    <div style={{
+                      flex:1,
+                      textAlign:"left",
+                      position:"relative",
+                      right:6,
+                      bottom:8
+                    }}>
+                    <Text style={{
+                      fontSize:"14px",
+                      fontWeight:500
+                    }}>
+                      Now
+                    </Text>
+                    <br />
+                    <Text type="secondary" strong style={{
+                      position:"relative",
+                      
+                      fontSize:"12px",
+                    }}>{currentTime}</Text>
+                    </div>
+                    </div>
+                    
+                    <div>
+                    
+                    <div style={{
+                      background:"rgb(220, 53, 50)",
+                      height:"30px",
+                      width:"30px",
+                      display:"flex",
+                      alignItems:"center",
+                      justifyContent:"center",
+                      borderRadius:"50px",
+                      position:"relative",
+                      left:40,
+                      bottom:18
+                    }}>
+                    <img src={FlightTakeoffFilledIcon} style={{
+                      
+                      height:"20px"
+                    }}>
+                    </img>
+                    </div>
+                    <div style={{
+                      flex:1,
+                      textAlign:"right",
+                      position:"relative",
+                      bottom:8
+                    }}>
+                    <Text style={{
+                      fontSize:"14px",
+                      fontWeight:500
+                    }}>
+                      Departure
+                    </Text>
+                    <br />
+                    <Text type="secondary" strong style={{
+                      position:"relative",
+                      
+                      fontSize:"12px",
+                    }}>{ret.day} {ret.month}, {selectedReturn[0].departureTime}</Text>
+                    </div>
+                    </div>
+                  </div>
+                  </div>
+                  )}
+                              </div>
+                            )}
+
+                  
                   
                   
                   <Text style={{fontSize:"15px",fontWeight:500,
@@ -2081,7 +2081,7 @@ useEffect(() => {
                   // maxHeight: height,
                   
                 }}
-                onClick={()=>handleAddCancelFee(items.price,calculateCancel)}
+                onClick={()=>handleAddCancelFee(calculateCancel)}
                 >
                   <div >
                 <img src="https://images.ixigo.com/image/upload/icon/8378c73f79f77491eccf58ba345ee5bc-gbjnr.png"
@@ -2209,17 +2209,67 @@ useEffect(() => {
               children: (
                 <div>
                 
-                {selectedFlights.map((items,idx)=>{
+                {selectedOnwards.map((items,idx)=>{
                 const calculateReschedule = getRescheduleFee(items.price);
-                const calTotalTravellerRefund = getTotalTraveller(items.price);
+                const calTotalTravellerRefund = getTotalTraveller();
+                const calTotalTravellerOnwardsRefund = getTotalOnwardsTraveller(items.price);
+                const calTotalTravellerReturnRefund = getTotalReturnTraveller(selectedReturn[0].price);
+                const cal8HrsCancelTime = get8HrsCancelTime(items.departureTime)
+                const cal8HrsCancelReturnTime = get8HrsCancelReturnTime(selectedReturn[0].departureTime)
                 const ixigoRescheduleFee = getIxigoRescheduleFee() 
+                console.log("Reschudle",calculateReschedule)
                 return(
                   <div style={{
                   fontFamily:"Roboto"
                 }}>
                   
                   <Text style={{fontWeight:500}}>*Rescheduling charges applicable (Airline fee + ixigo fee)</Text>
-                  {removeRescheduleAdd?(
+                  <div style={{ display: "flex", justifyContent: "space-evenly", width: "250px",marginTop:10}}>
+                              <Button shape="round" size="medium" 
+                                onClick={handleOnwardSwap} 
+                                style={{
+                                  fontFamily: "Roboto",
+                                  fontSize: 16,
+                                  color:swapButton?"black":"#288ee7ff",
+                                  backgroundColor:swapButton?"white":"#f2f9ff",
+                                  borderColor:swapButton?null:"#288ee7ff",
+                                  transition:"all 0.15 cubic-bezier(.4,0,.2,1)",
+                  
+                                }}
+                                onMouseEnter={(e) => {
+                                                e.currentTarget.style.background = swapButton?"#eeeeeeff":"#f2f9ff";
+                                                e.currentTarget.style.color = swapButton?"black":"#288ee7ff";
+                                               
+                                              }}
+                                              onMouseLeave={(e) => {
+                                                e.currentTarget.style.background = "white";
+                                                e.currentTarget.style.color = swapButton?"black":"288ee7ff";
+                                              }}>{`${fromCode} - ${toCode}`}</Button>
+                              <Button shape="round" size="medium" type={swapButton ? "primary" : "default"}
+                                onClick={handleReturnSwap}
+                                style={{
+                                  fontFamily: "Roboto",
+                                  fontSize: 16,
+                                  color:!swapButton?"black":"#288ee7ff",
+                                  backgroundColor:!swapButton?"white":"#f2f9ff",
+                                  borderColor:!swapButton?null:"#288ee7ff",
+                                  transition:"all 0.15 cubic-bezier(.4,0,.2,1)",
+                  
+                                }}
+                                onMouseEnter={(e) => {
+                                                e.currentTarget.style.background = !swapButton?"#eeeeeeff":"#f2f9ff";
+                                                e.currentTarget.style.color = !swapButton?"black":"#288ee7ff";
+                                               
+                                              }}
+                                              onMouseLeave={(e) => {
+                                                e.currentTarget.style.background = "white";
+                                                e.currentTarget.style.color = !swapButton?"black":"288ee7ff";
+                                              }}>{`${toCode} - ${fromCode}`}</Button>
+                            </div>
+
+                  {!swapButton?(
+                    <div>
+                      {removeRescheduleAdd?(
                     <div>
                       <div style={{
                         display:"flex",
@@ -2247,7 +2297,7 @@ useEffect(() => {
                         }}>(<span style={{
                           color:"green",
                 
-                        }}>₹0</span> <span><s>₹{calTotalTravellerRefund.toLocaleString("en-IN")}</s>
+                        }}>₹0</span> <span><s>₹{calTotalTravellerOnwardsRefund.toLocaleString("en-IN")}</s>
                           </span> + ₹{ixigoRescheduleFee.toLocaleString("en-IN")})* </Text>
                         </div>
                         <div>
@@ -2388,14 +2438,14 @@ useEffect(() => {
                       fontSize:"14px",
                       fontWeight:500
                     }}>
-                      {dep.day} {dep.month}
+                      {lessdep.day} {lessdep.month}
                     </Text>
                     <br />
                     <Text type="secondary" strong style={{
                       position:"relative",
                       fontSize:"12px",
                       //before 8
-                    }}>{currentTime}</Text>
+                    }}>{cal8HrsCancelTime.finalTime}</Text>
                     </div>
                     <div style={{
                       flex:1,
@@ -2523,6 +2573,316 @@ useEffect(() => {
                   </div>
                   </div>
                   )}
+                    </div>
+                  ):(
+                    <div>
+                      {removeRescheduleAdd?(
+                    <div>
+                      <div style={{
+                        display:"flex",
+                        justifyContent:"space-between",
+                        width:"60%",
+                        alignItems:"center",
+                        position:"relative",
+                        top:25,
+                        left:"20%"
+                      }}>
+                        <div style={{
+                          textAlign:"center"
+                        }}>
+                        <Text style={{
+                          fontWeight:500,
+                      fontSize:"15px",
+                        }}>
+                          ₹0 + fare difference
+                        </Text>
+                        <br/>
+                        <Text style={{
+                          fontSize:"12px",
+                          fontWeight:500,
+                          color:"#5e616e"
+                        }}>(<span style={{
+                          color:"green",
+                
+                        }}>₹0</span> <span><s>₹{calTotalTravellerReturnRefund.toLocaleString("en-IN")}</s>
+                          </span> + ₹{ixigoRescheduleFee.toLocaleString("en-IN")})* </Text>
+                        </div>
+                        <div>
+                        <Text style={{
+                          fontWeight:500,
+                      fontSize:"15px",
+                      textAlign:"center"
+                        }}>Non Changeable</Text>
+                        </div>
+                      </div>
+                      <div style={{
+                        display:"flex",
+                        flexDirection:"column",
+                        
+                      }}>
+                        <div style={{
+                    
+                    marginTop:"50px",
+                    textAlign:"center",
+                    height:"4px",
+                    width:"50%",
+                    backgroundImage:"linear-gradient(to right, rgb(43, 153, 80), rgb(238, 154, 153))"
+                  }}>
+                    </div>
+                    <div style={{
+                    position:"relative",
+                    // marginTop:"10px",
+                    textAlign:"center",
+                    height:"4px",
+                    width:"50%",
+                    backgroundImage:"linear-gradient(to right, rgb(238, 154, 153), rgb(220, 53, 50))",
+                    left:"50%",
+                    bottom:4
+                  }}></div>
+                      </div>
+                      
+                    
+                      
+                  
+                  
+                  <div style={{
+                    display:"flex",
+                    justifyContent:"space-between"
+                  }}>
+                    <div>
+                    <div style={{
+                      background:"rgb(107, 184, 133)",
+                      height:"30px",
+                      width:"30px",
+                      display:"flex",
+                      alignItems:"center",
+                      justifyContent:"center",
+                      borderRadius:"50px",
+                      position:"relative",
+                      right:7,
+                      bottom:21
+                    }}>
+                    <img src={FlightTicketFilledIcon} style={{
+                      
+                      height:"20px"
+                    }}>
+                    </img>
+                    </div>
+                    <div style={{
+                      background:"rgb(231, 114, 112)",
+                      height:"15px",
+                      width:"15px",
+                      display:"flex",
+                      alignItems:"center",
+                      justifyContent:"center",
+                      borderRadius:"50px",
+                      position:"relative",
+                      left:410,
+                      bottom:44
+                    }}></div>
+                    
+                    
+                    </div>
+                    
+                    <div>
+                    
+                    <div style={{
+                      background:"rgb(220, 53, 50)",
+                      height:"30px",
+                      width:"30px",
+                      display:"flex",
+                      alignItems:"center",
+                      justifyContent:"center",
+                      borderRadius:"50px",
+                      position:"relative",
+                      // left:50,
+                      bottom:21
+                    }}>
+                    <img src={FlightTakeoffFilledIcon} style={{
+                      
+                      height:"20px"
+                    }}>
+                    </img>
+                    </div>
+                    
+                    </div>
+                    
+                  </div>
+                  <div style={{
+                    display:"flex",
+                    justifyContent:"space-between",
+                    position:"relative",
+                    bottom:18
+                  }}>
+                    <div style={{
+                      flex:1,
+                      textAlign:"left",
+                      position:"relative",
+                      right:6,
+                      bottom:8
+                    }}>
+                    <Text style={{
+                      fontSize:"14px",
+                      fontWeight:500
+                    }}>
+                      Now
+                    </Text>
+                    <br />
+                    <Text type="secondary" strong style={{
+                      position:"relative",
+                      
+                      fontSize:"12px",
+                    }}>{currentTime}</Text>
+                    </div>
+                    <div style={{
+                      flex:1,
+                      textAlign:"center",
+                      position:"relative",
+                      left:5,
+                      bottom:8
+                    }}>
+                    <Text style={{
+                      fontSize:"14px",
+                      fontWeight:500
+                    }}>
+                      {lessret.day} {lessret.month}
+                    </Text>
+                    <br />
+                    <Text type="secondary" strong style={{
+                      position:"relative",
+                      fontSize:"12px",
+                      //before 8
+                    }}>{cal8HrsCancelReturnTime.finalTime}</Text>
+                    </div>
+                    <div style={{
+                      flex:1,
+                      textAlign:"right",
+                      position:"relative",
+                      bottom:8
+                    }}>
+                    <Text style={{
+                      fontSize:"14px",
+                      fontWeight:500
+                    }}>
+                      Departure
+                    </Text>
+                    <br />
+                    <Text type="secondary" strong style={{
+                      position:"relative",
+                      
+                      fontSize:"12px",
+                    }}>{ret.day} {ret.month}, {selectedReturn[0].departureTime}</Text>
+                    </div>
+                  </div>
+                  </div>
+                  ):(
+                    <div>
+                  <div style={{
+                    flex:1,
+                    marginTop:"50px",
+                    textAlign:"center",
+                    height:"4px",
+                    width:"98%",
+                    backgroundImage:"linear-gradient(to right, rgb(238, 154, 153), rgb(220, 53, 50))"
+                  }}>
+                    <Text style={{fontWeight:500,
+                      fontSize:"15px",
+                      position:"relative",
+                      textAlign:"center",
+                      bottom:35}}>Non Changeable</Text>
+                      
+                  </div>
+                  <div style={{
+                    display:"flex",
+                    justifyContent:"space-between"
+                  }}>
+                    <div>
+                    <div style={{
+                      background:"rgb(231, 114, 112)",
+                      height:"30px",
+                      width:"30px",
+                      display:"flex",
+                      alignItems:"center",
+                      justifyContent:"center",
+                      borderRadius:"50px",
+                      position:"relative",
+                      right:7,
+                      bottom:17
+                    }}>
+                    <img src={FlightTicketFilledIcon} style={{
+                      
+                      height:"20px"
+                    }}>
+                    </img>
+                    </div>
+                    <div style={{
+                      flex:1,
+                      textAlign:"left",
+                      position:"relative",
+                      right:6,
+                      bottom:8
+                    }}>
+                    <Text style={{
+                      fontSize:"14px",
+                      fontWeight:500
+                    }}>
+                      Now
+                    </Text>
+                    <br />
+                    <Text type="secondary" strong style={{
+                      position:"relative",
+                      
+                      fontSize:"12px",
+                    }}>{currentTime}</Text>
+                    </div>
+                    </div>
+                    
+                    <div>
+                    
+                    <div style={{
+                      background:"rgb(220, 53, 50)",
+                      height:"30px",
+                      width:"30px",
+                      display:"flex",
+                      alignItems:"center",
+                      justifyContent:"center",
+                      borderRadius:"50px",
+                      position:"relative",
+                      left:40,
+                      bottom:18
+                    }}>
+                    <img src={FlightTakeoffFilledIcon} style={{
+                      
+                      height:"20px"
+                    }}>
+                    </img>
+                    </div>
+                    <div style={{
+                      flex:1,
+                      textAlign:"right",
+                      position:"relative",
+                      bottom:8
+                    }}>
+                    <Text style={{
+                      fontSize:"14px",
+                      fontWeight:500
+                    }}>
+                      Departure
+                    </Text>
+                    <br />
+                    <Text type="secondary" strong style={{
+                      position:"relative",
+                      
+                      fontSize:"12px",
+                    }}>{ret.day} {ret.month}, {selectedReturn[0].departureTime}</Text>
+                    </div>
+                    </div>
+                  </div>
+                  </div>
+                  )}
+                    </div>
+                  )}
+                  
                   
                   
                   <Text style={{fontSize:"15px",fontWeight:500,
@@ -2648,7 +3008,7 @@ useEffect(() => {
                   // maxHeight: height,
                   
                 }}
-                onClick={()=>handleAddRescheduleFee(items.price,calculateReschedule)}
+                onClick={()=>handleAddRescheduleFee(calculateReschedule)}
                 >
                   <div >
                 <img src="https://images.ixigo.com/image/upload/icon/8934cfa8cec76c87ada8b3ecda4f0da1-awjph.png"
@@ -2775,7 +3135,7 @@ useEffect(() => {
                         <div style={{
       
                             position: "sticky",
-                            top: "30px",            
+                            top: "100px",            
                             alignSelf: "flex-start",
                             height: "fit-content",
                             transition:"all 0.3 ease"
@@ -3348,15 +3708,15 @@ useEffect(() => {
                           <SwiperSlide key={index}>
                             <div
                               onClick={() => {
-                                setSelectedDate(item.label);
+                               
                                 // console.log(item.date)
                 
                             const d = new Date(item.date);
                             const formattedDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
                               d.getDate()
                             ).padStart(2, "0")}`;
-                
-                     dispatch(setDeparture(formattedDate));
+                            setSelectedDate(formattedDate)
+                            dispatch(setDeparture(formattedDate));
                   
                               }
                               }
@@ -3364,14 +3724,14 @@ useEffect(() => {
                                 background: "#fff",
                                 borderRadius: "6px",
                                 border:
-                                  selectedDate === item.label
+                                  selectedDate === item.date
                                     ? "1px solid #0066ff"
                                     : "1px solid #e0e0e0",
-                                color: selectedDate === item.label ? "#0066ff" : "#000",
+                                color: selectedDate === item.date ? "#0066ff" : "#000",
                                 textAlign: "center",
                                 padding: "8px 0",
                                 cursor: "pointer",
-                                height: selectedDate === item.label? "35.8px":"35px",
+                                height: selectedDate === item.date? "35.8px":"35px",
                                 transition: "0.2s ease",
                               }}
                               
@@ -3453,7 +3813,8 @@ useEffect(() => {
                                   e.currentTarget.style.transform = "scale(1)";
                                 }}
                                 onClick={()=>
-                                  setSelectedFlightId(item.id)
+                                  showOnwards(item)
+                                
                                 }
                               >
                                 <div
@@ -3658,31 +4019,31 @@ useEffect(() => {
                           <SwiperSlide key={index}>
                             <div
                               onClick={() => {
-                                setSelectedReturnDate(item.label);
-                                // console.log(item.date)
-                
-                            const d = new Date(item.date);
-                            const formattedDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-                              d.getDate()
-                            ).padStart(2, "0")}`;
+                                      const d = new Date(item.date);
+                                      const formattedDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+                                        d.getDate()
+                                      ).padStart(2, "0")}`;
 
-                      
-                          dispatch(setReturnDate(formattedDate));
-                  
-                              }
-                              }
+                                      
+                                      setSelectedReturnDate(formattedDate);
+
+                                      
+                                      dispatch(setReturnDate(formattedDate));
+                                    }}
+
+                              
                               style={{
                                 background: "#fff",
                                 borderRadius: "6px",
                                 border:
-                                  selectedReturnDate === item.label
+                                  selectedReturnDate === item.date
                                     ? "1px solid #0066ff"
                                     : "1px solid #e0e0e0",
-                                color: selectedReturnDate === item.label ? "#0066ff" : "#000",
+                                color: selectedReturnDate === item.date ? "#0066ff" : "#000",
                                 textAlign: "center",
                                 padding: "8px 0",
                                 cursor: "pointer",
-                                height: selectedReturnDate === item.label? "35.8px":"35px",
+                                height: selectedReturnDate === item.date? "35.8px":"35px",
                                 transition: "0.2s ease",
                               }}
                               
@@ -3764,8 +4125,7 @@ useEffect(() => {
                                   e.currentTarget.style.transform = "scale(1)";
                                 }}
                                 onClick={()=>
-                                  setSelectedFlightReturnId(item.id)
-                                  // showLoading(item)
+                                showReturn(item)
                                 }
                               >
                                 <div
@@ -3959,7 +4319,7 @@ useEffect(() => {
               position: "fixed",
               bottom: 0,
               width: "75%",
-              height:"15%",
+              height:"13%",
               zIndex: 1000,
               background: "#f2f9ff",
               padding: "10px 20px",
@@ -3971,62 +4331,358 @@ useEffect(() => {
               borderTopRightRadius:"30px"
             }}
           >
-            <div >
-              {selectedFlights.map((item,idx)=>(
+            
+              <div style={{
+                display:"flex",
+                gap:"20px",
+                alignItems:"stretch",
+                width:"60%",
+                // border:"1px solid"
+              }}>
+                
                 <div style={{
-              display:"flex",
-              flexDirection:"column",
-              position:"relative",
-              bottom:"10px"
-            }}>
-                  <Text style={{ fontSize: 28, fontWeight: 500 }}>
-  ₹
-                    {Number(
+                  gap:10,
+                  display:"flex",
+                  flexDirection:"column",
+                  width:"45%",
+                  borderRight:"1px solid #cccccc",
+                  padding:5,
+                  fontSize:"Roboto"
+                }}>
+                  {selectedOnwards.map((items, idx) => (
+                          <div key={idx}> 
+                              <Text style={{
+                                  fontWeight: 700,
+                              }}>
+                                  Onward &nbsp; • &nbsp; 
+                                  
+                                  <Text  style={{ fontWeight:500  }}>
+                                    {items.airline} • </Text>
+                                    <Text style={{ fontWeight:500  }}>{items.stops === "1 stop"
+                                    ? items.flightCodes[0].code || "--"
+                                    : items.flightCodes || "--"}</Text>
+                              </Text>
+                              <br/>
+                              
+                              <div style={{
+                                marginTop:20,
+                                display:"flex",
+                                flexDirection:"column",
+                                
+                              }}>
+                                <div>
+                              <img src={items.logo} style={{
+                                height:"35px"
+                              }}>
+                              </img>
+                              <div style={{
+                                display:"flex",
+                                flexDirection:"column",
+                                position:"relative",
+                                left:50,
+                                bottom:53
+                              }}>
+                              <Text style={{
+                                fontSize:"24px",
+                                fontWeight:700
+                              }}>
+                                {items.departureTime}  <ArrowRightOutlined style={{
+                                  fontSize:"15px",position:"relative",bottom:3
+                                }}/> {items.arrivalTime}
+                              </Text>
+                                <Text type="secondary" style={{
+                                  position:"relative",fontSize:"12px",fontWeight:500,
+                               
+                                }}>{items.durations} &nbsp; • {items.stops}</Text>
+                                </div>
+                              </div>
+                              
+                              </div>
+                          </div>
+                      ))}
+                    
+                  
+                    
+                </div>
+
+                <div style={{
+                  gap:10,
+                  display:"flex",
+                  flexDirection:"column",
+                  width:"45%",
+                  borderRight:"1px solid #cccccc",
+                  padding:5,
+                  fontSize:"Roboto"
+                }}>
+                  {selectedReturn.map((items, idx) => (
+                          <div key={idx}> 
+                              <Text style={{
+                                  fontWeight: 700,
+                              }}>
+                                  Return &nbsp; • &nbsp; 
+                                  
+                                  <Text  style={{ fontWeight:500  }}>
+                                    {items.airline} • </Text>
+                                    <Text style={{ fontWeight:500  }}>{items.stops === "1 stop"
+                                    ? items.flightCodes[0].code || "--"
+                                    : items.flightCodes || "--"}</Text>
+                              </Text>
+                              <br/>
+                              
+                              <div style={{
+                                marginTop:20,
+                                display:"flex",
+                                flexDirection:"column",
+                                
+                              }}>
+                                <div>
+                              <img src={items.logo} style={{
+                                height:"35px"
+                              }}>
+                              </img>
+                              <div style={{
+                                display:"flex",
+                                flexDirection:"column",
+                                position:"relative",
+                                left:50,
+                                bottom:53
+                              }}>
+                              <Text style={{
+                                fontSize:"24px",
+                                fontWeight:700
+                              }}>
+                                {items.departureTime}  <ArrowRightOutlined style={{
+                                  fontSize:"15px",position:"relative",bottom:3
+                                }}/> {items.arrivalTime}
+                              </Text>
+                                <Text type="secondary" style={{
+                                  position:"relative",fontSize:"12px",fontWeight:500,
+                               
+                                }}>{items.durations} &nbsp; • {items.stops}</Text>
+                                </div>
+                              </div>
+                              
+                              </div>
+                          </div>
+                      ))}
+                    
+                  
+                    
+                </div>
+                
+              </div>
+            
+                <div style={{
+                   display:"flex",
+                gap:"10px",
+                alignItems:"stretch",
+                 
+                }}>
+                  <Text  style={{
+                        color:"#ff7a00",
+                        position:"relative",
+                        top:"10px",
+                        fontSize:16,
+                        cursor:"pointer",
+                        textAlign:"start",
+                        right:30,
+                        fontWeight:500
+                      }} onClick={()=>{
+                        showLoading()
+                      }}>Flight Details<RightOutlined style={{
+                        fontSize:14,
+                        color:"#ff7a00",
+                        position:"relative",
+                        top:".5px"
+                      }}/></Text>
+                      <div style={{
+                            textAlign:"end",
+                            marginTop:30
+                          }}>
+                        <Text style={{
+                          fontSize:"24px",fontWeight:700
+                        }}>₹{fullAmount.toLocaleString("en-IN")}</Text>
+                        <br/>
+                        <Text style={{
+                          color:"#238C46",fontSize:"14px",fontWeight:700
+                        }}>Extra ₹{fullDiscount.toLocaleString("en-IN")} Off</Text>
+
+                        
+                      </div>
+                          
+                          <div style={{ marginTop:45}}>
+                            
+                            <button
+                              type="primary"
+                              style={{
+                                background: "#ff7a00",
+                                border: "none",
+                                borderRadius: 10,
+                                width:"185px",
+                                height:"40px",
+                                fontSize:"17px",
+                                color:"white"
+                        
+                              }}
+                              onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            navigate("/ReviewTravellerDetails");
+                            dispatch(setCancelFeeAdd(removeFeeAdd))
+                            dispatch(setRescheduleFeeAdd(removeRescheduleAdd))
+                              }}
+                            >
+                              Book
+                            </button>
+                            
+                          </div>
+
+                      <div>
+
+                      </div>
+                      
+                </div>
+              
+                
+            </div>
+            <div>
+                  
+            
+          </div>
+
+
+          <Drawer
+                       title={null}
+                      closable={false}
+                      destroyOnHidden
+                      placement="right"
+                      open={openDrawer}
+                      loading={loadingDrawer}
+                      onClose={() => setOpenDrawer(false)}
+                      maskClosable={true}  
+                       width={"60%"}
+                      style={{
+                    // padding: "24px",
+                    background: "#fff",
+                    // borderRadius: "8px 0 0 8px",
+                    overflow: "auto",
+                  }}>
+                    <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    
+                  }}
+                >
+                  <Tabs
+                    activeKey={!openDrawer?"details":activeTab}
+                    onChange={(key) => setActiveTab(key)}
+                    items={items.map(({ key, label }) => ({ key, label: (
+                <span
+                  style={{
+                    fontFamily: "Roboto",
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    color: activeTab === key ? "#1677ff" : "#000",
+                    
+                  }}
+                >
+                  {label}
+                </span>) }))}
+                    style={{ flex: 1,fontFamily:"Roboto", }}
+                    tabBarStyle={{
+                      marginBottom: 0,
+                      
+                    }}
+                  />
+                  <CloseOutlined
+                    onClick={()=>setOpenDrawer(false)}
+                    style={{
+                      fontSize: 16,
+                      cursor: "pointer",
+                      marginLeft: 8,
+                      color: "#b1b1b1ff",
+                    }}
+                  />
+                </div>
+                 <div style={{ padding: "20px",overflowY:"hidden" }}>
+                  {items.find((t) => t.key === activeTab)?.children}
+                  <div
+                      style={{
+                        position: "fixed",
+                        bottom: 0,
+                        width: "60%",
+                        height:"7%",
+                        zIndex: 1000,
+                        background: "#fff",
+                        padding: "10px 20px",
+                        left:"40%",
+                        boxShadow: "0 5px 25px rgba(0, 0, 0, 0.3)",
+                        display:"flex",
+                        justifyContent:"space-between"
+                      }}
+                    >
+                      <div >
+                        
+                          <div style={{
+                        display:"flex",
+                        flexDirection:"column",
+                        position:"relative",
+                        bottom:"10px"
+                      }}>
+                            <Text style={{ fontSize: 28, fontWeight: 500 }}>
+                              {Number(
                         removeFeeAdd || removeRescheduleAdd 
                         ? finalAmount 
-                        : item.price
+                        : fullAmount
                       ).toLocaleString("en-IN")
                     }
-                  </Text>
-
-            {item.discount > 0 && (
-              <Text strong style={{ color: "#238C46",fontWeight:"bold",position:"relative",
-                bottom:"8px",fontSize:"14px"
-               }}>Extra ₹{item.discount} Off</Text>
-            )}
+            
+                              
+                            </Text>
+          
+                      
+                        <Text strong style={{ color: "#238C46",fontWeight:"bold",position:"relative",
+                          bottom:"8px",fontSize:"14px"
+                         }}>Extra ₹{fullDiscount.toLocaleString("en-IN")} Off</Text>
+                    
+                          </div>
+                       
+                      
+                      
+                      </div>
+                      <div style={{
+                        padding:"7px 15px"
+                      }}>
+                        <button
+                          type="primary"
+                          style={{
+                            background: "#ff7a00",
+                            border: "none",
+                            borderRadius: 10,
+                            width:"140px",
+                            height:"40px",
+                            fontSize:"17px",
+                            color:"white",
+                            position:"relative",
+                            right:"40px"
+          
+                          }}
+                          onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        navigate("/buses");
+                          }}
+                        >
+                          Book
+                        </button>
+                      </div>
+                    </div>
+          
                 </div>
-              ))}
-            
-            
-            </div>
-            <div style={{
-              padding:"7px 15px"
-            }}>
-              <button
-                type="primary"
-                style={{
-                  background: "#ff7a00",
-                  border: "none",
-                  borderRadius: 10,
-                  width:"140px",
-                  height:"40px",
-                  fontSize:"17px",
-                  color:"white",
-                  position:"relative",
-                  right:"40px"
-
-                }}
-                onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              navigate("/buses");
-                }}
-              >
-                Book
-              </button>
-            </div>
-          </div>
-                     
+          
+                      </Drawer>   
                       
         </div>
         </>

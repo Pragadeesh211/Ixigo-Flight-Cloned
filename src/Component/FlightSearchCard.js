@@ -899,7 +899,7 @@ const handleTravellersClass = () =>{
             borderTopRightRadius:"10px",
             borderBottomRightRadius:"10px",
             borderLeftRadius:"none",
-            background:"orange",
+            background:"#ff7a00",
             border:"none",
             color:"white",
             cursor:"pointer",

@@ -3,7 +3,7 @@ import FlightListSearchCard from "./FlightListSearchCard";
 import Link,{useNavigate} from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RightOutlined,CloseOutlined, CloseCircleFilled,ClockCircleOutlined,ArrowRightOutlined,AppstoreOutlined,CheckOutlined  } from "@ant-design/icons";
-import { Typography,Card,Checkbox,Col, InputNumber, Row, Slider, Space,ConfigProvider,Button, Tag, Drawer,Tabs,Badge,Avatar, Tooltip } from "antd";
+import { Typography,Card,Checkbox,Col, InputNumber, Row, Slider, Space,ConfigProvider,Button, Tag, Drawer,Tabs,Badge,Avatar, Tooltip,Skeleton } from "antd";
 import { 
   setFrom,
   setTo,
@@ -20,7 +20,9 @@ import {
   setTravellerValue,
   setTravelClass,
   setCancelFeeAdd,
-  setRescheduleFeeAdd
+  setRescheduleFeeAdd,
+  setOnewaySelectedFlight,
+  setReturnSelectedFlight,
  } from "../../Redux/Slices/FlightSearchSlice";
  import {Swiper,SwiperSlide} from "swiper/react";
  import 'swiper/css';
@@ -30,16 +32,9 @@ import "swiper/css/pagination";
 import { Navigation,Pagination,Autoplay } from "swiper/modules";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
-import Cabin from "../../Images/Cabin.png";
-import CheckIn from "../../Images/Chech-in.png";
-import AirlineSeat from "../../Images/AirlineSeat.png"
-import FlightEngineFilledIcon from "../../Images/FlightEngineFilledIcon.png"
 import FlightTicketFilledIcon from "../../Images/FlightTicketFilledIcon.png"
 import FlightTakeoffFilledIcon from "../../Images/FlightTakeoffFilledIcon.png"
-import NoFoodIcon from "../../Images/NoFoodIcon.png"
-import WifiOffIcon from "../../Images/wifi.png"
-import NoPowerIcon from "../../Images/NoPowerIcon.png"
-import NoVideoIcon from "../../Images/NoVideoIcon.png"
+import OnewayFlightDetails from "../../Component/OnewayFlightDetails";
 
 
 
@@ -207,6 +202,7 @@ const formatDate = (date) => {
 
 const dep = formatDate(selectedDate)
 
+
 const [currentTime,setCurrentTime] = useState(time)
 
 useEffect(() => {
@@ -353,7 +349,7 @@ useEffect(() => {
     flightCodes: ["6E532"],
     fromCode: "MAA",
     toCode: "DEL",
-    departureTime: "06:30",
+    departureTime: "04:30",
     arrivalTime: "09:10",
     durations: "2h 40m",
     stops: "Non-stop",
@@ -382,6 +378,25 @@ useEffect(() => {
     fromTerminal:3,
     toTerminal:2,
   },
+  {
+    id: 9,
+    airline: "SpiceJet",
+    logo: "https://images.ixigo.com/img/common-resources/airline-new/SG.png",
+    flightCodes: ["6E532"],
+    fromCode: "MAA",
+    toCode: "HYD",
+    departureTime: "08:00",
+    arrivalTime: "09:10",
+    durations: "2h 10m",
+    stops: "Non-stop",
+    nextDayArrival: false,
+    price: 4230,
+    discount: 120,
+    tags: ["Free Meal"],
+    fromTerminal:3,
+    toTerminal:2,
+  },
+  
 ]);
 }, [dateFareData]);
 
@@ -398,6 +413,37 @@ const FilterDetailShow = [
                             // show price range only if changed
                             ...(startPrice !== 0 || endPrice !== 51273 ? [`₹${startPrice} - ₹${endPrice}`] : []),
                           ]
+      const today = dayjs().format("YYYY-MM-DD")
+      const today1 = formatDate(today)
+
+    const toMinutes = (t) =>{
+      const [h,m] = t.split(":").map(Number)
+      return h * 60 + m;
+
+    }
+
+  const handleCurrentTimeFilter =(departureTime) =>{
+    
+  const bufferMinutes = toMinutes("03:00");
+  const nowMinutes = toMinutes(currentTime);
+  const finalminutes = bufferMinutes + nowMinutes;
+
+  const finaldep = toMinutes(departureTime)
+
+  
+  // const minReturnDate = dayjs(selectedDate).format("YYYY-MM-DD");
+  // const a = dayjs(selectedDate).isAfter(today)
+  console.log("ddddddddddddddddddd",today)
+   console.log("ffffffffffff",depart)
+
+  if(today !== depart) return finaldep;
+  
+  return finalminutes<=finaldep;
+
+   
+
+    
+  }
 
 // --- FILTER LOGIC ---
 const filteredFlights = useMemo(() => {
@@ -462,14 +508,22 @@ const filteredFlights = useMemo(() => {
 
      if (
       FilterDetailShow.length > 0 &&
-      FilterDetailShow.includes(flight.airline)
+      FilterDetailShow.includes(flight)
     ) {
       return true;
     }
 
+    if(!handleCurrentTimeFilter(flight.departureTime)){
+      return false;
+    }
+    
+    console.log("checklist", flight.departureTime)
     return true; 
   });
 }, [flights, checkedList, airlineCheckList, startPrice, endPrice,fromCode,toCode]);
+
+
+
 
 
 console.log("checklist", airlineCheckList)
@@ -483,6 +537,7 @@ console.log("checklist", airlineCheckList)
   const [selectedFlights,setSelectedFlights] = useState([])
   const showLoading = (item) => {
     setLoadingDrawer(true);
+    dispatch(setOnewaySelectedFlight([item]));
     setSelectedFlights([item]);
     setOpenDrawer(true);
     
@@ -613,6 +668,49 @@ const calculateNextDayArrival = (departureTime, arrivalTime,durations) => {
   return price;
 }
 
+const [lessday,setLessDay] = useState()
+
+const get8HrsCancelTime = (departureTime) =>{
+  const [h1, m1] = departureTime.split(":").map(Number);
+  const t2= "08:00";
+  const [h2, m2] = t2.split(":").map(Number);
+
+  let totalMinutes1 = h1 * 60 + m1;
+  let totalMinutes2 = h2 * 60 + m2;
+
+  let diff = totalMinutes1 - totalMinutes2;
+
+  
+  const days = Math.floor(diff / (24 * 60));
+  
+  diff = diff % (24 * 60);
+
+  
+  if (diff < 0) diff += 24 * 60;
+
+  const hours = Math.floor(diff / 60);
+  const minutes = diff % 60;
+
+  const finalTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+
+
+  return { finalTime, days };
+}
+
+useEffect(() => {
+  if (!selectedFlights[0]?.departureTime) return;
+
+  const { finalTime, days } = get8HrsCancelTime(selectedFlights[0]?.departureTime);
+
+  const newDate = dayjs(departure).add(days, "day").format("YYYY-MM-DD");
+  setLessDay(newDate);
+
+}, [selectedFlights[0]?.departureTime]);
+
+const lessdep = formatDate(lessday);
+
+console.log("lessdaydsfdfdfdfgxkfhgyugfhdxgfd",lessday)
+
 const getIxigoCancelFee = ()=>{
   if(travellerValue>1) return 300 * travellerValue;
    return 300;
@@ -709,6 +807,9 @@ useEffect(() => {
   }
 }, [selectedFlights]);
 
+useEffect(()=>{
+  setOnewaySelectedFlight([])
+})
 
 
 // console.log("jxbfjdpppppp",selectedFlights[0]?.price)
@@ -722,590 +823,10 @@ useEffect(() => {
       children: (
         <div style={{
           fontFamily:"Roboto"
+           ,paddingBottom:"60px"
         }}>
           
-           { selectedFlights.map((item,idx)=>(
-            <div key={idx}>
-              <Text  style={{
-            fontSize:"23px",
-            fontWeight:"bold"
-          }}>{fromCity} <ArrowRightOutlined style={{
-            fontSize:"18px"
-          }}/> {toCity}</Text> <br />
-          <div style={{
-            position:"relative",
-            bottom:"25px"
-          }}>
-          <Text style={{
-            fontWeight:700,
-            fontSize:"15px"
-          }}>{selectedDate}</Text> <Text strong style={{
-          fontSize:"30px",
-          position:"relative",
-            bottom:"4px"
-        }}>.</Text>
-        <Text  style={{
-                  fontSize:"14px",
-                  fontWeight:500,
-                  color:"#2e2e2eff",
-                  position:"relative",
-                  left:"3px"
-                }}>{item.stops} <Text strong style={{
-          fontSize:"30px",
-          position:"relative",
-            bottom:"4px"
-        }}>.</Text> <Text>
-                  {item.durations}
-                </Text> <Text strong style={{
-          fontSize:"30px",
-          position:"relative",
-            bottom:"4px",
-            fontWeight:500
-        }}>.</Text> {travelClass}
-        </Text>
-        </div>
-        <div style={{
-      display: "flex",
-      alignItems: "center",
-      gap: 6,
-      flex: 1,
-      minWidth: "20%",
-    }}>
-          <img src={item.logo} alt={item.airline} style={{ height: 35 }} />
-          <Text strong style={{
-            fontSize:"16px"
-          }}>{item.airline}</Text> <Text strong style={{
-            color:"grey"
-          }}>
-            | {item.stops === "1 stop"
-  ? item?.flightCodes?.[0]?.code || "--"
-  : item?.flightCodes || "--"}
-
-            
-            
-          
-          </Text>
-        </div>
-        <div style={{
-          display:"flex",
-          flexDirection:"row",
-          marginTop:"15px",
-          gap:35
-        }}>
-          
-        <div style={{
-          width:"140px"
-        }}>
-          <Text strong style={{
-            color:"grey",
-            fontSize:"14px"
-
-          }}>{selectedDate}</Text>
-          <br />
-          <Text style={{
-            fontSize:"30px",
-            fontWeight:"bold"
-          }}>
-            {/* {selectedFlights?.flightCodes?.[0]?.departureTime} */}
-            {item.stops === "1 stop"
-  ?item?.flightCodes?.[0]?.departureTime1 || "--":item?.departureTime || "--"}
-
-</Text>
-          <br />
-          <Text strong>
-            {from}
-          </Text>
-          <Text strong style={{
-            whiteSpace: "wrap",
-          overflow: "hidden",
-          color:"grey",
-          display: "inline-block",
-          maxWidth: "155px",
-          fontSize:"12px",
-          
-          }}>
-            {fromAirport}
-          </Text>
-          <br />
-          <Text strong style={{
-            fontSize:"12px "
-          }}>
-            Terminal {item.fromTerminal}
-          </Text>
-          </div>
-          <div style={{
-            marginTop:"30px",
-            display:"flex",
-            flexDirection:"column",
-            textAlign:"center"
-          }}>
-            <Text style={{
-              color:"gray",
-              fontWeight:400
-            }}>{item.stops === "1 stop"
-  ?item?.flightCodes?.[0]?.duration1 || "--":item?.durations || "--"}</Text>
-            <img src="https://edge.ixigo.com/st/vimaan/_next/static/media/line.9641f579.svg">
-            </img>
-          </div>
-          <div style={{
-            textAlign:"right",
-            width:"140px"
-          }}>
-            {item.nextDayArrival === true ?(<div>
-              <Text strong style={{
-            color:"grey",
-            fontSize:"14px"
-
-          }}
-              >{dayjs(selectedDate).add(1, "day").format("YYYY-MM-DD")}</Text>
-            
-          </div>):<div><Text strong style={{
-            color:"grey",
-            fontSize:"14px"
-
-          }}>{selectedDate}</Text></div>}
-          <Text style={{
-            fontSize:"30px",
-            fontWeight:"bold"
-          }}>{item.stops === "1 stop"
-  ?item?.flightCodes?.[0]?.arrivalTime1 || "--":item?.arrivalTime || "--"}</Text>
-          <br />
-          <Text strong>
-            {item.stops === "1 stop"
-  ?`${item?.flightCodes?.[0]?.to} - ${item?.flightCodes?.[0]?.toCity}` || "--":to}
-          </Text>
-          <br />
-          <Text strong style={{
-            whiteSpace: "wrap",
-          overflow: "hidden",
-          color:"grey",
-          display: "inline-block",
-          maxWidth: "155px",
-          fontSize:"12px",
-          
-          }}>
-            {item.stops === "1 stop"
-          ?item?.flightCodes?.[0]?.toAirport1 || "--":toAirport}
-          </Text>
-          <br />
-          <Text strong style={{
-            fontSize:"12px "
-          }}>
-            Terminal {item.stops === "1 stop"
-  ?item?.flightCodes?.[0]?.toTerminal1 || "--":item.toTerminal}
-          </Text>
-          </div>
-          <div>
-            <Text strong style={{
-              fontSize:"14px",
-              color:"grey"
-            }}>
-              Baggage
-            </Text>
-
-            <br />
-            <div style={{
-              display:"flex",
-              gap:8
-            }}>
-              
-            <img src={Cabin} style={{
-              height:"20px",
-              width:"20px",
-              marginTop:"20px"
-            }}>
-            </img>  <div style={{
-                    marginTop:"17px"
-            }}>
-              <Text style={{
-              fontWeight:500
-            }}>Cabin : </Text> <Text style={{
-              fontWeight:700
-            }}>
-              7 kg per adult
-            </Text>
-            </div>
-            </div>
-            <div style={{
-              display:"flex",
-              gap:8
-            }}>
-            <img src={CheckIn} style={{
-              height:"20px",
-              width:"20px",
-              marginTop:"20px"
-            }}>
-            </img>  <div style={{
-                    marginTop:"17px"
-            }}>
-              <Text style={{
-              fontWeight:500
-            }}>Check-in : </Text> <Text style={{
-              fontWeight:700
-            }}>
-              15 kg per adult
-            </Text>
-            </div>
-            </div>
-            
-            
-          </div>
-          
-
-        </div>
-        <div style={{
-          marginTop:"15px",
-          display:"flex",
-          textAlign:"center",
-          gap:10
-        }}>
-              <img src={FlightEngineFilledIcon} style={{
-                height:"20px",
-              }}/>  <Text strong style={{
-                fontSize:"12px"
-              }}>
-                Airbus A320
-              </Text>
-              <img src={AirlineSeat} style={{
-                height:"15px",
-              }}/>  <Text strong style={{
-                fontSize:"12px"
-              }}>
-                Narrow
-              </Text>
-              <AppstoreOutlined />  <Text strong style={{
-                fontSize:"12px"
-              }}>
-                Narrow (Limited seat tilt)
-              </Text>
-              <Tooltip title="Fresh Food - Chargeable" >
-              <img src={NoFoodIcon} style={{
-                height:"20px",
-                cursor:"pointer"
-              }}/></Tooltip>
-              <Tooltip title="No Wi-Fi" >
-              <img src={WifiOffIcon} style={{
-                height:"15px",
-                marginTop:2,
-                cursor:"pointer"
-              }}/>
-              </Tooltip>
-              <Tooltip title="No power outlet" >
-              <img src={NoPowerIcon} style={{
-                height:"15px",
-                marginTop:2,
-                cursor:"pointer",
-                color:"gray"
-              }}/>
-              </Tooltip>
-              <Tooltip title="No Entertainment" >
-              <img src={NoVideoIcon} style={{
-                height:"18px",
-                marginTop:2,
-                cursor:"pointer",
-                color:"gray"
-              }}/>
-              </Tooltip>
-              
-
-            </div>
-
-            {item.stops ==="1 stop" &&  (
-              <div style={{
-                display:"flex",
-                justifyContent:"center",
-                alignItems:"center",
-                width:"100%",
-                textAlign:"center",
-                flexDirection:"column",
-                marginTop:"40px"
-              }}>
-              <div style={{
-                
-                width:"85%",
-                border:"1px solid rgb(204, 204, 204)",
-                
-              }}>
-
-              </div>
-              
-             
-      <div
-        style={{
-          textAlign: "center",
-          background: "#ffffffff",
-          
-          borderRadius: "20px",
-          position:"relative",
-          display: "inline-block",
-          bottom:"12px",
-          border:"1px solid #d1d1d1ff",
-          width:"60%"
-          
-        }}
-      >
-        <Text style={{
-          color: "#ad6800",
-          fontSize:"12px",
-          fontWeight:500
-        }}>Change of Planes •</Text> <Text style={{
-          color: "black",
-          fontSize:"13px",
-          fontWeight:700
-        }}>{item.flightCodes[0].waitTime}</Text> <Text style={{
-          fontSize:"13px",
-          fontWeight:500
-        }}> layover in {item.flightCodes[0].toCity}  {selectedFlights.layoverCity}</Text>
-      </div>
-      </div>
-    )}
-           {/* 1 stop design */}
-            {item.stops === "1 stop"?(<div style={{
-              marginTop:"30px"
-            }}>
-              <div style={{
-      display: "flex",
-      alignItems: "center",
-      gap: 6,
-      flex: 1,
-      minWidth: "20%",
-    }}>
-          <img src={item.logo} alt={item.airline} style={{ height: 35 }} />
-          <Text strong style={{
-            fontSize:"16px"
-          }}>{item.airline}</Text> <Text strong style={{
-            color:"grey"
-          }}>
-            | {item.stops === "1 stop"
-  ? item?.flightCodes?.[0]?.code || "--"
-  : item?.flightCodes || "--"}
-
-            
-            
-          
-          </Text>
-        </div>
-              <div style={{
-          display:"flex",
-          flexDirection:"row",
-          marginTop:"15px",
-          gap:35
-        }}>
-          
-        <div style={{
-          width:"140px"
-        }}>
-          <Text strong style={{
-            color:"grey",
-            fontSize:"14px"
-
-          }}>{selectedDate}</Text>
-          <br />
-          <Text style={{
-            fontSize:"30px",
-            fontWeight:"bold"
-          }}>{item?.flightCodes?.[1]?.departureTime2 || "--"}</Text>
-          <br />
-          <Text strong>
-            {
-  `${item?.flightCodes?.[0]?.to} - ${item?.flightCodes?.[0]?.toCity}` || "--"}
-          </Text>
-          <Text strong style={{
-            whiteSpace: "wrap",
-          overflow: "hidden",
-          color:"grey",
-          display: "inline-block",
-          maxWidth: "155px",
-          fontSize:"12px",
-          
-          }}>
-            {item?.flightCodes?.[1]?.toAirport2 || "--"}
-          </Text>
-          <br />
-          <Text strong style={{
-            fontSize:"12px "
-          }}>
-            Terminal {item?.flightCodes?.[1]?.fromTerminal2 || "--"}
-          </Text>
-          </div>
-          <div style={{
-            marginTop:"30px",
-            display:"flex",
-            flexDirection:"column",
-            textAlign:"center"
-          }}>
-            <Text style={{
-              color:"gray",
-              fontWeight:400
-            }}>{item?.flightCodes?.[1]?.duration2 || "--"}</Text>
-            <img src="https://edge.ixigo.com/st/vimaan/_next/static/media/line.9641f579.svg">
-            </img>
-          </div>
-          <div style={{
-            textAlign:"right",
-            width:"140px"
-          }}>
-            {item.nextDayArrival === true ?(<div>
-              <Text strong style={{
-            color:"grey",
-            fontSize:"14px"
-
-          }}
-              >{dayjs(selectedDate).add(1, "day").format("YYYY-MM-DD")}</Text>
-            
-          </div>):<div><Text strong style={{
-            color:"grey",
-            fontSize:"14px"
-
-          }}>{selectedDate}</Text></div>}
-          <Text style={{
-            fontSize:"30px",
-            fontWeight:"bold"
-          }}>{item.arrivalTime}</Text>
-          <br />
-          <Text strong>
-            {to}
-          </Text>
-          <br />
-          <Text strong style={{
-            whiteSpace: "wrap",
-          overflow: "hidden",
-          color:"grey",
-          display: "inline-block",
-          maxWidth: "155px",
-          fontSize:"12px",
-          
-          }}>
-            {toAirport}
-          </Text>
-          <br />
-          <Text strong style={{
-            fontSize:"12px "
-          }}>
-            Terminal {item?.flightCodes?.[1]?.toTerminal2 || "--"}
-          </Text>
-          </div>
-          <div>
-            <Text strong style={{
-              fontSize:"14px",
-              color:"grey"
-            }}>
-              Baggage
-            </Text>
-
-            <br />
-            <div style={{
-              display:"flex",
-              gap:8
-            }}>
-              
-            <img src={Cabin} style={{
-              height:"20px",
-              width:"20px",
-              marginTop:"20px"
-            }}>
-            </img>  <div style={{
-                    marginTop:"17px"
-            }}>
-              <Text style={{
-              fontWeight:500
-            }}>Cabin : </Text> <Text style={{
-              fontWeight:700
-            }}>
-              7 kg per adult
-            </Text>
-            </div>
-            </div>
-            <div style={{
-              display:"flex",
-              gap:8
-            }}>
-            <img src={CheckIn} style={{
-              height:"20px",
-              width:"20px",
-              marginTop:"20px"
-            }}>
-            </img>  <div style={{
-                    marginTop:"17px"
-            }}>
-              <Text style={{
-              fontWeight:500
-            }}>Check-in : </Text> <Text style={{
-              fontWeight:700
-            }}>
-              15 kg per adult
-            </Text>
-            </div>
-            </div>
-            
-            
-          </div>
-          
-
-        </div>
-        <div style={{
-          marginTop:"15px",
-          display:"flex",
-          textAlign:"center",
-          gap:10
-        }}>
-              <img src={FlightEngineFilledIcon} style={{
-                height:"20px",
-              }}/>  <Text strong style={{
-                fontSize:"12px"
-              }}>
-                Airbus A320
-              </Text>
-              <img src={AirlineSeat} style={{
-                height:"15px",
-              }}/>  <Text strong style={{
-                fontSize:"12px"
-              }}>
-                Narrow
-              </Text>
-              <AppstoreOutlined />  <Text strong style={{
-                fontSize:"12px"
-              }}>
-                Narrow (Limited seat tilt)
-              </Text>
-              <Tooltip title="Fresh Food - Chargeable" >
-              <img src={NoFoodIcon} style={{
-                height:"20px",
-                cursor:"pointer"
-              }}/></Tooltip>
-              <Tooltip title="No Wi-Fi" >
-              <img src={WifiOffIcon} style={{
-                height:"15px",
-                marginTop:2,
-                cursor:"pointer"
-              }}/>
-              </Tooltip>
-              <Tooltip title="No power outlet" >
-              <img src={NoPowerIcon} style={{
-                height:"15px",
-                marginTop:2,
-                cursor:"pointer",
-                color:"gray"
-              }}/>
-              </Tooltip>
-              <Tooltip title="No Entertainment" >
-              <img src={NoVideoIcon} style={{
-                height:"18px",
-                marginTop:2,
-                cursor:"pointer",
-                color:"gray"
-              }}/>
-              </Tooltip>
-              
-
-            </div>
-            <div style={{
-              marginTop:200
-            }}></div>
-            </div>):null}
-            </div>
-           ))
-            }
+           <OnewayFlightDetails/>
           
   
          
@@ -1321,7 +842,8 @@ useEffect(() => {
         {selectedFlights.map((items,idx)=>{
         const calculateCancel = getCancelFee(items.price);
         const calTotalTravellerRefund = getTotalTraveller(items.price);
-        const ixigoCancelFee = getIxigoCancelFee() 
+        const cal8HrsCancelTime = get8HrsCancelTime(items.departureTime)
+        const ixigoCancelFee = getIxigoCancelFee();
         return(
           <div style={{
           fontFamily:"Roboto"
@@ -1497,14 +1019,14 @@ useEffect(() => {
               fontSize:"14px",
               fontWeight:500
             }}>
-              {dep.day} {dep.month}
+              {lessdep.day} {lessdep.month}
             </Text>
             <br />
             <Text type="secondary" strong style={{
               position:"relative",
               fontSize:"12px",
               //before 8
-            }}>{currentTime}</Text>
+            }}>{cal8HrsCancelTime.finalTime}</Text>
             </div>
             <div style={{
               flex:1,
@@ -1899,6 +1421,7 @@ useEffect(() => {
         {selectedFlights.map((items,idx)=>{
         const calculateReschedule = getRescheduleFee(items.price);
         const calTotalTravellerRefund = getTotalTraveller(items.price);
+        const cal8HrsCancelTime = get8HrsCancelTime(items.departureTime)
         const ixigoRescheduleFee = getIxigoRescheduleFee() 
         return(
           <div style={{
@@ -2075,14 +1598,14 @@ useEffect(() => {
               fontSize:"14px",
               fontWeight:500
             }}>
-              {dep.day} {dep.month}
+              {lessdep.day} {lessdep.month}
             </Text>
             <br />
             <Text type="secondary" strong style={{
               position:"relative",
               fontSize:"12px",
               //before 8
-            }}>{currentTime}</Text>
+            }}>{cal8HrsCancelTime.finalTime}</Text>
             </div>
             <div style={{
               flex:1,
@@ -2438,6 +1961,23 @@ useEffect(() => {
     },
   ];
 
+const [pageLoading, setPageLoading] = useState(true);
+
+
+
+
+useEffect(() => {
+  setPageLoading(true);
+
+  const timer = setTimeout(() => setPageLoading(false), 1500);
+
+  return () => clearTimeout(timer);
+}, [toCity, fromCity, selectedDate,travellerValue]);
+
+
+
+
+
 
 
   // const progressCircle = useRef(null);
@@ -2448,9 +1988,49 @@ useEffect(() => {
   // };
     return(
         <>
-        
+        {pageLoading ? (
+      <div style={{ display: "flex", gap: "20px", padding: "20px" }}>
+    
+    {/* LEFT FILTER SKELETON */}
+    <div
+      style={{
+        width: "300px",
+        background: "#fff",
+        padding: "16px",
+        borderRadius: "10px",
+        boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+        height: "600px"
+      }}
+    >
+      <Skeleton active paragraph={{ rows: 16 }} />
+    </div>
 
-         <div >
+    {/* CENTER LIST SKELETON (multiple flight cards) */}
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "20px" }}>
+      {[...Array(6)].map((_, i) => (
+        <div
+          key={i}
+          style={{
+            background: "#fff",
+            padding: "16px",
+            borderRadius: "10px",
+            boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+            height: "60px",
+            width:"75%"
+          }}
+        >
+          <Skeleton active paragraph={{ rows: 1 }} />
+        </div>
+      ))}
+    </div>
+
+
+    
+
+  </div>
+    ):(
+      <>
+                 <div >
           
           
             <div style={{
@@ -2468,7 +2048,7 @@ useEffect(() => {
               <div style={{
       
                             position: "sticky",
-                            top: "30px",            
+                            top: "10px",            
                             alignSelf: "flex-start",
                             height: "fit-content",
                           }}>
@@ -3224,9 +2804,10 @@ const formattedDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,
       onClick={(e) => {
     e.stopPropagation();
     e.preventDefault();
-    navigate("/buses");
+    navigate("/ReviewTravellerDetails");
     dispatch(setCancelFeeAdd(removeFeeAdd))
     dispatch(setRescheduleFeeAdd(removeRescheduleAdd))
+    dispatch(setOnewaySelectedFlight([item]))
       }}
     >
       Book
@@ -3407,7 +2988,9 @@ const formattedDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,
                 onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              navigate("/buses");
+              navigate("/ReviewTravellerDetails");
+              dispatch(setOnewaySelectedFlight(selectedFlights))
+              console.log("selecteddddddddd",selectedFlights)
                 }}
               >
                 Book
@@ -3419,6 +3002,10 @@ const formattedDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,
 
             </Drawer>
         </div>
+      </>
+    )
+  }
+
         
       
         </>

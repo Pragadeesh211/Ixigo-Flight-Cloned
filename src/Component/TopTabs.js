@@ -1,10 +1,26 @@
 import React, {useState, useEffect} from "react";
 import "./Navbar.css";
 import Tabs from "./Tabs";
-import { Button } from "antd";
+import {Typography} from "antd";
+import {
+  setOpenDrawer
+} from "../Redux/Slices/ProfileSlice";
+import { useDispatch, useSelector } from "react-redux";
+import LoginDropdown from "./LoginDropdown";
+
+const {Text} = Typography;
 
 const TopTabs = () =>{
+  const dispatch = useDispatch();
+
+  const {
+    openDrawer
+  } = useSelector((state) => state.profile);
     const [scrolled, setScrolled] = useState(false);
+
+    const handleOpen = () =>{
+      dispatch(setOpenDrawer(true))
+    }
     
       useEffect(() => {
         const handleScroll = () => {
@@ -23,10 +39,7 @@ const TopTabs = () =>{
         <div className={`navbar ${scrolled ? "navbar" : ""}`}>
       <div className="logo">GMPM</div>
       <Tabs/>
-      <div className="right-menu">
-        
-        <Button>Log in / Sign up</Button>
-      </div>
+      <LoginDropdown/>
     </div>
         </>
       )
