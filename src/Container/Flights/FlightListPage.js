@@ -47,15 +47,22 @@ const FlightListPage = () =>{
         }}>
             <FlightListSearchCard/>
             <div>
+                {
+                    !returnTripUI?(<div>
+                    <Economy/>
+                </div>):(
+                    <EconomyReturn/>
+                )
                 
-            {travelClass === "Economy" &&(
+                }
+            {/* {travelClass === "Economy" &&(
                 !returnTripUI?(<div>
                     <Economy/>
                 </div>):(
                     <EconomyReturn/>
                 )
                 )}
-            {travelClass === "Premium Economy" &&(<p>Hi</p>)}
+            {travelClass === "Premium Economy" &&(<p>Hi</p>)} */}
             </div>
         </div>
         <LoginPage/>

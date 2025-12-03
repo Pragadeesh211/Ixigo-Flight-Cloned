@@ -269,7 +269,7 @@ const ReturnFlightDetails = () =>{
                                 }}>Check-in : </Text> <Text style={{
                                   fontWeight:700
                                 }}>
-                                  15 kg per adult
+                                  {item?.fareOptions?.[travelClass]?.baggage} per adult
                                 </Text>
                                 </div>
                                 </div>
@@ -554,7 +554,7 @@ const ReturnFlightDetails = () =>{
                                 }}>Check-in : </Text> <Text style={{
                                   fontWeight:700
                                 }}>
-                                  15 kg per adult
+                                  {item?.fareOptions?.[travelClass]?.baggage} per adult
                                 </Text>
                                 </div>
                                 </div>

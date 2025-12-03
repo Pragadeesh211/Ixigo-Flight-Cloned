@@ -23,6 +23,8 @@ import {
   setRescheduleFeeAdd,
   setOnewaySelectedFlight,
   setReturnSelectedFlight,
+  setTotalAmount,
+  setRefundFeeAdd,
  } from "../../Redux/Slices/FlightSearchSlice";
  import {Swiper,SwiperSlide} from "swiper/react";
  import 'swiper/css';
@@ -44,8 +46,6 @@ import NoPowerIcon from "../../Images/NoPowerIcon.png"
 import NoVideoIcon from "../../Images/NoVideoIcon.png"
 import OnewayFlightDetails from "../../Component/OnewayFlightDetails";
 import ReturnFlightDetails from "../../Component/ReturnFlightDetails";
-import CancellationDetails from "../../Component/CancellationDetails";
-
 
 dayjs.extend(duration);
 
@@ -82,6 +82,9 @@ const EconomyReturn = () =>{
       travellers,
       travellerValue,
       travelClass,
+      cancelFeeAdd,
+      rescheduleFeeAdd,
+      totalAmount,
       } = useSelector((state) => state.flightSearch);
       
       const navigate = useNavigate();
@@ -125,13 +128,18 @@ const EconomyReturn = () =>{
             month: "short",
           });
       
-          const randomPrice = Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500;
-          
+          const economyRandomPrice = Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500;
+          const premiumEconomyRandomPrice = Math.floor(Math.random() * (7500 - 5000 + 1)) + 5000;
+          const businessRandomPrice = Math.floor(Math.random() * (18000 - 12000 + 1)) + 12000;
       
           return {
             date: date.toISOString(),
             label: formattedDate,
-            price: randomPrice,
+            price: {
+            Economy: { price: economyRandomPrice},
+            "Premium Economy": { price: premiumEconomyRandomPrice}, 
+            Business: { price: businessRandomPrice },
+        },
           };
         });
       
@@ -191,12 +199,18 @@ useEffect(() => {
     const date = new Date(base);
     date.setDate(base.getDate() + i);
 
-    const randomPrice = Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500;
+    const economyRandomPrice = Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500;
+          const premiumEconomyRandomPrice = Math.floor(Math.random() * (7500 - 5000 + 1)) + 5000;
+          const businessRandomPrice = Math.floor(Math.random() * (18000 - 12000 + 1)) + 12000;
 
     return {
-      date: date.toISOString(),        // STORED REAL DATE
-      label: formattedDate(date),      // DISPLAY LABEL
-      price: randomPrice,
+      date: date.toISOString(),       
+      label: formattedDate(date),      
+      price: {
+            Economy: { price: economyRandomPrice},
+            "Premium Economy": { price: premiumEconomyRandomPrice}, 
+            Business: { price: businessRandomPrice },
+        },
     };
   });
 
@@ -360,8 +374,11 @@ useEffect(() => {
           durations: "6h 0m",
           stops: "1 stop",
           nextDayArrival: false,
-          price: 10395,
-          discount: 670,
+          fareOptions: {
+            Economy: { price: 10395, discount: 670, baggage: "15kg" },
+            "Premium Economy": { price: 14500, discount: 800, baggage: "20kg" },
+            Business: { price: 28500, discount: 1500, baggage: "30kg" },
+          },
           tags: ["Earliest", "Free Meal"],
         },
         {
@@ -376,8 +393,11 @@ useEffect(() => {
           durations: "2h 40m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: dateFareData[0].price,
-          discount: 100,
+           fareOptions: {
+            Economy: { price: 4520, discount: 100, baggage: "15kg" }, 
+            "Premium Economy": { price: 6500, discount: 150, baggage: "20kg" },
+            Business: { price: 15000, discount: 500, baggage: "30kg" },
+          },
           tags: ["Cheapest"],
           fromTerminal:3,
           toTerminal:2,
@@ -394,8 +414,11 @@ useEffect(() => {
           durations: "2h 45m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 7390,
-          discount: 300,
+          fareOptions: {
+            Economy: { price: 7390, discount: 300, baggage: "15kg" },
+            "Premium Economy": { price: 11000, discount: 500, baggage: "20kg" },
+            Business: { price: 23000, discount: 1000, baggage: "30kg" },
+          },
           tags: ["Best Overall"],
           fromTerminal:1,
           toTerminal:3,
@@ -412,8 +435,11 @@ useEffect(() => {
           durations: "2h 35m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 6890,
-          discount: 150,
+          fareOptions: {
+            Economy: { price: 6890, discount: 150, baggage: "15kg" },
+            "Premium Economy": { price: 8900, discount: 200, baggage: "20kg" },
+            Business: { price: 18000, discount: 700, baggage: "30kg" },
+          },
           tags: ["Earliest"],
           fromTerminal:2,
           toTerminal:2,
@@ -430,8 +456,11 @@ useEffect(() => {
           durations: "2h 50m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 4230,
-          discount: 200,
+          fareOptions: {
+            Economy: { price: 4230, discount: 200, baggage: "15kg" },
+            "Premium Economy": { price: 6000, discount: 250, baggage: "20kg" },
+            Business: { price: 12000, discount: 500, baggage: "30kg" },
+          },
           tags: ["Free Meal"],
           fromTerminal:1,
           toTerminal:1,
@@ -448,8 +477,11 @@ useEffect(() => {
           durations: "2h 35m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 6890,
-          discount: 150,
+          fareOptions: {
+            Economy: { price: 6890, discount: 150, baggage: "15kg" },
+            "Premium Economy": { price: 8900, discount: 200, baggage: "20kg" },
+            Business: { price: 18000, discount: 700, baggage: "30kg" },
+          },
           tags: ["Free Meal"],
           fromTerminal:3,
           toTerminal:3,
@@ -466,8 +498,11 @@ useEffect(() => {
           durations: "2h 40m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 4230,
-          discount: 120,
+          fareOptions: {
+            Economy: { price: 4230, discount: 120, baggage: "15kg" },
+            "Premium Economy": { price: 6500, discount: 150, baggage: "20kg" },
+            Business: { price: 15000, discount: 500, baggage: "30kg" },
+          },
           tags: ["Free Meal"],
           fromTerminal:2,
           toTerminal:3,
@@ -484,8 +519,11 @@ useEffect(() => {
           durations: "2h 40m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 4230,
-          discount: 120,
+          fareOptions: {
+            Economy: { price: 4230, discount: 120, baggage: "15kg" },
+            "Premium Economy": { price: 6500, discount: 150, baggage: "20kg" },
+            Business: { price: 15000, discount: 500, baggage: "30kg" },
+          },
           tags: ["Free Meal"],
           fromTerminal:3,
           toTerminal:2,
@@ -502,8 +540,11 @@ useEffect(() => {
           durations: "1h 45m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 5320,
-          discount: 140,
+          fareOptions: {
+            Economy: { price: 4230, discount: 120, baggage: "15kg" },
+            "Premium Economy": { price: 5800, discount: 130, baggage: "20kg" },
+            Business: { price: 11000, discount: 450, baggage: "30kg" },
+          },
           tags: ["Free Meal"],
           fromTerminal:3,
           toTerminal:2,
@@ -520,8 +561,11 @@ useEffect(() => {
           durations: "2h 45m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 7390,
-          discount: 300,
+          fareOptions: {
+            Economy: { price: 5530, discount: 120, baggage: "15kg" },
+            "Premium Economy": { price: 6800, discount: 130, baggage: "20kg" },
+            Business: { price: 14000, discount: 450, baggage: "30kg" },
+          },
           tags: ["Best Overall"],
           fromTerminal:1,
           toTerminal:3,
@@ -572,8 +616,11 @@ useEffect(() => {
           durations: "6h 0m",
           stops: "1 stop",
           nextDayArrival: false,
-          price: 10395,
-          discount: 670,
+          fareOptions: {
+            Economy: { price: 4530, discount: 120, baggage: "15kg" },
+            "Premium Economy": { price: 6800, discount: 130, baggage: "20kg" },
+            Business: { price: 14000, discount: 450, baggage: "30kg" },
+          },
           tags: ["Earliest", "Free Meal"],
         },
         {
@@ -588,8 +635,12 @@ useEffect(() => {
           durations: "2h 40m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: dateFareData1[0].price,
-          discount: 100,
+          fareOptions: {
+            Economy: { price: 5580, discount: 140, baggage: "15kg" },
+            "Premium Economy": { price: 7800, discount: 180, baggage: "20kg" },
+            Business: { price: 17000, discount: 450, baggage: "30kg" },
+          },
+          
           tags: ["Cheapest"],
           fromTerminal:3,
           toTerminal:2,
@@ -606,8 +657,11 @@ useEffect(() => {
           durations: "2h 45m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 7390,
-          discount: 300,
+          fareOptions: {
+            Economy: { price: 3530, discount: 160, baggage: "15kg" },
+            "Premium Economy": { price: 5500, discount: 250, baggage: "20kg" },
+            Business: { price: 21000, discount: 650, baggage: "30kg" },
+          },
           tags: ["Best Overall"],
           fromTerminal:1,
           toTerminal:3,
@@ -624,8 +678,11 @@ useEffect(() => {
           durations: "2h 35m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 6890,
-          discount: 150,
+          fareOptions: {
+            Economy: { price: 3510, discount: 120, baggage: "15kg" },
+            "Premium Economy": { price: 8000, discount: 130, baggage: "20kg" },
+            Business: { price: 26000, discount: 450, baggage: "30kg" },
+          },
           tags: ["Earliest"],
           fromTerminal:2,
           toTerminal:2,
@@ -642,8 +699,11 @@ useEffect(() => {
           durations: "2h 45m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 7390,
-          discount: 300,
+          fareOptions: {
+            Economy: { price: 6510, discount: 200, baggage: "15kg" },
+            "Premium Economy": { price: 9000, discount: 300, baggage: "20kg" },
+            Business: { price: 28000, discount: 850, baggage: "30kg" },
+          },
           tags: ["Best Overall"],
           fromTerminal:1,
           toTerminal:3,
@@ -660,8 +720,11 @@ useEffect(() => {
           durations: "2h 50m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 4230,
-          discount: 200,
+          fareOptions: {
+            Economy: { price: 7510, discount: 220, baggage: "15kg" },
+            "Premium Economy": { price: 9500, discount: 330, baggage: "20kg" },
+            Business: { price: 29100, discount: 900, baggage: "30kg" },
+          },
           tags: ["Free Meal"],
           fromTerminal:1,
           toTerminal:1,
@@ -678,8 +741,11 @@ useEffect(() => {
           durations: "2h 35m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 6890,
-          discount: 150,
+          fareOptions: {
+            Economy: { price: 7700, discount: 250, baggage: "15kg" },
+            "Premium Economy": { price: 10500, discount: 380, baggage: "20kg" },
+            Business: { price: 29500, discount: 950, baggage: "30kg" },
+          },
           tags: ["Free Meal"],
           fromTerminal:3,
           toTerminal:3,
@@ -696,8 +762,11 @@ useEffect(() => {
           durations: "2h 40m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 4230,
-          discount: 120,
+          fareOptions: {
+            Economy: { price: 3500, discount: 150, baggage: "15kg" },
+            "Premium Economy": { price: 7500, discount: 280, baggage: "20kg" },
+            Business: { price: 17500, discount: 650, baggage: "30kg" },
+          },
           tags: ["Free Meal"],
           fromTerminal:2,
           toTerminal:3,
@@ -714,8 +783,11 @@ useEffect(() => {
           durations: "2h 40m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 4230,
-          discount: 120,
+          fareOptions: {
+            Economy: { price: 4200, discount: 150, baggage: "15kg" },
+            "Premium Economy": { price: 7700, discount: 280, baggage: "20kg" },
+            Business: { price: 19500, discount: 650, baggage: "30kg" },
+          },
           tags: ["Free Meal"],
           fromTerminal:3,
           toTerminal:2,
@@ -732,8 +804,11 @@ useEffect(() => {
           durations: "1h 45m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 5320,
-          discount: 140,
+          fareOptions: {
+            Economy: { price: 4800, discount: 150, baggage: "15kg" },
+            "Premium Economy": { price: 9700, discount: 280, baggage: "20kg" },
+            Business: { price: 23500, discount: 850, baggage: "30kg" },
+          },
           tags: ["Free Meal"],
           fromTerminal:3,
           toTerminal:2,
@@ -750,8 +825,11 @@ useEffect(() => {
           durations: "2h 35m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 6890,
-          discount: 150,
+          fareOptions: {
+            Economy: { price: 5300, discount: 210, baggage: "15kg" },
+            "Premium Economy": { price: 9900, discount: 300, baggage: "20kg" },
+            Business: { price: 25600, discount: 900, baggage: "30kg" },
+          },
           tags: ["Free Meal"],
           fromTerminal:3,
           toTerminal:3,
@@ -768,8 +846,11 @@ useEffect(() => {
           durations: "2h 45m",
           stops: "Non-stop",
           nextDayArrival: false,
-          price: 7390,
-          discount: 300,
+          fareOptions: {
+            Economy: { price: 7300, discount: 290, baggage: "15kg" },
+            "Premium Economy": { price: 11900, discount: 450, baggage: "20kg" },
+            Business: { price: 30600, discount: 1100, baggage: "30kg" },
+          },
           tags: ["Best Overall"],
           fromTerminal:1,
           toTerminal:3,
@@ -809,7 +890,7 @@ useEffect(() => {
             return false;
           }
           //  Price Range Filter
-          if (flight.price < startPrice || flight.price > endPrice) {
+          if (flight?.fareOptions?.[travelClass]?.price < startPrice || flight?.fareOptions?.[travelClass]?.price > endPrice) {
             return false;
           }
       
@@ -881,7 +962,7 @@ useEffect(() => {
             return false;
           }
           //  Price Range Filter
-          if (flight.price < startReturnPrice || flight.price > endReturnPrice) {
+          if (flight?.fareOptions?.[travelClass]?.price < startReturnPrice || flight?.fareOptions?.[travelClass]?.price > endReturnPrice) {
             return false;
           }
       
@@ -969,20 +1050,21 @@ useEffect(() => {
           setSelectedReturn([filteredFlightsReturn[0]]);
           dispatch(setReturnSelectedFlight([filteredFlightsReturn[0]])) 
         }
-      }, [filteredFlights,filteredFlightsReturn]);
+      }, [filteredFlights,filteredFlightsReturn,travelClass]);
 
       const [fullAmount,setFullAmount] = useState(0)
       const [fullDiscount,setFullDiscount] = useState(0)
 
       const CalculateFullAmount = () =>{
-        const a = selectedOnwards[0]?.price;
-        const b = selectedReturn[0]?.price;
+        const a = selectedOnwards[0]?.fareOptions?.[travelClass]?.price;
+        const b = selectedReturn[0]?.fareOptions?.[travelClass]?.price;
         setFullAmount(a+b)
+        // dispatch(setTotalAmount(fullAmount))
       }
 
       const CalculateFullDiscount = () =>{
-        const a = selectedOnwards[0]?.discount;
-        const b = selectedReturn[0]?.discount;
+        const a = selectedOnwards[0]?.fareOptions?.[travelClass]?.discount;
+        const b = selectedReturn[0]?.fareOptions?.[travelClass]?.discount;
         setFullDiscount(a+b)
       }
 
@@ -1173,18 +1255,24 @@ useEffect(() => {
           if(removeFeeAdd || removeRescheduleAdd){
             setRemoveFeeAdd(false);
             setRemoveRescheduleAdd(false)
+            dispatch(setRefundFeeAdd(false))
           }
           
         
         },[travellerValue,from,to,departure,returnDate,returnTrip,returnTripUI,travelClass])
 
-
+        useEffect(()=>{
+          if(removeFeeAdd ===false && removeRescheduleAdd === false){
+          dispatch(setRefundFeeAdd(false))
+          }
+        },[removeFeeAdd,removeRescheduleAdd]) 
 
         const handleAddCancelFee = (calculateCancel) =>{
         const final = fullAmount + calculateCancel
         setFinalAmount(final)
         
         setRemoveFeeAdd(true)
+        dispatch(setRefundFeeAdd(true))
         if(removeRescheduleAdd){
           setRemoveRescheduleAdd(false)
         }
@@ -1200,6 +1288,7 @@ useEffect(() => {
         //   });
         
         setRemoveRescheduleAdd(true)
+        dispatch(setRefundFeeAdd(true))
         
         if(removeFeeAdd){
           setRemoveFeeAdd(false)
@@ -1272,10 +1361,10 @@ useEffect(() => {
                 <div>
                 
                 {selectedOnwards.map((items,idx)=>{
-                const calculateCancel = getCancelFee(items.price);
-                const calTotalTravellerRefund = getTotalTraveller(items.price);
-                const calTotalTravellerOnwardsRefund = getTotalOnwardsTraveller(items.price);
-                const calTotalTravellerReturnRefund = getTotalReturnTraveller(selectedReturn[0].price);
+                const calculateCancel = getCancelFee(items?.fareOptions?.[travelClass]?.price);
+                const calTotalTravellerRefund = getTotalTraveller(items?.fareOptions?.[travelClass]?.price);
+                const calTotalTravellerOnwardsRefund = getTotalOnwardsTraveller(items?.fareOptions?.[travelClass]?.price);
+                const calTotalTravellerReturnRefund = getTotalReturnTraveller(selectedReturn[0]?.fareOptions?.[travelClass]?.price);
                 const cal8HrsCancelTime = get8HrsCancelTime(items.departureTime)
                 const cal8HrsCancelReturnTime = get8HrsCancelReturnTime(selectedReturn[0].departureTime)
                 const ixigoCancelFee = getIxigoCancelFee() 
@@ -2200,6 +2289,7 @@ useEffect(() => {
                 
                     
                   )})}
+                 
                   </div>
               ),
             },
@@ -2210,14 +2300,14 @@ useEffect(() => {
                 <div>
                 
                 {selectedOnwards.map((items,idx)=>{
-                const calculateReschedule = getRescheduleFee(items.price);
+                const calculateReschedule = getRescheduleFee(items?.fareOptions?.[travelClass]?.price);
                 const calTotalTravellerRefund = getTotalTraveller();
-                const calTotalTravellerOnwardsRefund = getTotalOnwardsTraveller(items.price);
-                const calTotalTravellerReturnRefund = getTotalReturnTraveller(selectedReturn[0].price);
+                const calTotalTravellerOnwardsRefund = getTotalOnwardsTraveller(items?.fareOptions?.[travelClass]?.price);
+                const calTotalTravellerReturnRefund = getTotalReturnTraveller(selectedReturn[0]?.fareOptions?.[travelClass]?.price);
                 const cal8HrsCancelTime = get8HrsCancelTime(items.departureTime)
                 const cal8HrsCancelReturnTime = get8HrsCancelReturnTime(selectedReturn[0].departureTime)
                 const ixigoRescheduleFee = getIxigoRescheduleFee() 
-                console.log("Reschudle",calculateReschedule)
+                console.log("totalmmmmm",calTotalTravellerRefund)
                 return(
                   <div style={{
                   fontFamily:"Roboto"
@@ -3106,6 +3196,7 @@ useEffect(() => {
                 
                     
                   )})}
+                  
                   </div>
               ),
             },
@@ -3746,7 +3837,7 @@ useEffect(() => {
                                   marginTop: "4px",
                                 }}
                               >
-                                ₹{item.price.toLocaleString("en-IN")}
+                                ₹{item?.price?.[travelClass]?.price.toLocaleString("en-IN")}
                               </div>
                               {selectedDate === item.label && (
                                 <div
@@ -3972,7 +4063,7 @@ useEffect(() => {
                       {/* Price and Offer */}
                       <div style={{ textAlign: "right", flex: 1,fontFamily:"Roboto",position:"relative",right:"5px", }}>
                         <Text style={{ fontSize: 24,fontWeight:700 }}>
-                          ₹{item.price.toLocaleString("en-IN")}
+                          ₹{item?.fareOptions?.[travelClass]?.price.toLocaleString("en-IN")}
                         </Text>
                         
             
@@ -4058,7 +4149,7 @@ useEffect(() => {
                                   marginTop: "4px",
                                 }}
                               >
-                                ₹{item.price.toLocaleString("en-IN")}
+                                ₹{item?.price?.[travelClass]?.price.toLocaleString("en-IN")}
                               </div>
                               {selectedReturnDate === item.label && (
                                 <div
@@ -4283,7 +4374,7 @@ useEffect(() => {
                       {/* Price and Offer */}
                       <div style={{ textAlign: "right", flex: 1,fontFamily:"Roboto",position:"relative",right:"5px", }}>
                         <Text style={{ fontSize: 24,fontWeight:700 }}>
-                          ₹{item.price.toLocaleString("en-IN")}
+                          ₹{item?.fareOptions?.[travelClass]?.price.toLocaleString("en-IN")}
                         </Text>
                         
             
@@ -4632,7 +4723,7 @@ useEffect(() => {
                         bottom:"10px"
                       }}>
                             <Text style={{ fontSize: 28, fontWeight: 500 }}>
-                              {Number(
+                              ₹{Number(
                         removeFeeAdd || removeRescheduleAdd 
                         ? finalAmount 
                         : fullAmount
@@ -4672,7 +4763,7 @@ useEffect(() => {
                           onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
-                        navigate("/buses");
+                        navigate("/ReviewTravellerDetails");
                           }}
                         >
                           Book

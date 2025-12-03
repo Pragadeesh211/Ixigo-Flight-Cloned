@@ -6,6 +6,7 @@ import duration from "dayjs/plugin/duration";
 import { ArrowRightOutlined,AppstoreOutlined,CheckOutlined } from "@ant-design/icons";
 import FlightTicketFilledIcon from "../Images/FlightTicketFilledIcon.png"
 import FlightTakeoffFilledIcon from "../Images/FlightTakeoffFilledIcon.png"
+import { setTotalAmount,setCancelFeeAdd, setRescheduleFeeAdd } from "../Redux/Slices/FlightSearchSlice";
 
 
 dayjs.extend(duration);
@@ -13,6 +14,7 @@ dayjs.extend(duration);
 const { Text } = Typography;
 
 const CancellationDetails = () =>{
+  const dispatch = useDispatch();
 
     const {
         from,
@@ -31,264 +33,329 @@ const CancellationDetails = () =>{
       travellerValue,
       travelClass,
         onewaySelectedFlight, 
-        returnSelectedFlight
+        returnSelectedFlight,
+        drawerOpen,
+        cancelFeeAdd,
+        rescheduleFeeAdd,
+       
+        
       } = useSelector((state) => state.flightSearch);
 
-      const [fullAmount,setFullAmount] = useState(0)
-      const [fullDiscount,setFullDiscount] = useState(0)
-      const [openDrawer, setOpenDrawer] = useState(false);
-      const [finalAmount,setFinalAmount] =useState()
-      const [removeFeeAdd,setRemoveFeeAdd] = useState(false);
-      const [removeRescheduleAdd,setRemoveRescheduleAdd] = useState(false);
-      const [open, setOpen] = useState(false);
       const now = new Date();
-      const time = now.toLocaleTimeString("en-GB", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      });
-      const [currentTime,setCurrentTime] = useState(time)
+            const time = now.toLocaleTimeString("en-GB", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            });
+      
+      
+                const [openDrawer, setOpenDrawer] = useState(drawerOpen);
+                const [loadingDrawer, setLoadingDrawer] = useState(true);
+          
+               const [fullAmount,setFullAmount] = useState(0)
+                     const [fullDiscount,setFullDiscount] = useState(0)
+               
+                     const CalculateFullAmount = () =>{
+                      if(returnTripUI){
+                       const a = onewaySelectedFlight[0]?.price;
+                       const b = returnSelectedFlight[0]?.price;
+                       setFullAmount(a+b)
+                      }
+                      else{
+                          const a = onewaySelectedFlight[0]?.price;
+                          setFullAmount(a)
+                      }
+                     }
+               
+                     const CalculateFullDiscount = () =>{
+                      if(returnTripUI){
+                       const a = onewaySelectedFlight[0]?.discount;
+                       const b = returnSelectedFlight[0]?.discount;
+                       setFullDiscount(a+b)
+                      }
+                      else{
+                           const a = onewaySelectedFlight[0]?.discount;
+                           setFullDiscount(a)
+                      }
+                     }
+               
+                     useEffect(() => {
+                       CalculateFullAmount();
+                       CalculateFullDiscount();
+                     }, [onewaySelectedFlight, returnSelectedFlight]);
+               
+                     const formatDate = (date) => {
+                             if (!date) return { day: "", month: "", weekday: "" };
+                             const d = dayjs(date);
+                             return {
+                               day: d.format("DD"),
+                               month: d.format("MMM"),
+                               weekday: d.format("ddd"),
+                             };
+                           };
+                         
+                           
+                     
+                           const dep = formatDate(departure)
+                           const ret = formatDate(returnDate)
+      
+                           const [currentTime,setCurrentTime] = useState(time)
+               
+               
+               
+                       
+               
+                       const [activeTab, setActiveTab] = useState("details");
+                       
+                         useEffect(() => {
+                         if (!openDrawer) {
+                           setActiveTab("details");
+                         }
+                       }, [openDrawer]);
+                       
+                         console.log("selectefddd",onewaySelectedFlight)
+                       
+                         const [open, setOpen] = useState(false);
+                          const [openReTerm, setOpenReTerm] = useState(false);
+                         const contentRef = useRef(null);
+                         const contentRef1 = useRef(null);
+                         const [height, setHeight] = useState("0px");
+                         const [height1, setHeight1] = useState("0px");
+                       
+                         useEffect(() => {
+                         if (!contentRef.current) return;
+                       
+                         setHeight(`${contentRef.current.scrollHeight}px`);
+                       }, [open,onewaySelectedFlight]);
+                       
+                         useEffect(() => {
+                         if (!contentRef1.current) return;
+                       
+                         setHeight1(`${contentRef1.current.scrollHeight}px`);
+                       }, [openReTerm,onewaySelectedFlight]);
+               
+               
+                       const [cancelFee,setCancelFee] = useState(259);
+                       
+                         const getCancelFee = (price) => {
+                         if (price > 6000) return 719;
+                         if (price > 4500) return 519;
+                         if (price > 3500) return 359;
+                         return 259;
+                       };
+               
+                       
+                       
+                         const getRescheduleFee = (price) => {
+                         if (price > 6000) return 1019;
+                         if (price > 4500) return 819;
+                         if (price > 3500) return 659;
+                         return 459;
+                       };
+               
+               
+                       const getTotalTraveller = () =>{
+                           if(travellerValue>1) return fullAmount * travellerValue;
+                       
+                         return fullAmount;
+                       }
+               
+                       const getTotalOnwardsTraveller = (price) =>{
+                         if(travellerValue>1) return price * travellerValue;
+                       
+                         return price;
+               
+                       }
+               
+                       const getTotalReturnTraveller = (price) =>{
+                         if(travellerValue>1) return price * travellerValue;
+                       
+                         return price;
+                       }
+               
+                       const [lessday,setLessDay] = useState()
+                       
+               
+                       const get8HrsCancelTime = (departureTime) =>{
+                          if (!departureTime) return { finalTime: "00:00", days: 0 };
+      
+                           const [h1, m1] = departureTime.split(":").map(Number);
+                           const t2= "08:00";
+                           const [h2, m2] = t2.split(":").map(Number);
+               
+                           let totalMinutes1 = h1 * 60 + m1;
+                           let totalMinutes2 = h2 * 60 + m2;
+               
+                           let diff = totalMinutes1 - totalMinutes2;
+               
+                           
+                           const days = Math.floor(diff / (24 * 60));
+                           
+                           diff = diff % (24 * 60);
+               
+                           
+                           if (diff < 0) diff += 24 * 60;
+               
+                           const hours = Math.floor(diff / 60);
+                           const minutes = diff % 60;
+               
+                           const finalTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+               
+               
+                           return { finalTime, days };
+                         }
+               
+                         useEffect(() => {
+                           if (!onewaySelectedFlight[0]?.departureTime) return;
+                         
+                           const { finalTime, days } = get8HrsCancelTime(onewaySelectedFlight[0]?.departureTime);
+                         
+                           const newDate = dayjs(departure).add(days, "day").format("YYYY-MM-DD");
+                           setLessDay(newDate);
+                         
+                         }, [onewaySelectedFlight[0]?.departureTime]);
+               
+                         const [lessReturnday,setLessReturnDay] = useState()
+               
+                         const get8HrsCancelReturnTime = (departureTime) =>{
+                          if (!departureTime) return { finalTime: "00:00", days: 0 };
+      
+                           const [h1, m1] = departureTime.split(":").map(Number);
+                           const t2= "08:00";
+                           const [h2, m2] = t2.split(":").map(Number);
+               
+                           let totalMinutes1 = h1 * 60 + m1;
+                           let totalMinutes2 = h2 * 60 + m2;
+               
+                           let diff = totalMinutes1 - totalMinutes2;
+               
+                           
+                           const days = Math.floor(diff / (24 * 60));
+                           
+                           diff = diff % (24 * 60);
+               
+                           
+                           if (diff < 0) diff += 24 * 60;
+               
+                           const hours = Math.floor(diff / 60);
+                           const minutes = diff % 60;
+               
+                           const finalTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+               
+               
+                           return { finalTime, days };
+                         }
+               
+                         useEffect(() => {
+                           if (!returnSelectedFlight[0]?.departureTime) return;
+                         
+                           const { finalTime, days } = get8HrsCancelReturnTime(returnSelectedFlight[0]?.departureTime);
+                         
+                           const newDate = dayjs(returnDate).add(days, "day").format("YYYY-MM-DD");
+                           setLessReturnDay(newDate);
+                         
+                         }, [returnSelectedFlight[0]?.departureTime]);
+                         
+                         const lessdep = formatDate(lessday);
+                         const lessret = formatDate(lessReturnday);
+                       
+                       
+                       const getIxigoCancelFee = ()=>{
+                         if(travellerValue>1) return 300 * travellerValue;
+                          return 300;
+                       }
+                       
+                       const getIxigoRescheduleFee = ()=>{
+                         if(travellerValue>1) return 499 * travellerValue;
+                          return 499;
+                       }
+                       
+                       
+                       const [finalAmount,setFinalAmount] =useState()
+                       const [removeFeeAdd,setRemoveFeeAdd] = useState(false);
+                       const [removeRescheduleAdd,setRemoveRescheduleAdd] = useState(false);
+                       
+                       useEffect(()=>{
+                         if(removeFeeAdd || removeRescheduleAdd){
+                           setRemoveFeeAdd(false);
+                                                dispatch(setCancelFeeAdd(false))
+                                                setRemoveRescheduleAdd(false)
+                                                dispatch(setRescheduleFeeAdd(false))
+                         }
+                         
+                       
+                       },[travellerValue,from,to,departure,returnDate,returnTrip,returnTripUI,travelClass])
+               
+               
+               
+                       const handleAddCancelFee = (calculateCancel) =>{
+                       const final = fullAmount + calculateCancel
+                      //  setFinalAmount(final)
+                       dispatch(setTotalAmount(final))
+                       dispatch(setCancelFeeAdd(true))
+                       
+                       setRemoveFeeAdd(true)
+                       if(removeRescheduleAdd){
+                         setRemoveRescheduleAdd(false)
+                         dispatch(setCancelFee(false))
+                       }
+                       
+                       
+                       }
 
-      useEffect(()=>{
-          if(removeFeeAdd || removeRescheduleAdd){
-            setRemoveFeeAdd(false);
-            setRemoveRescheduleAdd(false)
-          }
-          },[travellerValue,from,to,departure,returnDate,returnTrip,returnTripUI,travelClass])
-
-           const handleAddCancelFee = (calculateCancel) =>{
-        const final = fullAmount + calculateCancel
-        setFinalAmount(final)
-        
-        setRemoveFeeAdd(true)
-        if(removeRescheduleAdd){
-          setRemoveRescheduleAdd(false)
-        }
-        
-        
-        }
-        
-        const handleAddRescheduleFee = (calculateReschedule) =>{
-        const final = fullAmount + calculateReschedule
-        setFinalAmount(final)
-        //  animateValue(finalAmount, final, 600, (val) => {
-        //     setFinalAmount(val);
-        //   });
-        
-        setRemoveRescheduleAdd(true)
-        
-        if(removeFeeAdd){
-          setRemoveFeeAdd(false)
-        }
-        }
-        
-              const CalculateFullAmount = () =>{
-                const a = onewaySelectedFlight[0]?.price;
-                const b = returnSelectedFlight[0]?.price;
-                setFullAmount(a+b)
-              }
-        
-              const CalculateFullDiscount = () =>{
-                const a = onewaySelectedFlight[0]?.discount;
-                const b = returnSelectedFlight[0]?.discount;
-                setFullDiscount(a+b)
-              }
-        
-        useEffect(() => {
-                CalculateFullAmount();
-                CalculateFullDiscount();
-              }, [onewaySelectedFlight, returnSelectedFlight]);
-
-
-      const getCancelFee = (price) => {
-                if (price > 6000) return 719;
-                if (price > 4500) return 519;
-                if (price > 3500) return 359;
-                return 259;
-              };
-      
-              
-              
-                const getRescheduleFee = (price) => {
-                if (price > 6000) return 1019;
-                if (price > 4500) return 819;
-                if (price > 3500) return 659;
-                return 459;
-              };
-      
-      
-              const getTotalTraveller = () =>{
-                  if(travellerValue>1) return fullAmount * travellerValue;
-              
-                return fullAmount;
-              }
-      
-              const getTotalOnwardsTraveller = (price) =>{
-                if(travellerValue>1) return price * travellerValue;
-              
-                return price;
-      
-              }
-      
-              const getTotalReturnTraveller = (price) =>{
-                if(travellerValue>1) return price * travellerValue;
-              
-                return price;
-              }
-      
-              const [lessday,setLessDay] = useState()
-              
-      
-              const get8HrsCancelTime = (departureTime) =>{
-                  const [h1, m1] = departureTime.split(":").map(Number);
-                  const t2= "08:00";
-                  const [h2, m2] = t2.split(":").map(Number);
-      
-                  let totalMinutes1 = h1 * 60 + m1;
-                  let totalMinutes2 = h2 * 60 + m2;
-      
-                  let diff = totalMinutes1 - totalMinutes2;
-      
-                  
-                  const days = Math.floor(diff / (24 * 60));
-                  
-                  diff = diff % (24 * 60);
-      
-                  
-                  if (diff < 0) diff += 24 * 60;
-      
-                  const hours = Math.floor(diff / 60);
-                  const minutes = diff % 60;
-      
-                  const finalTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-      
-      
-                  return { finalTime, days };
-                }
-
-                 useEffect(() => {
-                            if (!onewaySelectedFlight[0]?.departureTime) return;
-                          
-                            const { finalTime, days } = get8HrsCancelTime(onewaySelectedFlight[0]?.departureTime);
-                          
-                            const newDate = dayjs(departure).add(days, "day").format("YYYY-MM-DD");
-                            setLessDay(newDate);
-                          
-                          }, [onewaySelectedFlight[0]?.departureTime]);
-                
-                          const [lessReturnday,setLessReturnDay] = useState()
-                
-                          const get8HrsCancelReturnTime = (departureTime) =>{
-                            const [h1, m1] = departureTime.split(":").map(Number);
-                            const t2= "08:00";
-                            const [h2, m2] = t2.split(":").map(Number);
-                
-                            let totalMinutes1 = h1 * 60 + m1;
-                            let totalMinutes2 = h2 * 60 + m2;
-                
-                            let diff = totalMinutes1 - totalMinutes2;
-                
-                            
-                            const days = Math.floor(diff / (24 * 60));
-                            
-                            diff = diff % (24 * 60);
-                
-                            
-                            if (diff < 0) diff += 24 * 60;
-                
-                            const hours = Math.floor(diff / 60);
-                            const minutes = diff % 60;
-                
-                            const finalTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-                
-                
-                            return { finalTime, days };
-                          }
-                
-                          useEffect(() => {
-                            if (!returnSelectedFlight[0]?.departureTime) return;
-                          
-                            const { finalTime, days } = get8HrsCancelReturnTime(returnSelectedFlight[0]?.departureTime);
-                          
-                            const newDate = dayjs(returnDate).add(days, "day").format("YYYY-MM-DD");
-                            setLessReturnDay(newDate);
-                          
-                          }, [returnSelectedFlight[0]?.departureTime]);
-
-                           const [swapButton,setSwapButton] = useState(false)
-                          
-                                  const handleOnwardSwap = () =>{
-                                    setSwapButton(false)
-                                  }
-                                  const handleReturnSwap = () =>{
-                                    setSwapButton(true)
-                                  }
-                                  useEffect(()=>{
-                                    if(!openDrawer){
-                                      setSwapButton(false)
-                                    }
-                                  },[openDrawer])
-                          const formatDate = (date) => {
-                                if (!date) return { day: "", month: "", weekday: "" };
-                                const d = dayjs(date);
-                                return {
-                                  day: d.format("DD"),
-                                  month: d.format("MMM"),
-                                  weekday: d.format("ddd"),
-                                };
-                              };
-
-                              const dep = formatDate(departure)
-                            const ret = formatDate(returnDate)
-                          
-                          const lessdep = formatDate(lessday);
-                          const lessret = formatDate(lessReturnday);
-                        
-                        
-                        const getIxigoCancelFee = ()=>{
-                          if(travellerValue>1) return 300 * travellerValue;
-                           return 300;
-                        }
-                        
-                        const getIxigoRescheduleFee = ()=>{
-                          if(travellerValue>1) return 499 * travellerValue;
-                           return 499;
-                        }
-
-                        useEffect(() => {
-                                  if (!onewaySelectedFlight || onewaySelectedFlight.length === 0) return;
-                                
-                                  const price = onewaySelectedFlight[0]?.price || 0;
-                                  const cancelFee = getIxigoCancelFee(onewaySelectedFlight[0]?.price);
-                                  const rescheduleFee = getIxigoRescheduleFee(onewaySelectedFlight[0]?.price);
-                                
-                                  if (removeFeeAdd) {
-                                    handleAddCancelFee(cancelFee);
-                                  } else if (removeRescheduleAdd) {
-                                    handleAddRescheduleFee(rescheduleFee);
-                                  } else {
-                                    setFinalAmount(price);
-                                  }
-                                }, [onewaySelectedFlight]);
-
-                                const [openReTerm, setOpenReTerm] = useState(false);
-
-                                const contentRef = useRef(null);
-                                          const contentRef1 = useRef(null);
-                                          const [height, setHeight] = useState("0px");
-                                          const [height1, setHeight1] = useState("0px");
-                                        
-                                          useEffect(() => {
-                                          if (!contentRef.current) return;
-                                        
-                                          setHeight(`${contentRef.current.scrollHeight}px`);
-                                        }, [open,onewaySelectedFlight]);
-                                        
-                                          useEffect(() => {
-                                          if (!contentRef1.current) return;
-                                        
-                                          setHeight1(`${contentRef1.current.scrollHeight}px`);
-                                        }, [openReTerm,onewaySelectedFlight]);
+                       
+                       const handleAddRescheduleFee = (calculateReschedule) =>{
+                       const final = fullAmount + calculateReschedule
+                       setFinalAmount(final)
+                       dispatch(setTotalAmount(final))
+                      //  dispatch(setTotalAmount(final))
+                       //  animateValue(finalAmount, final, 600, (val) => {
+                       //     setFinalAmount(val);
+                       //   });
+                       
+                       setRemoveRescheduleAdd(true)
+                       
+                       if(removeFeeAdd ){
+                         setRemoveFeeAdd(false)
+                         dispatch(setCancelFeeAdd(false))
+                       }
+               
+                       
+                       
+                       }
+                       
+                       useEffect(() => {
+                         if (!onewaySelectedFlight || onewaySelectedFlight.length === 0) return;
+                       
+                         const price = onewaySelectedFlight[0]?.price || 0;
+                         const cancelFee = getIxigoCancelFee(onewaySelectedFlight[0]?.price);
+                         const rescheduleFee = getIxigoRescheduleFee(onewaySelectedFlight[0]?.price);
+                       
+                         if (removeFeeAdd) {
+                           handleAddCancelFee(cancelFee);
+                         } 
+                         else if (removeRescheduleAdd) {
+                           handleAddRescheduleFee(rescheduleFee);
+                         } 
+                         else {
+                           setFinalAmount(price);
+                          //  dispatch(setTotalAmount(price))
+                         }
+                       }, [onewaySelectedFlight]);
+               
+                       const [swapButton,setSwapButton] = useState(false)
+               
+                       const handleOnwardSwap = () =>{
+                         setSwapButton(false)
+                       }
+                       const handleReturnSwap = () =>{
+                         setSwapButton(true)
+                       }
+                       useEffect(()=>{
+                         if(!openDrawer){
+                           setSwapButton(false)
+                         }
+                       },[openDrawer])
 
 
     return(
@@ -296,20 +363,329 @@ const CancellationDetails = () =>{
         <div>
                         
                         {onewaySelectedFlight.map((items,idx)=>{
-                        const calculateCancel = getCancelFee(items.price);
-                        const calTotalTravellerRefund = getTotalTraveller(items.price);
-                        const calTotalTravellerOnwardsRefund = getTotalOnwardsTraveller(items.price);
-                        const calTotalTravellerReturnRefund = getTotalReturnTraveller(returnSelectedFlight[0].price);
-                        const cal8HrsCancelTime = get8HrsCancelTime(items.departureTime)
-                        const cal8HrsCancelReturnTime = get8HrsCancelReturnTime(returnSelectedFlight[0].departureTime)
+                        const calculateCancel = getCancelFee(items?.price);
+                        const calTotalTravellerRefund = getTotalTraveller(items?.price);
+                        const calTotalTravellerOnwardsRefund = getTotalOnwardsTraveller(items?.price);
+                        const calTotalTravellerReturnRefund = getTotalReturnTraveller(returnSelectedFlight[0]?.price);
+                        const cal8HrsCancelTime = get8HrsCancelTime(items?.departureTime)
+                        const cal8HrsCancelReturnTime = get8HrsCancelReturnTime(returnSelectedFlight[0]?.departureTime)
                         const ixigoCancelFee = getIxigoCancelFee() 
                         console.log("cancelfee",calculateCancel)
                         return(
                           <div style={{
                           fontFamily:"Roboto"
                         }}>
-                          
-                          <Text style={{fontWeight:500}}>*Cancellation charges applicable (Airline fee + ixigo fee)</Text>
+                          {!returnTripUI?(
+                            <div>
+                              <Text style={{fontWeight:500}}>*Cancellation charges applicable (Airline fee + ixigo fee)</Text>
+                                        {removeFeeAdd?(
+                                          <div>
+                                            <div style={{
+                                              display:"flex",
+                                              justifyContent:"space-between",
+                                              width:"60%",
+                                              alignItems:"center",
+                                              position:"relative",
+                                              top:25,
+                                              left:"20%"
+                                            }}>
+                                              <div style={{
+                                                textAlign:"center"
+                                              }}>
+                                              <Text style={{
+                                                fontWeight:500,
+                                            fontSize:"15px",
+                                              }}>
+                                                Full refund of ₹{items.price.toLocaleString("en-IN")}
+                                              </Text>
+                                              <br/>
+                                              <Text style={{
+                                                fontSize:"12px",
+                                                fontWeight:500,
+                                                color:"#5e616e"
+                                              }}>(<span style={{
+                                                color:"green",
+                                      
+                                              }}>₹0</span> <span><s>₹{calTotalTravellerRefund.toLocaleString("en-IN")}</s>
+                                                </span> + ₹{ixigoCancelFee.toLocaleString("en-IN")})* </Text>
+                                              </div>
+                                              <div>
+                                              <Text style={{
+                                                fontWeight:500,
+                                            fontSize:"15px",
+                                            textAlign:"center"
+                                              }}>Non Refundable</Text>
+                                              </div>
+                                            </div>
+                                            <div style={{
+                                              display:"flex",
+                                              flexDirection:"column",
+                                              
+                                            }}>
+                                              <div style={{
+                                          
+                                          marginTop:"50px",
+                                          textAlign:"center",
+                                          height:"4px",
+                                          width:"50%",
+                                          backgroundImage:"linear-gradient(to right, rgb(43, 153, 80), rgb(238, 154, 153))"
+                                        }}>
+                                          </div>
+                                          <div style={{
+                                          position:"relative",
+                                          // marginTop:"10px",
+                                          textAlign:"center",
+                                          height:"4px",
+                                          width:"50%",
+                                          backgroundImage:"linear-gradient(to right, rgb(238, 154, 153), rgb(220, 53, 50))",
+                                          left:"50%",
+                                          bottom:4
+                                        }}></div>
+                                            </div>
+                                            
+                                          
+                                            
+                                        
+                                        
+                                        <div style={{
+                                          display:"flex",
+                                          justifyContent:"space-between"
+                                        }}>
+                                          <div>
+                                          <div style={{
+                                            background:"rgb(107, 184, 133)",
+                                            height:"30px",
+                                            width:"30px",
+                                            display:"flex",
+                                            alignItems:"center",
+                                            justifyContent:"center",
+                                            borderRadius:"50px",
+                                            position:"relative",
+                                            right:7,
+                                            bottom:21
+                                          }}>
+                                          <img src={FlightTicketFilledIcon} style={{
+                                            
+                                            height:"20px"
+                                          }}>
+                                          </img>
+                                          </div>
+                                          <div style={{
+                                            background:"rgb(231, 114, 112)",
+                                            height:"15px",
+                                            width:"15px",
+                                            display:"flex",
+                                            alignItems:"center",
+                                            justifyContent:"center",
+                                            borderRadius:"50px",
+                                            position:"relative",
+                                            left:410,
+                                            bottom:44
+                                          }}></div>
+                                          
+                                          
+                                          </div>
+                                          
+                                          <div>
+                                          
+                                          <div style={{
+                                            background:"rgb(220, 53, 50)",
+                                            height:"30px",
+                                            width:"30px",
+                                            display:"flex",
+                                            alignItems:"center",
+                                            justifyContent:"center",
+                                            borderRadius:"50px",
+                                            position:"relative",
+                                            // left:50,
+                                            bottom:21
+                                          }}>
+                                          <img src={FlightTakeoffFilledIcon} style={{
+                                            
+                                            height:"20px"
+                                          }}>
+                                          </img>
+                                          </div>
+                                          
+                                          </div>
+                                          
+                                        </div>
+                                        <div style={{
+                                          display:"flex",
+                                          justifyContent:"space-between",
+                                          position:"relative",
+                                          bottom:18
+                                        }}>
+                                          <div style={{
+                                            flex:1,
+                                            textAlign:"left",
+                                            position:"relative",
+                                            right:6,
+                                            bottom:8
+                                          }}>
+                                          <Text style={{
+                                            fontSize:"14px",
+                                            fontWeight:500
+                                          }}>
+                                            Now
+                                          </Text>
+                                          <br />
+                                          <Text type="secondary" strong style={{
+                                            position:"relative",
+                                            
+                                            fontSize:"12px",
+                                          }}>{currentTime}</Text>
+                                          </div>
+                                          <div style={{
+                                            flex:1,
+                                            textAlign:"center",
+                                            position:"relative",
+                                            left:5,
+                                            bottom:8
+                                          }}>
+                                          <Text style={{
+                                            fontSize:"14px",
+                                            fontWeight:500
+                                          }}>
+                                            {lessdep.day} {lessdep.month}
+                                          </Text>
+                                          <br />
+                                          <Text type="secondary" strong style={{
+                                            position:"relative",
+                                            fontSize:"12px",
+                                            //before 8
+                                          }}>{cal8HrsCancelTime.finalTime}</Text>
+                                          </div>
+                                          <div style={{
+                                            flex:1,
+                                            textAlign:"right",
+                                            position:"relative",
+                                            bottom:8
+                                          }}>
+                                          <Text style={{
+                                            fontSize:"14px",
+                                            fontWeight:500
+                                          }}>
+                                            Departure
+                                          </Text>
+                                          <br />
+                                          <Text type="secondary" strong style={{
+                                            position:"relative",
+                                            
+                                            fontSize:"12px",
+                                          }}>{dep.day} {dep.month}, {items.departureTime}</Text>
+                                          </div>
+                                        </div>
+                                        </div>
+                                        ):(
+                                          <div>
+                                        <div style={{
+                                          flex:1,
+                                          marginTop:"50px",
+                                          textAlign:"center",
+                                          height:"4px",
+                                          width:"98%",
+                                          backgroundImage:"linear-gradient(to right, rgb(238, 154, 153), rgb(220, 53, 50))"
+                                        }}>
+                                          <Text style={{fontWeight:500,
+                                            fontSize:"15px",
+                                            position:"relative",
+                                            textAlign:"center",
+                                            bottom:35}}>Non Refundable</Text>
+                                            
+                                        </div>
+                                        <div style={{
+                                          display:"flex",
+                                          justifyContent:"space-between"
+                                        }}>
+                                          <div>
+                                          <div style={{
+                                            background:"rgb(231, 114, 112)",
+                                            height:"30px",
+                                            width:"30px",
+                                            display:"flex",
+                                            alignItems:"center",
+                                            justifyContent:"center",
+                                            borderRadius:"50px",
+                                            position:"relative",
+                                            right:7,
+                                            bottom:17
+                                          }}>
+                                          <img src={FlightTicketFilledIcon} style={{
+                                            
+                                            height:"20px"
+                                          }}>
+                                          </img>
+                                          </div>
+                                          <div style={{
+                                            flex:1,
+                                            textAlign:"left",
+                                            position:"relative",
+                                            right:6,
+                                            bottom:8
+                                          }}>
+                                          <Text style={{
+                                            fontSize:"14px",
+                                            fontWeight:500
+                                          }}>
+                                            Now
+                                          </Text>
+                                          <br />
+                                          <Text type="secondary" strong style={{
+                                            position:"relative",
+                                            
+                                            fontSize:"12px",
+                                          }}>{currentTime}</Text>
+                                          </div>
+                                          </div>
+                                          
+                                          <div>
+                                          
+                                          <div style={{
+                                            background:"rgb(220, 53, 50)",
+                                            height:"30px",
+                                            width:"30px",
+                                            display:"flex",
+                                            alignItems:"center",
+                                            justifyContent:"center",
+                                            borderRadius:"50px",
+                                            position:"relative",
+                                            left:40,
+                                            bottom:18
+                                          }}>
+                                          <img src={FlightTakeoffFilledIcon} style={{
+                                            
+                                            height:"20px"
+                                          }}>
+                                          </img>
+                                          </div>
+                                          <div style={{
+                                            flex:1,
+                                            textAlign:"right",
+                                            position:"relative",
+                                            bottom:8
+                                          }}>
+                                          <Text style={{
+                                            fontSize:"14px",
+                                            fontWeight:500
+                                          }}>
+                                            Departure
+                                          </Text>
+                                          <br />
+                                          <Text type="secondary" strong style={{
+                                            position:"relative",
+                                            
+                                            fontSize:"12px",
+                                          }}>{dep.day} {dep.month}, {items.departureTime}</Text>
+                                          </div>
+                                          </div>
+                                        </div>
+                                        </div>
+                                        )}
+                            </div>
+                          ):(
+                            <div>
+                              <Text style={{fontWeight:500}}>*Cancellation charges applicable (Airline fee + ixigo fee)</Text>
                           <div style={{ display: "flex", justifyContent: "space-evenly", width: "250px",marginTop:10}}>
                                       <Button shape="round" size="medium" 
                                         onClick={handleOnwardSwap} 
@@ -967,6 +1343,10 @@ const CancellationDetails = () =>{
                           )}
                                       </div>
                                     )}
+                            </div>
+                          )}
+                          
+                          
         
                           
                           
@@ -1082,7 +1462,18 @@ const CancellationDetails = () =>{
                             position:"relative",
                             top:20,
                             cursor:"pointer",
-                          }} onClick={()=>setRemoveFeeAdd(false)}>
+                          }} onClick={()=>{setRemoveFeeAdd(false)
+                            dispatch(setCancelFeeAdd(false))
+                            if(returnTripUI){
+                       const a = onewaySelectedFlight[0]?.price;
+                       const b = returnSelectedFlight[0]?.price;
+                       dispatch(setTotalAmount(a+b))
+                      }
+                      else{
+                          const a = onewaySelectedFlight[0]?.price;
+                          dispatch(setTotalAmount(a))
+                      }
+                          }}>
                             <Text style={{
                               color:"#fc790d",
                               fontWeight:500,
