@@ -138,11 +138,13 @@ const FlightListSearchCard = () => {
   const [fromAirpotValue, setFromAirportValue] = useState(fromAirport)
   const [toAirpotValue, setToAirportValue] = useState(toAirport)
 
+  // console.log("departureeee",departure) 
+
   const makeDropdownContent = (isFrom = true) => {
     const filtered = isFrom ? filteredAirportsFrom : filteredAirportsTo;
 
     const handleSelect = (airport) => {
-      const value = `${airport.code} - ${airport.city.split(",")[0]}`;
+      const value = `${airport.code} - ${airport.city.split(",")[0]}`; 
       const cityOnly = airport.city.split(",")[0];
       if (isFrom) {
         dispatch(setFrom(value));
@@ -151,7 +153,7 @@ const FlightListSearchCard = () => {
         setDisplayFrom(value);
         setOpenFrom(false);
         setQueryFrom("");
-        console.log("From", value)
+        // console.log("From", value)
         if (value === to) {
           setErrorRoute(true);
           setOpenFrom(true);
@@ -343,7 +345,7 @@ const FlightListSearchCard = () => {
   const [tempTravellers,setTempTravellers] = useState(travellers);
   const [tempTravelClass,setTempTravelClass] = useState(travelClass);
 
-  console.log("tempTravellers1",travellers)
+  // console.log("tempTravellers1",travellers)
 
   const totalTravellers =
     tempTravellers.Adults + tempTravellers.Children + tempTravellers.Infants;
@@ -371,7 +373,7 @@ const FlightListSearchCard = () => {
     setOpenTC(false)
   }
 
-  console.log("tempt",travelClassValue)
+  // console.log("tempt",travelClassValue)
   const maketravellerClass = () => {
     return (
       <div style={{
@@ -517,15 +519,15 @@ const FlightListSearchCard = () => {
         };
   
   
-        console.log("depTemp",depTemp)
-        console.log("retTemp",retTemp)
+        // console.log("depTemp",depTemp)
+        // console.log("retTemp",retTemp)
         
   
     const disabledDate = (date) => {
     if (!date) return false;
     return date.isBefore(dayjs().startOf("day"));
     };
-  console.log("uuuuuu",departure)
+  // console.log("uuuuuu",departure)
 
   //   useEffect(() => {
   // if (departure) {
@@ -569,20 +571,20 @@ const FlightListSearchCard = () => {
 
 
   //   const onSearch = (value) => {
-  //   console.log("Search:", { from, to, value });
+  //   // console.log("Search:", { from, to, value });
   // };
 
   const handleSearch = () => {
-    console.log("Flight Search Params:", {
-      from,
-      fromAirport,
-      to,
-      returnTrip,
-      departure,
-      returnDate,
-      travellers,
-      travelClass,
-    });
+    // // console.log("Flight Search Params:", {
+    //   from,
+    //   fromAirport,
+    //   to,
+    //   returnTrip,
+    //   departure,
+    //   returnDate,
+    //   travellers,
+    //   travelClass,
+    // });
     if (from === to) {
       setErrorRoute(true);
       setOpenTo(true);
@@ -602,7 +604,7 @@ const FlightListSearchCard = () => {
       // }
       navigate("/flightListPage");
     }
-    // console.log(travelClassValue)
+    // // console.log(travelClassValue)
     handleReturnTripUI();
     handleinput();
     handleAirportInput();
@@ -641,7 +643,7 @@ const FlightListSearchCard = () => {
     dispatch(setTravelClass(travelClassValue))
     dispatch(setTravellerValue(travellersValue))
   }
-console.log("nansd",travelClass);
+// console.log("nansd",travelClass);
 
 const [disabled,setdisabled] = useState(true)
 useEffect(() => {

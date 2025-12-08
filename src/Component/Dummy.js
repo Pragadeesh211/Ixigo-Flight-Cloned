@@ -1141,3 +1141,94 @@ export default FlightSearchDropdown;
                        ))
                         }
           </div>
+
+
+// Dropdown Add
+
+
+{adults.map((person, index) => {
+  const isSelected = selectedAdults.some(a => a.key === person.key);
+  const disableExtra = selectedAdults.length >= travellers.Adults;
+
+  const handleCheckboxChange = () => {
+    if (isSelected) {
+      setSelectedAdults(prev => prev.filter(a => a.key !== person.key));
+    } else if (!disableExtra) {
+      setSelectedAdults(prev => [...prev, person]);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedAdults(prev =>
+      prev.map(a =>
+        a.key === person.key ? { ...a, [name]: value } : a
+      )
+    );
+  };
+
+  return (
+    <div
+      key={person.key}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        marginBottom: 20,
+        border: "1px solid #ccc",
+        padding: 10,
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={handleCheckboxChange}
+          disabled={disableExtra && !isSelected}
+          style={{ height: 20, width: 20 }}
+        />
+        <span style={{ fontSize: 16 }}>
+          {person.firstName} {person.lastName} 
+        </span>
+      </div>
+
+      {isSelected && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <input
+            type="text"
+            name="firstName"
+            value={person.firstName}
+            onChange={handleInputChange}
+            placeholder="First Name"
+          />
+          <input
+            type="text"
+            name="lastName"
+            value={person.lastName}
+            onChange={handleInputChange}
+            placeholder="Last Name"
+          />
+          <select
+            name="genderValue"
+            value={person.genderValue}
+            onChange={handleInputChange}
+          >
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+      )}
+    </div>
+  );
+})}
+
+<button onClick={() => {
+  const newKey = Date.now();
+  const newTraveller = {
+    key: newKey,
+    firstName: '',
+    lastName: '',
+    genderValue: 'Male',
+  };
+  setAdults(prev => [...prev, newTraveller]);
+}}>Add New Traveller</button>

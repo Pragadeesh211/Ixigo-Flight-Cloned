@@ -33,15 +33,18 @@ const EditTraveller = () =>{
      const [noLastError,setNoLastError] = useState(false);
      const [noDOBError,setNoDOBError] = useState(false);
      const [records, setRecords] = useState([]);
+     const [openDelete,setOpenDelete] = useState(false);
 
      const gender = ["Male","Female"]
 
      const handleSave = () => {
-  if (firstName === "" || firstName.length > 27) {
+   const NAME_REGEX = /^[A-Za-z\s'-]+$/;
+  if (firstName === "" || firstName.length > 27 || !NAME_REGEX.test(firstName) ){
     setNoFirstError(true);
   }
-  else if (lastName === "" || lastName.length === 1 || lastName.length > 27) {
+  else if (lastName === "" || lastName.length === 1 || lastName.length > 27 || !NAME_REGEX.test(lastName)) {
     setNoLastError(true);
+    setNoFirstError(false);
     
   }
   else if (DOBValue === "") {
@@ -98,8 +101,7 @@ const EditTraveller = () =>{
                         <DeleteFilled style={{
                             color:"white",cursor:"pointer"
                         }} onClick={()=>{
-                            dispatch(deleteTraveller(index))
-                            navigate("/myTravellers");
+                            setOpenDelete(true)
                                     
                                     
                         }}/>
@@ -387,6 +389,56 @@ const EditTraveller = () =>{
                                     </div>
                                     </div>
                 </div>
+                <Modal footer={null}
+                                        open={openDelete}
+                                        closable
+                                        width={"20%"}
+                                        onCancel={() => setOpenDelete(false)}
+                                        style={{
+                                            marginTop:150
+                                        }}>
+                  <div style={{
+                    dispatch:"flex",textAlign:"center",width:"80%",justifyContent:"center",marginTop:20,marginLeft:25
+                  }}>
+                    <Text type="secondary" style={{
+                      fontSize:16,color:"#7b7171ff",
+                    }}>Are you sure you want to delete this traveller?</Text>
+                    <div style={{
+                      display:"flex",flexDirection:"row",gap:25,marginLeft:10,marginTop:10
+                    }}>
+                      <button style={{
+                        display:"flex",
+                        border:"none",
+                        textAlign:"center",
+                        height:40,
+                        alignItems:"center",background:"transparent",
+                        cursor:"pointer",color:"#ec5b24",fontSize:16,textTransform:"uppercase",
+                        width:80
+                      }}
+                      onClick={() => setOpenDelete(false)}>
+                        Cancel
+                      </button>
+                       <button style={{
+                        display:"flex",
+                        border:"none",
+                        textAlign:"center",
+                        height:40,
+                        alignItems:"center",background:"#ec5b24",
+                        cursor:"pointer",color:"white",fontSize:16,textTransform:"uppercase",
+                        borderRadius:5
+                      }}
+                      onClick={()=>{
+                        dispatch(deleteTraveller(index))
+                            navigate("/myTravellers");
+                      }
+
+                      }>
+                        Delete
+                      </button>
+                    </div>
+                        
+                  </div>
+                </Modal>
             </div>
         </>
     )

@@ -26,7 +26,9 @@ const initialState = {
   onewaySelectedFlight:[],
   returnSelectedFlight:[],
   totalAmount:0,
-  
+  refundValue:{
+    planType: null,
+    price: 0}
 };
 
 const flightSearchSlice = createSlice({
@@ -57,10 +59,15 @@ const flightSearchSlice = createSlice({
         setRescheduleFeeAdd: (state, action) => { state.rescheduleFeeAdd = action.payload; },
         setRefundFeeAdd: (state, action) => { state.refundFeeAdd = action.payload; },
         setDrawerOpen: (state, action) => { state.drawerOpen = action.payload; },
+        
         setPromoRadioValue: (state, action) => { state.promoRadioValue = action.payload; },
         setOnewaySelectedFlight: (state, action) => { state.onewaySelectedFlight = action.payload; },
         setReturnSelectedFlight: (state, action) => { state.returnSelectedFlight = action.payload; },
         setTotalAmount: (state, action) => { state.totalAmount = action.payload; },
+        setRefundPlan: (state, action) => {
+          state.refundValue.planType = action.payload.planType;
+          state.refundValue.price = action.payload.price;
+        },
         resetSearch: () => initialState,
     }
 })
@@ -91,6 +98,7 @@ export const {
   setReturnSelectedFlight,
   setDrawerOpen,
   setTotalAmount,
+  setRefundPlan,
 } = flightSearchSlice.actions;
 
 export default flightSearchSlice.reducer;

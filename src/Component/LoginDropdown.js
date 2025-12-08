@@ -109,20 +109,10 @@ const LoginDropdown = () =>{
                   >
                     <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
                       <div
-                        style={{
-                          background: "#d9ebff",
-                          height: "40px",
-                          width: "40px",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          borderRadius: 50,
-                        }}
                       >
                         <img
-                          style={{ height: "24px", width: "24px" }}
-                          src="https://images.ixigo.com/image/upload/Header/9fcafc6b32ac191685d067086c6072e3-cyrbh.webp"
-                        />
+                          style={{ height: "40px", width: "40px",borderRadius:50 }}
+                          src="https://edge.ixigo.com/img/zeus/ixigoer.png?v=1.0" />
                       </div>
 
                       <Text style={{ marginLeft: 8, fontSize: "16px",

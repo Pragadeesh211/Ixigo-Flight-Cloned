@@ -1,8 +1,8 @@
-import React,{useState} from "react";
+import React,{useState,useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import { Typography,Input,Modal,Radio, Space,ConfigProvider,DatePicker } from "antd";
 import {  CloseOutlined } from "@ant-design/icons";
-import {addTraveller,setadded} from "../Redux/Slices/TravellerSlice";
+import {addTraveller,setadded,setDobCheckValue} from "../Redux/Slices/TravellerSlice";
 import { useDispatch, useSelector } from "react-redux";
 import "./AddTraveller.css";
 import dayjs from 'dayjs';
@@ -13,7 +13,7 @@ const {Text} =Typography;
 
 const AddTraveller = () =>{
      const navigate = useNavigate();
-     const {add,added} = useSelector((state) => state.traveller);
+     const {add,added,dobCheckValue} = useSelector((state) => state.traveller);
      const dispatch = useDispatch();
      const [openSample,setOpenSample] = useState(false);
      const [firstName,setFirstName] = useState("");
@@ -30,10 +30,11 @@ const AddTraveller = () =>{
      const gender = ["Male","Female"]
 
      const handleSave = () => {
-  if (firstName === "" || firstName.length > 27) {
+      const NAME_REGEX = /^[A-Za-z\s'-]+$/;
+  if (firstName === "" || firstName.length > 27 || !NAME_REGEX.test(firstName) ) {
     setNoFirstError(true);
   }
-  else if (lastName === "" || lastName.length === 1 || lastName.length > 27) {
+  else if (lastName === "" || lastName.length === 1 || lastName.length > 27 || !NAME_REGEX.test(lastName)) {
     setNoLastError(true);
     
   }
@@ -56,6 +57,8 @@ const AddTraveller = () =>{
   }
   
 };
+
+
 
 
     return(

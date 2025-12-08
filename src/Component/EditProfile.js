@@ -28,9 +28,12 @@ const EditProfile = () =>{
    const [tempEmail, setTempEmail] = useState(email);
    const [tempPhone, setTempPhone] = useState(phoneNo);
    const [noNameError,setNoNameError] = useState(false);
+   const [noPhoneError,setNoPhoneError] = useState(false);
+   const [noEmailError,setNoEmailError] = useState(false);
 
    const handleSave = () =>{
-    if(tempName ==="" || tempName.length > 27){
+    const NAME_REGEX = /^[A-Za-z\s'-]+$/;
+    if(tempName ==="" || tempName.length > 27 || !NAME_REGEX.test(tempName)){
       setNoNameError(true)
     }
     else{
@@ -185,7 +188,7 @@ const EditProfile = () =>{
                 <div
               style={{
                 height: "35px",
-                borderBottom: "1px solid #bbafaf8a",
+                borderBottom: noEmailError?"1px solid red":"1px solid #bbafaf8a",
                 display: "flex",
                 alignItems: "center",
                 flexDirection: "row",
@@ -203,12 +206,19 @@ const EditProfile = () =>{
                 }}
                 
                 defaultValue={tempEmail}
-                onChange={(e) =>
+                onChange={(e) =>{
                     setTempEmail(e.target.value)
+                    setNoEmailError(false)
+                }
                 }
               />
 
               </div>
+              {!noEmailError?null:(
+              <Text style={{
+                position:"relative",fontSize:12,color:"red"
+              }}>Please enter a valid Email</Text>
+            )}
                <div
             style={{
               marginTop: 30,
@@ -221,11 +231,17 @@ const EditProfile = () =>{
               fontSize:15
             }}
             onClick={()=>{
+              const isValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+              if(isValid.test(tempEmail)){
                 dispatch(setEmail(tempEmail))
                 setEmailModalOpen(false)
+              }
+              else{
+                setNoEmailError(true)
+              }
             }}
           >
-            VERIFY
+            UPDATE
           </div>
           <Text type="secondary" style={{
             fontSize:13,
@@ -302,6 +318,7 @@ const EditProfile = () =>{
                         Please enter your new mobile number
                     </Text>
                     </div>
+
                 </div>
                 <div style={{
                 padding:15,
@@ -312,7 +329,7 @@ const EditProfile = () =>{
                 <div
               style={{
                 height: "35px",
-                borderBottom: "1px solid #bbafaf8a",
+                borderBottom: noPhoneError?"1px solid red":"1px solid #bbafaf8a",
                 display: "flex",
                 alignItems: "center",
                 flexDirection: "row",
@@ -336,11 +353,18 @@ const EditProfile = () =>{
                   right:15
                 }}
                 defaultValue={tempPhone}
-                onChange={(e) =>
+                onChange={(e) =>{
                     setTempPhone(e.target.value)
+                    setNoPhoneError(false)
+                }
                 }
               />
               </div>
+              {!noPhoneError?null:(
+              <Text style={{
+                position:"relative",fontSize:12,color:"red"
+              }}>Please enter a valid phone number</Text>
+            )}
                <div
             style={{
               marginTop: 30,
@@ -353,8 +377,14 @@ const EditProfile = () =>{
               fontSize:15
             }}
             onClick={()=>{
+              const isValidStart = /^[6-9]/.test(tempPhone);
+              if(tempPhone.length === 10 && isValidStart){
                 dispatch(setPhoneNo(tempPhone))
                 setPhoneModalOpen(false)
+              }
+               else{
+                setNoPhoneError(true)
+               } 
             }}
           >
             UPDATE

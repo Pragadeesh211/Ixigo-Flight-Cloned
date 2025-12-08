@@ -1,14 +1,25 @@
-import React from "react";
+import React,{useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import { LeftOutlined,DownOutlined, PlusCircleFilled, EditFilled } from "@ant-design/icons";
 import { Typography } from "antd";
 import { useDispatch, useSelector } from "react-redux";
+import dayjs from 'dayjs';
+import duration from "dayjs/plugin/duration";
+import { setDobCheckValue } from "../Redux/Slices/TravellerSlice";
+dayjs.extend(duration);
 
 const {Text} = Typography;
 
 const MyTravellers = () =>{
     const navigate = useNavigate();
-    const {add,added} = useSelector((state) => state.traveller);
+    const {add,added,dobCheckValue} = useSelector((state) => state.traveller);
+    const dispatch = useDispatch();
+
+
+    
+  console.log("todayyyyyy",dobCheckValue)
+
+
     return(
         <>
         <div style={{

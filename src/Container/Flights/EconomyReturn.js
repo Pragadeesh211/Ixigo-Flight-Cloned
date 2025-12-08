@@ -25,6 +25,8 @@ import {
   setReturnSelectedFlight,
   setTotalAmount,
   setRefundFeeAdd,
+  setRefundPlan,
+  setCancelValue,
  } from "../../Redux/Slices/FlightSearchSlice";
  import {Swiper,SwiperSlide} from "swiper/react";
  import 'swiper/css';
@@ -94,8 +96,11 @@ const EconomyReturn = () =>{
 
       const depart = dayjs(departure).format("YYYY-MM-DD");
       const returnpart = dayjs(returnDate).add(1,"day").format("YYYY-MM-DD");
+
         const [selectedDate, setSelectedDate] = useState(depart);
         const [selectedReturnDate, setSelectedReturnDate] = useState(returnpart)
+        const swiperRef = useRef(null);
+        const swiperRef1 = useRef(null);
 
         useEffect(() => {
                 const minReturnDate = dayjs(selectedDate).add(1, "day").format("YYYY-MM-DD");
@@ -110,49 +115,118 @@ const EconomyReturn = () =>{
               console.log()
 
       
-        console.log("ABCD",returnDate)
+        // console.log("ABCD",returnDate)
         // console.log(fromA)
         const [dateFareData, setDateFareData] = useState([]);
         const [dateFareData1, setDateFareData1] = useState([]);
+        const [i,seti] = useState()
+        const [j,setj] = useState()
       
       // Generate 18 days starting from TODAY
+
+      const formationDate = (isoString) => {
+  const date = new Date(isoString);
+  return date.toString();
+};
+
+      const departDate = formationDate(selectedDate);
+      const retDate = formationDate(selectedReturnDate)
+      console.log("selectiiiii",departDate)
+
+      
       useEffect(() => {
-        const today = new Date();
-        const daysArray = Array.from({ length: 18 }, (_, i) => {
-          const date = new Date(today);
-          date.setDate(today.getDate() + i);
+        if (!departDate) return;
+        const formatToLocalDateString = (isoString) => {
+        return new Date(isoString);
+      };
+      const convertedDate = formatToLocalDateString(departure);
+      
+        const startDate = convertedDate;   
+        // console.log("todaysss",startDate);
+        // console.log("selecttttt",selectedDate);
+        // console.log("convertdd",convertedDate);
+        const daysArray = (() => {
+        
+        const result = [];
+        const today = new Date(); 
+        const yesterday = new Date(today) 
+        yesterday.setDate(yesterday.getDate() -1)                 
+        const start = convertedDate;       
+        console.log("todaysss",today)
+      
+        for (let i = 10; i > 0; i--) {
+          const date = new Date(start);
+          date.setDate(start.getDate() - i);
+      
           
+          if (date < yesterday) continue;
+      
           const formattedDate = date.toLocaleDateString("en-GB", {
             weekday: "short",
             day: "2-digit",
             month: "short",
           });
       
-          const economyRandomPrice = Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500;
-          const premiumEconomyRandomPrice = Math.floor(Math.random() * (7500 - 5000 + 1)) + 5000;
-          const businessRandomPrice = Math.floor(Math.random() * (18000 - 12000 + 1)) + 12000;
-      
-          return {
+          result.push({
             date: date.toISOString(),
             label: formattedDate,
             price: {
-            Economy: { price: economyRandomPrice},
-            "Premium Economy": { price: premiumEconomyRandomPrice}, 
-            Business: { price: businessRandomPrice },
-        },
-          };
-        });
+              Economy: { price: Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500 },
+              "Premium Economy": { price: Math.floor(Math.random() * (7500 - 5000 + 1)) + 5000 },
+              Business: { price: Math.floor(Math.random() * (18000 - 12000 + 1)) + 12000 }
+            }
+          });
+        }
       
-        setDateFareData(daysArray);
+      
         
-      }, []);
+        for (let i = 0; i < 18; i++) {
+          const date = new Date(start);
+          date.setDate(start.getDate() + i);
+          seti(i)
+      
+          const formattedDate = date.toLocaleDateString("en-GB", {
+            weekday: "short",
+            day: "2-digit",
+            month: "short",
+          });
+      
+          result.push({
+            date: date.toISOString(),
+            label: formattedDate,
+            price: {
+              Economy: { price: Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500 },
+              "Premium Economy": { price: Math.floor(Math.random() * (7500 - 5000 + 1)) + 5000 },
+              Business: { price: Math.floor(Math.random() * (18000 - 12000 + 1)) + 12000 }
+            }
+          });
+        }
+      
+        return result;
+      
+      })();
+      
+      setDateFareData(daysArray);
+      
+      }, [departure]);
+
+      const today = departDate;
+
+      // const date = new Date(today);
+          console.log("datesss",today) 
+    
       
       
       // console.log("Ran price",dateFareData.price);
       
       // Set selected date based on departure (default: today)
 
-      const [startPrice,setStartPrice] = useState(dateFareData[0]?.price)
+      const [startPrice,setStartPrice] = useState(0) 
+      useEffect(() => {
+  if (dateFareData.length > 0) {
+    setStartPrice(dateFareData[i]?.price?.[travelClass]?.price || 0);
+  }
+}, [dateFareData, travelClass,i]);
       const [endPrice,setEndPrice] = useState(51273)
       useEffect(() => {
   if (dateFareData.length > 0 && departure) {
@@ -171,13 +245,15 @@ const EconomyReturn = () =>{
 
     
     setSelectedDate(todayMatch ? todayMatch.date : dateFareData[0].date);
-    const finalPrice = todayMatch ? todayMatch.price : dateFareData[0].price;
+    const finalPrice = todayMatch ? todayMatch.price?.[travelClass]?.price : dateFareData[i]?.price?.[travelClass]?.price;
     setStartPrice(finalPrice);
 
    
     
   }
 }, [dateFareData, departure]);
+
+console.log("formattttt",selectedDate)
 
 
 //Return Date start
@@ -198,6 +274,7 @@ useEffect(() => {
   const daysArray = Array.from({ length: 18 }, (_, i) => {
     const date = new Date(base);
     date.setDate(base.getDate() + i);
+    setj(i)
 
     const economyRandomPrice = Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500;
           const premiumEconomyRandomPrice = Math.floor(Math.random() * (7500 - 5000 + 1)) + 5000;
@@ -241,9 +318,16 @@ useEffect(() => {
 //           }); 
 //       console.log("helooooo",selectedReturnDate) 
 
-console.log("collapse",dateFareData[0]?.date)
+console.log("collapse",dateFareData[i]?.price?.["Business"]?.price)
+console.log("collapse",startPrice) 
 
-const [startReturnPrice,setStartReturnPrice] = useState(dateFareData1[0]?.price)
+const [startReturnPrice,setStartReturnPrice] = useState(0)
+
+useEffect(() => {
+  if (dateFareData1.length > 0) {
+    setStartReturnPrice(dateFareData1[0]?.price?.[travelClass]?.price || 0);
+  }
+}, [dateFareData, travelClass]);
 const [endReturnPrice,setEndReturnPrice] = useState(51275)
 
 useEffect(() => {
@@ -263,7 +347,7 @@ useEffect(() => {
 
     
     setSelectedReturnDate(tomorrowMatch ? tomorrowMatch.date : dateFareData1[0].date);
-    const finalPrice = tomorrowMatch ? tomorrowMatch.price : dateFareData1[0].price;
+    const finalPrice = tomorrowMatch ? tomorrowMatch.price?.[travelClass]?.price : dateFareData1[j]?.price?.[travelClass]?.price;
     setStartReturnPrice(finalPrice);
   }
 }, [dateFareData1,returnDate]);
@@ -1073,7 +1157,9 @@ useEffect(() => {
         CalculateFullDiscount();
       }, [selectedOnwards, selectedReturn]);
 
-
+      useEffect(()=>{
+        dispatch(setTotalAmount(0))
+      })
 
 
 
@@ -1118,6 +1204,11 @@ useEffect(() => {
         const [cancelFee,setCancelFee] = useState(259);
         
           const getCancelFee = (price) => {
+            if (price > 23000) return 2019;
+            if (price > 20000) return 1559;
+            if (price > 17000) return 1359;
+            if (price > 12500) return 1019;
+            if (price > 9000) return 959;
           if (price > 6000) return 719;
           if (price > 4500) return 519;
           if (price > 3500) return 359;
@@ -1127,11 +1218,23 @@ useEffect(() => {
         
         
           const getRescheduleFee = (price) => {
-          if (price > 6000) return 1019;
-          if (price > 4500) return 819;
-          if (price > 3500) return 659;
+            if (price > 23000) return 2519;
+            if (price > 20000) return 2319;
+            if (price > 17000) return 1559;
+            if (price > 12500) return 1419;
+            if (price > 9000) return 1259;
+            if (price > 6000) return 1019;
+            if (price > 4500) return 819;
+            if (price > 3500) return 659;
           return 459;
         };
+
+        useEffect(()=>{
+          dispatch(setRefundPlan({
+                planType : null,
+                price: 0,
+              }));
+        },[])
 
 
         const getTotalTraveller = () =>{
@@ -1157,6 +1260,7 @@ useEffect(() => {
         
 
         const get8HrsCancelTime = (departureTime) =>{
+          if (!departureTime) return { finalTime: "00:00", days: 0 };
             const [h1, m1] = departureTime.split(":").map(Number);
             const t2= "08:00";
             const [h2, m2] = t2.split(":").map(Number);
@@ -1196,6 +1300,7 @@ useEffect(() => {
           const [lessReturnday,setLessReturnDay] = useState()
 
           const get8HrsCancelReturnTime = (departureTime) =>{
+            if (!departureTime) return { finalTime: "00:00", days: 0 };
             const [h1, m1] = departureTime.split(":").map(Number);
             const t2= "08:00";
             const [h2, m2] = t2.split(":").map(Number);
@@ -1273,6 +1378,10 @@ useEffect(() => {
         
         setRemoveFeeAdd(true)
         dispatch(setRefundFeeAdd(true))
+         dispatch(setRefundPlan({
+                planType : "Free Cancellation",
+                price: calculateCancel*travellerValue,
+              }));
         if(removeRescheduleAdd){
           setRemoveRescheduleAdd(false)
         }
@@ -1289,6 +1398,10 @@ useEffect(() => {
         
         setRemoveRescheduleAdd(true)
         dispatch(setRefundFeeAdd(true))
+        dispatch(setRefundPlan({
+              planType: "Rescheduling",
+              price: calculateReschedule*travellerValue, 
+            }))
         
         if(removeFeeAdd){
           setRemoveFeeAdd(false)
@@ -2147,7 +2260,13 @@ useEffect(() => {
                     position:"relative",
                     top:20,
                     cursor:"pointer",
-                  }} onClick={()=>setRemoveFeeAdd(false)}>
+                  }} onClick={()=>{setRemoveFeeAdd(false)
+                    dispatch(setRefundFeeAdd(false))
+                                dispatch(setRefundPlan({
+                                                planType : null,
+                                                price: 0,
+                                              }));
+                  }}>
                     <Text style={{
                       color:"#fc790d",
                       fontWeight:500,
@@ -3075,7 +3194,14 @@ useEffect(() => {
                     position:"relative",
                     top:20,
                     cursor:"pointer",
-                  }} onClick={()=>setRemoveRescheduleAdd(false)}>
+                  }} onClick={()=>{
+                    setRemoveRescheduleAdd(false)
+                    dispatch(setRefundFeeAdd(false))
+                                dispatch(setRefundPlan({
+                                                planType : null,
+                                                price: 0,
+                                              }));
+                    }}>
                     <Text style={{
                       color:"#fc790d",
                       fontWeight:500,
@@ -3667,7 +3793,7 @@ useEffect(() => {
                                     }}
                                   >
                                     <Slider
-                                      min={dateFareData[0]?.price || 0}
+                                      min={dateFareData[0]?.price?.[travelClass]?.price || 0}
                                       max={51273}
                                       value={endPrice}
                                       onChange={(value) => setEndPrice(value)}
@@ -3722,7 +3848,7 @@ useEffect(() => {
                                     }}
                                   >
                                     <Slider
-                                      min={dateFareData1[0]?.price || 0}
+                                      min={dateFareData1[0]?.price?.[travelClass]?.price || 0}
                                       max={51275}
                                       value={endReturnPrice}
                                       onChange={(value) => setEndReturnPrice(value)}
@@ -3790,9 +3916,10 @@ useEffect(() => {
                     >
                       <Swiper
                         slidesPerView={3}
-                        spaceBetween={10}
+                        // spaceBetween={0}
                         navigation={true}
                         modules={[Navigation]}
+                        onSwiper={(swiper) => (swiperRef.current = swiper)}
                         className="dateswiper"
                       >
                         {dateFareData.map((item, index) => (
@@ -3808,6 +3935,10 @@ useEffect(() => {
                             ).padStart(2, "0")}`;
                             setSelectedDate(formattedDate)
                             dispatch(setDeparture(formattedDate));
+
+                            if (swiperRef.current) {
+                            swiperRef.current.slideTo(i, 400); 
+                          }
                   
                               }
                               }
@@ -4101,9 +4232,10 @@ useEffect(() => {
                     >
                       <Swiper
                         slidesPerView={3}
-                        spaceBetween={10}
+                        // spaceBetween={10}
                         navigation={true}
                         modules={[Navigation]}
+                        onSwiper={(swiper) => (swiperRef1.current = swiper)}
                         className="dateswiper"
                       >
                         {dateFareData1.map((item, index) => (
@@ -4120,7 +4252,10 @@ useEffect(() => {
 
                                       
                                       dispatch(setReturnDate(formattedDate));
-                                    }}
+                                      if (swiperRef1.current) {
+                                    swiperRef1.current.slideTo(index, 400); 
+                                  }
+                                            }}
 
                               
                               style={{

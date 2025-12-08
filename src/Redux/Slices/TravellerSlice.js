@@ -1,8 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  add: [],     
-  added: false 
+  add: [{
+    key:0,
+    firstName:"Pragadeesh",
+    lastName:"Go",
+    genderValue:"Male",
+      DOBValue:"21/11/2000",
+
+  }],     
+  added: false,
+  dobCheckValue:[]
 };
 
 const travellerSlice = createSlice({
@@ -27,6 +35,10 @@ const travellerSlice = createSlice({
        state.add.splice(action.payload, 1);
       
     },
+    setDobCheckValue:(state, action) => {
+      state.add.push(action.payload);  
+                    
+    },
 
     resetTravellers: (state) => {
       state.add = [];
@@ -40,6 +52,7 @@ export const {
   setadded,
   editTraveller,
   deleteTraveller,
+  setDobCheckValue,
   resetTravellers
 } = travellerSlice.actions;
 

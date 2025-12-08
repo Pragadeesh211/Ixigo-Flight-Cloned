@@ -417,7 +417,7 @@ const navigate = useNavigate();
     )
   }
   const depToday= dayjs
-  console.log("tempTravellers",travellers)
+  // console.log("tempTravellers",travellers)
 
   const [depTemp,setDepTemp ] = useState(dayjs().format("YYYY-MM-DD"));
   const [retTemp,setRetTemp ] = useState(dayjs().add(1, "day").format("YYYY-MM-DD"));
@@ -430,8 +430,8 @@ const navigate = useNavigate();
       };
 
 
-      console.log("depTemp",depTemp)
-      console.log("retTemp",retTemp)
+      // console.log("depTemp",depTemp)
+      // console.log("retTemp",retTemp)
       
 
   const disabledDate = (date) => {
@@ -468,19 +468,19 @@ useEffect(() => {
 
 
   //   const onSearch = (value) => {
-  //   console.log("Search:", { from, to, value });
+  //   // console.log("Search:", { from, to, value });
   // };
   
   const handleSearch = () => {
-    console.log("Flight Search Params:", {
-      from,
-      to,
-      returnTrip,
-      departure,
-      returnDate,
-      travellers,
-      travelClass,
-    });
+    // // console.log("Flight Search Params:", {
+    //   from,
+    //   to,
+    //   returnTrip,
+    //   departure,
+    //   returnDate,
+    //   travellers,
+    //   travelClass,
+    // });
      if (from === to) {
         setErrorRoute(true);
         setOpenTo(true);
@@ -494,7 +494,7 @@ useEffect(() => {
         // }
         navigate("/flightListPage");
       }
-      // console.log(travelClassValue)
+      // // console.log(travelClassValue)
   handleReturnTripUI();
  handleinput();
 handleTravellersClass();

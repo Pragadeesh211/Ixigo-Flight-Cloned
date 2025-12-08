@@ -26,6 +26,7 @@ import {
   setDrawerOpen,
   setTotalAmount,
   setRefundFeeAdd,
+  setRefundPlan,
  } from "../../Redux/Slices/FlightSearchSlice";
  import {Swiper,SwiperSlide} from "swiper/react";
  import 'swiper/css';
@@ -80,27 +81,73 @@ const Economy = () =>{
   travelClass,
   cancelFeeAdd,
   rescheduleFeeAdd,
-  
+  refundValue
   } = useSelector((state) => state.flightSearch);
   
   const navigate = useNavigate();
+
+  const formationDate = (isoString) => {
+  const date = new Date(isoString);
+  return date.toString();
+};
+
+      
   
 
 
 const depart = dayjs(departure).format("YYYY-MM-DD");
+const departDate = formationDate(depart);
 
   const [selectedDate, setSelectedDate] = useState(depart);
+  const swiperRef = useRef(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  
+
 
   // console.log(departure.length)
   // console.log(fromA)
   const [dateFareData, setDateFareData] = useState([]);
+  const [i,seti] = useState()
+  // console.log("dateee",departure)
+
+useEffect(() => {
+  if (swiperRef.current) {
+    swiperRef.current.slideTo(0, 400);
+  }
+}, [departure,dateFareData]);
+
+
+
+  
 
 // Generate 18 days starting from TODAY
 useEffect(() => {
-  const today = new Date();
-  const daysArray = Array.from({ length: 18 }, (_, i) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
+  if (!departDate) return;
+  const formatToLocalDateString = (isoString) => {
+  return new Date(isoString);
+};
+const convertedDate = formatToLocalDateString(departure);
+
+  const startDate = convertedDate;   
+  // console.log("todaysss",startDate);
+  // console.log("selecttttt",selectedDate);
+  // console.log("convertdd",convertedDate);
+  const daysArray = (() => {
+  
+  const result = [];
+  const today = new Date(); 
+  const yesterday = new Date(today) 
+  yesterday.setDate(yesterday.getDate() -1)                 
+  const start = convertedDate;       
+  console.log("todaysss",today)
+
+  for (let i = 10; i > 0; i--) {
+    const date = new Date(start);
+    date.setDate(start.getDate() - i);
+
+    
+    if (date < yesterday) continue;
 
     const formattedDate = date.toLocaleDateString("en-GB", {
       weekday: "short",
@@ -108,53 +155,90 @@ useEffect(() => {
       month: "short",
     });
 
-    const economyRandomPrice = Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500;
-          const premiumEconomyRandomPrice = Math.floor(Math.random() * (7500 - 5000 + 1)) + 5000;
-          const businessRandomPrice = Math.floor(Math.random() * (18000 - 12000 + 1)) + 12000;
-    
-
-    return {
+    result.push({
       date: date.toISOString(),
       label: formattedDate,
       price: {
-            Economy: { price: economyRandomPrice},
-            "Premium Economy": { price: premiumEconomyRandomPrice}, 
-            Business: { price: businessRandomPrice },
-        },
-    };
-  });
+        Economy: { price: Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500 },
+        "Premium Economy": { price: Math.floor(Math.random() * (7500 - 5000 + 1)) + 5000 },
+        Business: { price: Math.floor(Math.random() * (18000 - 12000 + 1)) + 12000 }
+      }
+    });
+  }
 
-  setDateFareData(daysArray);
+
   
-}, []);
+  for (let i = 0; i < 18; i++) {
+    const date = new Date(start);
+    date.setDate(start.getDate() + i);
+    seti(i)
+
+    const formattedDate = date.toLocaleDateString("en-GB", {
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+    });
+
+    result.push({
+      date: date.toISOString(),
+      label: formattedDate,
+      price: {
+        Economy: { price: Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500 },
+        "Premium Economy": { price: Math.floor(Math.random() * (7500 - 5000 + 1)) + 5000 },
+        Business: { price: Math.floor(Math.random() * (18000 - 12000 + 1)) + 12000 }
+      }
+    });
+  }
+
+  return result;
+
+})();
+
+setDateFareData(daysArray);
+
+}, [departure]);
+// console.log("selectii",departDate)
+
+console.log("daysarray",dateFareData) 
+
+
+
 
 // console.log("Ran price",dateFareData.price);
 
 // Set selected date based on departure (default: today)
 
-const [startPrice,setStartPrice] = useState(dateFareData[0]?.price)
+const [startPrice,setStartPrice] = useState(0)
+useEffect(() => {
+  if (dateFareData.length > 0) {
+    setStartPrice(dateFareData[0]?.price?.[travelClass]?.price || 0);
+  }
+}, [dateFareData, travelClass]);
 const [endPrice,setEndPrice] = useState(51273)
+
+
 useEffect(() => {
   if (dateFareData.length > 0 && departure) {
     const depDate = new Date(departure);
 
     const match = dateFareData.find((d) => {
       const parsedDate = new Date(d.date);
+      // return parsedDate;
       return (
         parsedDate.getDate() === depDate.getDate() &&
         parsedDate.getMonth() === depDate.getMonth() &&
         parsedDate.getFullYear() === depDate.getFullYear()
       );
-    });
+   });
 
-    setSelectedDate(match ? match.label : dateFareData[0].label);
-    const finalPrice = match ? match.price : dateFareData[0].price;
+    setSelectedDate(match ? match.date : dateFareData[0].date);
+    const finalPrice = match ? match.price?.[travelClass]?.price : dateFareData[0]?.price?.[travelClass]?.price;
     setStartPrice(finalPrice);
     
   }
 }, [dateFareData, departure]);
 
-// console.log(selectedDate)
+// console.log("selectiii",selectedDate)
  const endingprice = 57432;
 
   const [checkedList, setCheckedList] = useState([]);
@@ -200,7 +284,9 @@ const time = now.toLocaleTimeString("en-GB", {
   hour12: false,
 });
 
-
+useEffect(()=>{
+        dispatch(setTotalAmount(0))
+      })
 const formatDate = (date) => {
   if (!date) return { day: "", month: "", weekday: "" };
   const d = dayjs(date);
@@ -481,8 +567,8 @@ const FilterDetailShow = [
   
   // const minReturnDate = dayjs(selectedDate).format("YYYY-MM-DD");
   // const a = dayjs(selectedDate).isAfter(today)
-  console.log("ddddddddddddddddddd",today)
-   console.log("ffffffffffff",depart)
+  // console.log("ddddddddddddddddddd",today)
+  //  console.log("ffffffffffff",depart)
 
   if(today !== depart) return finaldep;
   
@@ -565,7 +651,7 @@ const filteredFlights = useMemo(() => {
       return false;
     }
     
-    console.log("checklist", flight.departureTime)
+    // console.log("checklist", flight.departureTime)
     return true; 
   });
 }, [flights, checkedList, airlineCheckList, startPrice, endPrice,fromCode,toCode]);
@@ -574,11 +660,11 @@ const filteredFlights = useMemo(() => {
 
 
 
-console.log("checklist", airlineCheckList)
+// console.log("checklist", airlineCheckList)
 
 
 
-                          console.log("FilterdetailShow", FilterDetailShow)
+                          // console.log("FilterdetailShow", FilterDetailShow)
 
   const [openDrawer, setOpenDrawer] = useState(false);
   const [loadingDrawer, setLoadingDrawer] = useState(true);
@@ -593,7 +679,7 @@ console.log("checklist", airlineCheckList)
   };
 // let depart = departure.format("YYYY-MM-DD")
 // console.log("dsdsdds",depart)
-console.log("dssdsfc x", flights.departureTime)
+// console.log("dssdsfc x", flights.departureTime)
 
 // console.log("filterssdfdfd",selectedFlights.flightCodes[0].departureTime1)
 const calculateNextDayArrival = (departureTime, arrivalTime,durations) => {
@@ -601,7 +687,7 @@ const calculateNextDayArrival = (departureTime, arrivalTime,durations) => {
   const [depHour, depMin] = departureTime.split(":").map(Number);
   const [durHour, durMin] = durations.split(":").map(Number);
   
-  console.log(depMin)
+  // console.log(depMin)
 
   const depTotal = depHour + depMin/60;
   const durTotal = durHour + durMin/60;
@@ -609,7 +695,7 @@ const calculateNextDayArrival = (departureTime, arrivalTime,durations) => {
   let nextDayArrival;
   
 
-  console.log("saasax",depTotal)
+  // console.log("saasax",depTotal)
 
   // If arrival time is less than departure time → next day
   // const isNextDay = arrTotal < depTotal;
@@ -652,7 +738,7 @@ const calculateNextDayArrival = (departureTime, arrivalTime,durations) => {
   }
 }, [openDrawer]);
 
-  console.log("selectefddd",selectedFlights)
+  // console.log("selectefddd",selectedFlights)
 
   const [open, setOpen] = useState(false);
    const [openReTerm, setOpenReTerm] = useState(false);
@@ -726,6 +812,13 @@ const calculateNextDayArrival = (departureTime, arrivalTime,durations) => {
   return 459;
 };
 
+useEffect(()=>{
+  dispatch(setRefundPlan({
+        planType : null,
+        price: 0,
+      }));
+},[])
+
 
 
   const getTotalTraveller = (price) =>{
@@ -775,7 +868,7 @@ useEffect(() => {
 
 const lessdep = formatDate(lessday);
 
-console.log("lessdaydsfdfdfdfgxkfhgyugfhdxgfd",lessday)
+// console.log("lessdaydsfdfdfdfgxkfhgyugfhdxgfd",lessday)
 
 const getIxigoCancelFee = ()=>{
   if(travellerValue>1) return 300 * travellerValue;
@@ -835,22 +928,25 @@ useEffect(()=>{
 
 
 
-const handleAddCancelFee = (price,calculateCancel) =>{
-const final = price + calculateCancel
-setFinalAmount(final)
-//  animateValue(finalAmount, final, 600, (val) => {
-//     setFinalAmount(val);
-//   });
+const handleAddCancelFee = (price, calculateCancel) => {
+  const final = price + calculateCancel;
+  setFinalAmount(final);
 
-setRemoveFeeAdd(true)
-dispatch(setRefundFeeAdd(true))
-if(removeRescheduleAdd){
-  setRemoveRescheduleAdd(false)
-}
+  setRemoveFeeAdd(true);
+  dispatch(setRefundFeeAdd(true));
 
+  dispatch(setRefundPlan({
+        planType : "Free Cancellation",
+        price: calculateCancel*travellerValue,
+      }));
+  
 
-}
+  if (removeRescheduleAdd) {
+    setRemoveRescheduleAdd(false);
+  }
+};
 
+console.log("type",  refundValue)
 const handleAddRescheduleFee = (price,calculateReschedule) =>{
 const final = price + calculateReschedule
 setFinalAmount(final)
@@ -860,7 +956,10 @@ setFinalAmount(final)
 
 setRemoveRescheduleAdd(true)
 dispatch(setRefundFeeAdd(true))
-
+dispatch(setRefundPlan({
+      planType: "Rescheduling",
+      price: calculateReschedule*travellerValue, 
+    }))
 if(removeFeeAdd){
   setRemoveFeeAdd(false)
 }
@@ -1344,7 +1443,15 @@ useEffect(()=>{
             position:"relative",
             top:20,
             cursor:"pointer",
-          }} onClick={()=>setRemoveFeeAdd(false)}>
+          }} onClick={()=>{
+            setRemoveFeeAdd(false)
+            dispatch(setRefundFeeAdd(false))
+            dispatch(setRefundPlan({
+                            planType : null,
+                            price: 0,
+                          }));
+          }
+          }>
             <Text style={{
               color:"#fc790d",
               fontWeight:500,
@@ -1913,7 +2020,13 @@ useEffect(()=>{
             position:"relative",
             top:20,
             cursor:"pointer",
-          }} onClick={()=>setRemoveRescheduleAdd(false)}>
+          }} onClick={()=>{setRemoveRescheduleAdd(false)
+            dispatch(setRefundFeeAdd(false))
+            dispatch(setRefundPlan({
+                            planType : null,
+                            price: 0,
+                          }));
+          }}>
             <Text style={{
               color:"#fc790d",
               fontWeight:500,
@@ -2353,7 +2466,7 @@ useEffect(() => {
     }}
   >
         <Slider
-          min={dateFareData[0]?.price || 0}
+          min={dateFareData[0]?.price?.[travelClass]?.price || 0}
           max={51273}
           value={endPrice}
         onChange={(value) => setEndPrice(value)} 
@@ -2574,40 +2687,47 @@ useEffect(() => {
     >
       <Swiper
         slidesPerView={5}
-        spaceBetween={10}
+        // spaceBetween={10}
         navigation={true}
         modules={[Navigation]}
         className="dateswiper"
+        scrollbar={true}
+        onSwiper={(swiper) => {
+          swiperRef.current = swiper; 
+        }}
+        // pagination={{ clickable: true }}
       >
         {dateFareData.map((item, index) => (
-          <SwiperSlide key={index}>
+          <SwiperSlide key={index} >
             <div
               onClick={() => {
-                setSelectedDate(item.label);
-                // console.log(item.date)
+                
+                        //  handleSelectDay(index)
+                        const d = new Date(item.date);
+                      const formattedDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+                        d.getDate()
+                      ).padStart(2, "0")}`;
+                      setSelectedDate(formattedDate);
 
-  const d = new Date(item.date);
-const formattedDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-  d.getDate()
-).padStart(2, "0")}`;
-
-
-  dispatch(setDeparture(formattedDate));
-  
+                        dispatch(setDeparture(formattedDate));
+                        
+                      if (swiperRef.current) {
+                                    swiperRef.current.slideTo(index, 400); 
+                                  }
               }
               }
               style={{
                 background: "#fff",
                 borderRadius: "6px",
                 border:
-                  selectedDate === item.label
+                  selectedDate === item.date
                     ? "1px solid #0066ff"
                     : "1px solid #e0e0e0",
-                color: selectedDate === item.label ? "#0066ff" : "#000",
+                color: selectedDate === item.date ? "#0066ff" : "#000",
                 textAlign: "center",
                 padding: "8px 0",
                 cursor: "pointer",
-                height: selectedDate === item.label? "35.8px":"35px",
+                height: selectedDate === item.date? "35.8px":"35px",
                 transition: "0.2s ease",
               }}
               

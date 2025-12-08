@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import PageSelectionTabs from "../../Component/PageSelectionTabs";
 import { Card, Typography, Input, Button, Radio, Space, ConfigProvider, Drawer, Tooltip, Col, Row, message, Divider, Dropdown, Segmented, Modal, Form, Alert, Select } from "antd";
-import { RightOutlined, CloseOutlined, CheckOutlined, EditOutlined, UpOutlined, DownOutlined, CheckCircleFilled, DeleteFilled, DeleteOutlined } from "@ant-design/icons";
+import { RightOutlined, CloseOutlined, CheckOutlined, EditOutlined, UpOutlined, DownOutlined, CheckCircleFilled } from "@ant-design/icons";
 import {
   setOpenDrawer,
   setPhoneNo
@@ -429,7 +429,6 @@ const ReviewTravellerDetails = () => {
   const [adultFirstName, setadultFirstName] = useState("")
   const [adultLastName, setadultLastName] = useState("")
   const [adultDOB, setadultDOB] = useState("")
-  const [adultGender, setadultGender] = useState("Male")
   const [openModal, setOpenModal] = useState(false)
 
   // const [disable,setdisable] = useState([false])
@@ -443,35 +442,46 @@ const ReviewTravellerDetails = () => {
   const [editGender, setEditGender] = useState("");
   const [editDOB, setEditDOB] = useState("");
 
-  const [existingModal,setExistingModal] = useState(false);
-  const [addNewModal,setAddNewModal] = useState(false);
-  const [editNewModal,seteditNewModal] = useState(false);
-  const [disabledAdults, setDisabledAdults] = useState([]); 
-  const [editingAdult, setEditingAdult] = useState(null);
+  const openEditModal = (person) => {
+    setEditingTraveller(person);
+    setEditFirstName(person.firstName);
+    setEditLastName(person.lastName);
+    setEditGender(person.genderValue || "Male");
+    setEditDOB(person.DOBValue);
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingTraveller && editingTraveller.originalIndex !== undefined) {
+      const updatedData = {
+        firstName: editFirstName,
+        lastName: editLastName,
+        genderValue: editGender,
+        DOBValue: editDOB,
+      };
+
+      dispatch(editTraveller({ index: editingTraveller.originalIndex, updatedData }));
+      setIsEditModalOpen(false);
+      setEditingTraveller(null);
+    }
+  };
 
 
-  
+  useEffect(() => {
+    if (selectedAdults.length > 0) {
+      const list = selectedAdults.map((a, idx) => {
+        return {
+          key: tempArray.length,
+          firstName: a?.firstName,
+          lastName: a?.lastName,
+          DOBValue: a?.DOBValue,
+          genderValue: a?.genderValue,
+        };
+      });
 
-  
-  useEffect(()=>{
-    settempArray([])
-  },[])
-
-
-//  useEffect(() => {
-//   if (selectedAdults.length > 0) {
-//     const list = selectedAdults.map((a, idx) => ({
-//       key: tempArray.length,  
-//       firstName: a?.firstName,
-//       lastName: a?.lastName,
-//       DOBValue: a?.DOBValue,
-//       genderValue: a?.genderValue,
-//     }));
-
-//     settempArray(prev => [...prev, ...list]);  
-//   }
-// }, [selectedAdults]);
-
+      settempArray(list);
+    }
+  }, [selectedAdults]);
 
 
 
@@ -485,47 +495,25 @@ const ReviewTravellerDetails = () => {
   const maxAllowedInfants = typeof travellerValue === "number"
     ? travellers?.Infants
     : null
-
-    const getselected = (person) =>{
-      selectedAdults.some(a => a.key === person.key) 
-    }
   const handleSelectAdult = (person) => {
-  const onlyOneAllowed = travellers?.Adults === 1; 
-  const isAlreadySelected = Array.isArray(selectedAdults) && selectedAdults.some(a => a.key === person.key);
 
- 
-  if (isAlreadySelected) {
-    setSelectedAdults(prev => prev.filter(a => a.key !== person.key));
-    settempArray(prev => prev.filter(a => a.key !== person.key));
-    return;
-  }
 
-  
-  if (onlyOneAllowed && tempArray.length >= 1) {
-    messageApi.open({
-      type: "warning",
-      content: `Only ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} allowed. Remove existing adult to select a new one.`,
-      duration: 3,
-    });
-    return;
-  }
+    if (selectedAdults.some(a => a.key === person.key)) {
+      setSelectedAdults(prev => prev.filter(a => a.key !== person.key));
+      return;
+    }
 
-  
-  if (selectedAdults.length >= maxAllowed || tempArray.length >= maxAllowed) {
-    messageApi.open({
-      type: "warning",
-      content: `Only ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} allowed. Remove existing adult to select a new one.`,
-      duration: 3,
-    });
-    return;
-  }
+    if (selectedAdults.length >= maxAllowed) {
+      messageApi.open({
+        content: `You cannot select more than ${travellers?.Adults}  ${travellers?.Adults == 1 ? `Adult` : `Adults`}`,
+        duration: 3,
+      });
+      return;
+    }
 
-  
-  setSelectedAdults(prev => [...prev, person]);
-  
-};
+    setSelectedAdults(prev => [...prev, person]);
+  };
 
-console.log("seeeee",selectedAdults)
   const handleSelectChildren = (person) => {
 
 
@@ -611,7 +599,28 @@ console.log("seeeee",selectedAdults)
   const travellerInfantListMap = createTravellerInfantArray(travellers);
 
 
-  
+  const handleInput = (index, field, value) => {
+    const updated = [...travellerAdultListMap];
+    updated[index][field] = value;
+    updated[index][field + "Error"] = false;
+    // setTravellerAdultListMap(updated);
+  };
+
+  const handleFocus = (index, field, bool) => {
+    const updated = [...travellerAdultListMap];
+    updated[index][field] = bool;
+    // setTravellerAdultListMap(updated);
+  };
+
+  const getadddetails = (idx) => {
+    if (idx === selectedAdults[idx]) {
+      settempArray(selectedAdults[idx])
+    }
+    else {
+      settempArray("")
+    }
+  }
+
 
 
   //   if (!selectedAdults[idx]) {
@@ -622,37 +631,22 @@ console.log("seeeee",selectedAdults)
   //   setactiveAdultIndex(idx)
   // }
   let alreadySelected;
-  // const handleAdultInputActive = (idx) => {
+  const handleAdultInputActive = (idx) => {
 
-  //   if (activeAdultIndex !== idx) {
-  //     const currentAdult = tempArray[activeAdultIndex];
-  //     const NAME_REGEX = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19|20)\d{2}$/;
-  //     const isValid = NAME_REGEX.test(currentAdult?.DOBValue);
+    if (activeAdultIndex === idx) {
+      setactiveAdultIndex(-1);
+      return;
+    }
 
-  //     if (!currentAdult?.firstName) {
-  //       setFirstNameError(true);
-  //       return;
-  //     }
-  //     if (!currentAdult?.lastName) {
-  //       setLastNameError(true);
-  //       return;
-  //     }
-  //     if (!currentAdult?.DOBValue || !isValid) {
-  //       setDOBError(true);
-  //       return;
-  //     }
-  //     const newRecord = {
-  //       key: activeAdultIndex,
-  //       firstName: currentAdult?.firstName,
-  //       lastName: currentAdult?.lastName,
-  //       genderValue: currentAdult?.genderValue,
-  //       DOBValue: currentAdult?.DOBValue,
-  //     };
-  //     settempArray(newRecord)
-
-  //     setactiveAdultIndex(idx);
-  //   }
-  // };
+    if (activeAdultIndex !== -1 && activeAdultIndex !== idx) {
+      // Optional: Validate current active before switching
+      // For now, allowing switch.
+    }
+    setactiveAdultIndex(idx);
+    setFirstNameError(false);
+    setLastNameError(false);
+    setDOBError(false);
+  };
 
 
   // // console.log(s)
@@ -681,124 +675,8 @@ console.log("seeeee",selectedAdults)
   // }
 
 
-  console.log("loopingg233", tempArray);
-  console.log("loopingg233", tempArray.length);
+  console.log("loopingg2", tempArray);
 
-  const handleaddDOBChange = (e) => {
-    const rawValue = e.target.value;
-    const cleanValue = rawValue.replace(/[^\d]/g, ""); // keep only digits
-
-    let maskedValue = "";
-    if (cleanValue.length > 0) {
-      maskedValue = cleanValue.substring(0, 2);
-    }
-    if (cleanValue.length >= 3) {
-      maskedValue += "/" + cleanValue.substring(2, 4);
-    }
-    if (cleanValue.length >= 5) {
-      maskedValue += "/" + cleanValue.substring(4, 8);
-    }
-
-    maskedValue = maskedValue.substring(0, 10);
-
-    // Validate with Day.js
-    
-    
-      setDOBError(false);
-
-
-    setadultDOB(maskedValue); 
-  };
-
-  const handleAdd = () =>{
-   
-    const NAME_REGEX = /^[A-Za-z\s'-]{1,27}$/;
-  
-
-      const DOB_REGEX = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19|20)\d{2}$/;
-      const isValid = DOB_REGEX.test(adultDOB);
-
-      if (!adultFirstName || adultFirstName.length > 32 || !NAME_REGEX.test(adultFirstName)) {
-        setFirstNameError(true);
-        return;
-      }
-      if (!adultLastName || adultLastName.length > 32 || !NAME_REGEX.test(adultLastName)) {
-        setLastNameError(true);
-        return;
-      }
-      if (!adultDOB || !isValid) {
-        setDOBError(true);
-        return;
-      }
-      const newRecord = {
-        key: selectedAdults.length,
-        firstName: adultFirstName,
-        lastName: adultLastName,
-        genderValue: adultGender || "Male",
-        DOBValue: adultDOB,
-      };
-      settempArray(prev => [...prev, newRecord]);
-
-      setadultFirstName("");
-      setadultLastName("");
-      setadultDOB("");
-      setadultGender("Male");
-      setAddNewModal(false)
-  }
-
-  const handleEdit = () =>{
-   
-    const NAME_REGEX = /^[A-Za-z\s'-]{1,27}$/;
-  
-
-      const DOB_REGEX = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19|20)\d{2}$/; 
-      const isValid = DOB_REGEX.test(editingAdult.DOBValue);
-
-      if (!editingAdult.firstName || editingAdult.firstName.length > 32 || !NAME_REGEX.test(editingAdult.firstName)) {
-        setFirstNameError(true);
-        return;
-      }
-      if (!editingAdult.lastName || editingAdult.lastName.length > 32 || !NAME_REGEX.test(editingAdult.lastName)) {
-        setLastNameError(true);
-        return;
-      }
-      if (!editingAdult.DOBValue || !isValid) {
-        setDOBError(true);
-        return;
-      }
-    
-      settempArray(prev =>
-    prev.map(a => a.key === editingAdult.key ? editingAdult : a)
-  ); 
-      seteditNewModal(false)
-  }
-
-
-  const handleEditDOBChange = (e) => {
-    const rawValue = e.target.value;
-    const cleanValue = rawValue.replace(/[^\d]/g, ""); 
-
-    let maskedValue = "";
-    if (cleanValue.length > 0) {
-      maskedValue = cleanValue.substring(0, 2);
-    }
-    if (cleanValue.length >= 3) {
-      maskedValue += "/" + cleanValue.substring(2, 4);
-    }
-    if (cleanValue.length >= 5) {
-      maskedValue += "/" + cleanValue.substring(4, 8);
-    }
-
-    maskedValue = maskedValue.substring(0, 10);
-
-    
-    
-    
-      setDOBError(false);
-
-
-    setEditingAdult(prev => ({ ...prev, DOBValue: maskedValue }));
-  };
 
   const handleFirstNameChange = (value, idx) => {
     const NAME_REGEX = /^[A-Za-z\s'-]{1,27}$/;
@@ -873,64 +751,6 @@ console.log("seeeee",selectedAdults)
 
 
   }
-
-  const openExistingTraveller = (person) => {
-  setactiveAdultIndex(person.key);
-
-  if (!selectedAdults.some(a => a.key === person.key)) {
-    setSelectedAdults(prev => [...prev, person]);
-  }
-};
-
-const updateTraveller = (updated) => {
-  setSelectedAdults(prev => prev.map(a => 
-    a.key === updated.key ? updated : a
-  ));
-};
-
-const openAddNewTraveller = (key) => {
-  setactiveAdultIndex(key);
-};
-
-const saveNewTraveller = (newTraveller) => {
-  newTraveller.key = activeAdultIndex;
-  setSelectedAdults(prev => [...prev, newTraveller]);
-};
-
-
-const TravellerForm = ({ traveller, onChange }) => {
-  const [formData, setFormData] = useState(traveller);
-
-  const NAME_REGEX = /^[A-Za-z\s'-]{1,27}$/; // Allows 1 to 27 characters (letters, spaces, hyphens, apostrophes)
-
-const handleFirstNameChange = (value, key) => {
-    
-    // 1. Validate the input value
-    const isValid = NAME_REGEX.test(value);
-    
-    // 2. Update the error state for the specific traveler index (key)
-    setFirstNameError(false);
-
-    // 3. Update the primary traveler data array (Must be immutable)
-    setSelectedAdults((prev) => {
-        const updated = [...prev];
-        // Ensure you copy the existing object before updating the property
-        updated[key] = { ...updated[key], firstName: value }; 
-        return updated;
-    });
-
-    // 4. (If necessary) Update the separate state for the currently active input value
-    // This should only be used if you need to track the global state of the active input.
-    // If 'setadultFirstName' is meant to track the input being typed, ensure it's defined.
-    // setadultFirstName(value); 
-};
-
-
-
-
-  
-};
- 
 
 
   // // console.log("selected121212121",tempArray)
@@ -2297,537 +2117,226 @@ const handleFirstNameChange = (value, key) => {
                   }}>Please ensure that your name matches your govt. ID such as Aadhaar, Passport or Driver's License</Text>
                 </div>
 
-                
-                <br/>
-                <Text style={{
+                {add?.length > 0 ? (
+                  <div style={{
+                    border: ".5px solid #cccccc",
+                    borderRadius: "20px",
+                    marginTop: 20,
+                    background: "white", padding: 20
+                  }}>
+                    {travellers.Adults > 0 && adults.length > 0 && (
+                      <div>
+                        <Text style={{
+                          fontSize: 15, fontWeight: 500
+                        }}>
+                          Adults (12 yrs or above)
+                        </Text>
+                        <ConfigProvider
+                          theme={{
+                            token: {
+                              colorBgElevated: "black",
+                              colorText: "white",
+                            },
+                          }}
+                        >
+                          {contextHolder}
+
+                        </ConfigProvider>
+
+                        <div style={{
+                          display: "flex",
+                          gap: "50px",
+                          flexWrap: "wrap",
+                          marginTop: 10
+                        }}>
+                          {adults.map((person, index) => {
+                            const isSelected = selectedAdults.some(a => a.key === person.key);
+                            const existsInStore = selectedAdults.some(t => t.key === person.key);
+                            const disableExtra = selectedAdults.length >= travellers.Adults;
+
+                            return (
+                              <div
+                                key={person.key}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 10,
+                                }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={Boolean(isSelected || alreadySelected)}
+                                  // disabled={disableExtra}
+                                  onChange={() => handleSelectAdult(person)}
+                                  style={{ height: 20, width: 20 }}
+                                />
+
+                                <span style={{ fontSize: 16 }}>
+                                  {/* {person.genderValue === "Male" ? "Mr" : "Ms"} */}
+                                  {person.firstName} {person.lastName}
+                                </span>
+                                <EditOutlined
+                                  style={{ marginLeft: "auto", cursor: "pointer", color: "#0770e4" }}
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent toggling selection
+                                    openEditModal(person);
+                                  }}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+
+
+
+
+                      </div>
+                    )}
+                    <div style={{
+                      marginTop: 10
+                    }}>
+                      {travellers.Children > 0 && children.length > 0 && (
+                        <div>
+                          <Divider style={{
+                            borderColor: "#8a8a8a"
+                          }} />
+                          <Text style={{
+                            fontSize: 15, fontWeight: 500
+                          }}>Child (2-12 yrs)</Text>
+                          <div style={{
+                            display: "flex",
+                            gap: "50px",
+                            flexWrap: "wrap",
+                            marginTop: 10
+                          }}>
+                            {children.map((person, index) => {
+                              const isSelected = selectedChildren.some(a => a.key === person.key);
+                              // const disableExtra = selectedAdults.length >= travellers.Adults;
+
+                              return (
+                                <div
+                                  key={person.key}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 10,
+                                  }}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                    // disabled={disableExtra}
+                                    onChange={() => handleSelectChildren(person)}
+                                    style={{ height: 20, width: 20 }}
+                                  />
+
+                                  <span style={{ fontSize: 16 }}>
+                                    {/* {person.genderValue === "Male" ? "Mr" : "Ms"} */}
+                                    {person.firstName} {person.lastName}
+                                  </span>
+                                  <EditOutlined
+                                    style={{ marginLeft: "auto", cursor: "pointer", color: "#0770e4" }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openEditModal(person);
+                                    }}
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                        </div>
+                      )}
+                    </div>
+
+                    <div style={{
+                      marginTop: 10
+                    }}>
+                      {travellers.Infants > 0 && infants.length > 0 && (
+                        <div>
+                          <Divider style={{
+                            borderColor: "#8a8a8a"
+                          }} />
+                          <Text style={{
+                            fontSize: 15, fontWeight: 500
+                          }}>Infants (0-2 yrs)</Text>
+                          <div style={{
+                            display: "flex",
+                            gap: "50px",
+                            flexWrap: "wrap",
+                            marginTop: 10
+                          }}>
+                            {infants.map((person, index) => {
+                              const isSelected = selectedInfants.some(a => a.key === person.key);
+                              // const disableExtra = selectedAdults.length >= travellers.Infants;
+
+                              return (
+                                <div
+                                  key={person.key}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 10,
+                                  }}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                    // disabled={disableExtra}
+                                    onChange={() => handleSelectInfants(person)}
+                                    style={{ height: 20, width: 20 }}
+                                  />
+
+                                  <span style={{ fontSize: 16 }}>
+                                    {/* {person.genderValue === "Male" ? "Mr" : "Ms"} */}
+                                    {person.firstName} {person.lastName}
+                                  </span>
+                                  <EditOutlined
+                                    style={{ marginLeft: "auto", cursor: "pointer", color: "#0770e4" }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openEditModal(person);
+                                    }}
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                        </div>
+                      )}
+                    </div>
+
+
+                  </div>
+                ) : null}
+
+                <div style={{
+                  marginTop: 20
+                }}>
+                  <Text style={{
                     fontSize: 18, fontWeight: 500
                   }}>Passengers</Text>
                   <br />
                   <Text style={{
                     fontWeight: 500
-                  }}>ADULTS</Text>
-                <div style={{
-                  display:"flex",justifyContent:"space-between",marginTop:10
-                }}>
-                <button style={{
-                  border:"none",background:"transparent",color:"#008cff",fontSize:13,fontWeight:700
-                }} onClick={()=>{
-                  // if(tempArray.length>=maxAllowed){
-                  //   messageApi.open({
-                  //   content: `Only ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} allowed. Remove existing adult to select a new one.` ,
-                  //   duration: 3,
-                  // });
-                  // }
-                  // else{
-                    setExistingModal(true)
-                  // }
-                  }}>ADD EXISTING ADULT +</button>
-                <button style={{
-                  border:"none",background:"transparent",color:"#008cff",fontSize:13,fontWeight:700
-                }} onClick={()=>{
-                  if(tempArray.length>=maxAllowed){
-                    messageApi.open({
-                    content: `Only ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} allowed. Remove existing adult to add a new one.`,
-                    duration: 3,
-                  });
-                  }
-                  else{
-                    setAddNewModal(true)
-                  }
-                 }}>ADD NEW ADULT +</button>
-                 <ConfigProvider
-                                           theme={{
-                                             token: {
-                                               colorBgElevated: "black",
-                                               colorText: "white",
-                                             },
-                                           }}
-                                         >
-                                           {contextHolder}
-                 
-                                         </ConfigProvider>
-
-                {/* Existing Modal */}
-                <Modal 
-                footer={null}
-                                        open={existingModal}
-                                        closable
-                                        width={"30%"}
-                                        onCancel={() => {setExistingModal(false)
-                                          setSelectedAdults(prev =>
-                                                  prev.filter(a => disabledAdults.includes(a.key))
-                                                );
-                                        }}
-                                        style={{
-                                            marginTop:50 
-                                        }}>
-                                          {adults.map((person,idx)=>{
-                                            const isSelected = Array.isArray(selectedAdults) && Array.isArray(tempArray) && selectedAdults.some(a => a.key === person.key);
-                                            const isDisabled = disabledAdults.includes(person.key);
-                                            return(
-                                              <>
-                                              <div key={person.key} style={{ display: "flex", flexDirection: "column" }}>
-                                
-                                {/* CHECKBOX FOR EXISTING PERSON */}
-                                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                  <input
-                                    type="checkbox"
-                                    checked={isSelected}
-                                     disabled={isDisabled}
-                                    onChange={() => {
-                                      handleSelectAdult(person);
-                                         
-                                    }}
-                                    style={{ height: 20, width: 20 }}
-                                  />
-                                  <span>{person.firstName} {person.lastName}</span>
-                                </div>
-
-                               
-
-                              </div>
-                                              </>
-                                            )
-                                          })}
-                                          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 20,gap:20 }}>
-                                           <button
-                                                style={{
-                                                  borderRadius: 10,
-                                                  width: "100px",
-                                                  height: "35px",
-                                                  fontSize: "16px",
-                                                  color: "black",
-                                                  background: "white",
-                                                  border: "1px solid #b8b8bcff",
-                                                }}
-                                               onClick={() => {
-                                                setSelectedAdults(prev =>
-                                                  prev.filter(a => disabledAdults.includes(a.key))
-                                                );
-
-                                                setExistingModal(false); 
-                                              }}
-
-                                              >
-                                                SKIP
-                                              </button>
-                                      <button
-                                        style={{
-                                          background: "#ff7a00",
-                                          border: "none",
-                                          borderRadius: 10,
-                                          width: "100px",
-                                          height: "35px",
-                                          fontSize: "16px",
-                                          color: "white",
-                                        }}
-                                        onClick={() => {
-                                    
-                                    setDisabledAdults(prev => [
-                                      ...prev,
-                                      ...selectedAdults.map(a => a.key)
-                                    ]);
-
-                                    
-                                    setExistingModal(false);
-
-                                    
-                                    settempArray(prev => [
-                                ...prev,
-                                ...selectedAdults
-                                  .filter(a => a && !disabledAdults.includes(a.key)) 
-                                  .map((a, idx) => ({
-                                    key: prev.length + idx,
-                                    firstName: a.firstName || "",
-                                    lastName: a.lastName || "",
-                                    DOBValue: a.DOBValue || "", 
-                                    genderValue: a?.genderValue || "Male",
-                                  }))
-                              ]);
-
-
-                                  }}
-
-                                      >
-                                        SELECT
-                                      </button>
-                                    </div> 
-
-                </Modal>
-
-                 <Modal 
-                footer={null}
-                                        open={addNewModal}
-                                        closable
-                                        width={"45%"}
-                                        onCancel={() => setAddNewModal(false)}
-                                        style={{
-                                            marginTop:50  
-                                        }}>
-                                          <Text>
-                                            Add New Adult
-                                          </Text>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",
-                                          width:"95%",alignItems:"center",justifyContent:"center",flexDirection:"column"
-                                          }}>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                          <Form>
-                              <Form.Item
-                                rules={[{ required: true }]}
-                                validateTrigger="onBlur"
-                              // validateStatus={firstNameError ? "error" : ""}
-                              // help={firstNameError ? "" : ""}
-                              >
-                                <FloatingInput
-                                  label="First Name"
-                                  value={adultFirstName}
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value
-                                            if(adultFirstName !== newValue){ 
-                                              setFirstNameError(false)
-                                            }
-                                            setadultFirstName(newValue);
-                                        
-                                  }}
-                                  error={
-                                    firstNameError && "Your first name should have 1–27 characters"
-                                  }
-                                />
-                              </Form.Item>
-                            </Form>
-
-
-                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="Last Name"
-                                  value={adultLastName}
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value
-                                            if(adultLastName !== newValue){ 
-                                              setLastNameError(false)
-                                            }
-                                            setadultLastName(newValue); 
-                                        
-                                  }}
-                                  error={lastNameError && "Your last name should have 1–27 characters "}
-                                />
-                              </Form.Item>
-                            </Form>
-                                          </div>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="DOB (DD/MM/YYYY)"
-                                  type={dayjs("DD/MM/YYYY")}
-                                  value={adultDOB}
-                                  onChange={handleaddDOBChange}  
-                                  
-                                  error={DOBError && "Enter Valid Age"}
-
-
-
-                                />
-
-                              </Form.Item>
-                            </Form>
-
-                            <ConfigProvider
-                              theme={{
-                                components: {
-                                  Segmented: {
-                                    itemSelectedBg: "#fc790d",
-                                    itemSelectedColor: "white"
-                                  },
-                                }
-                              }}
-                            >
-
-
-
-                              <Segmented
-                                value={adultGender || "Male"}
-                                options={["Male", "Female"]} 
-                                style={{
-                                  background: "#f1f1f1",
-                                  borderRadius: "10px",
-                                  boxShadow: "0 0 5px rgba(0,0,0,0.1)",
-                                  fontWeight: 500,
-                                  border: "1.5px solid #c9c9c9", 
-                                  height: 50,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "flex-end",
-                                  paddingLeft: 12,
-                                  paddingRight: 12,
-                                  fontSize: 15,
-                                  backgroundColor: "white", transition: "0.2s ease",
-                                  position:"relative",left:25 
-                                }}
-                                onChange={(val) => {
-                                  setadultGender(val);
-                                }} />
-                            </ConfigProvider>
-                                          </div>
-                                        
-                                          </div>
-                                          <div style={{
-                                           display:"flex",justifyContent:"flex-end",width:"97%",gap:10,flexDirection:"row"
-                                          }}>
-                                            <button style={{
-                                              borderRadius: 10,
-                                              width:"100px",
-                                              height:"35px",
-                                              fontSize:"16px",
-                                              color:"black",background:"white",border: "1px solid #b8b8bcff"
-                                            }} onClick={(e) => {
-                                            setAddNewModal(false)
-                                              }}>
-                                              CANCEL
-                                            </button>
-                                            <button
-                                              type="primary"
-                                              style={{
-                                                background: "#ff7a00",
-                                                border: "none",
-                                                borderRadius: 10,
-                                                width:"100px",
-                                                height:"35px",
-                                                fontSize:"16px",
-                                                color:"white",
-                                                position:"relative",
-                                                
-                                              }}
-                                              onClick={handleAdd}
-                                            >
-                                              ADD
-                                            </button>
-                                          </div>
-                                        </Modal>
-                </div>
-                
-
-                <div style={{
-                  marginTop: 10
-                }}>
-                  
-                  
+                  }}>Adults</Text>
+                  {selectedAdults.length > 0 && (
                     <div style={{
                       marginTop: 10
                     }}>
-                      {tempArray.map((item, idx) => (
+                      {selectedAdults.map((item, idx) => (
                         <div key={idx} style={{
-                          display: "flex", justifyContent: "space-between",border: "1px solid #c0c0c0ff",alignItems:"center",padding:12,borderRadius:8,marginTop:10,
-                          transition:"all 0.3 ease"
+                          display: "flex", justifyContent: "space-between"
                         }}>
-                          <Text style={{
-                            fontSize:15,fontWeight:500,textTransform:"uppercase"
-                          }}>
-                         Adult {idx + 1} -  {item.firstName} {item.lastName}
-                         </Text>
-                          <div style={{
-                            display:"flex",flexDirection:"row",gap:15
-                          }}>
-                            <EditOutlined style={{
-                              cursor:"pointer",fontSize:20,color:"#008cff"
-                            }} 
-                            onClick={()=>{seteditNewModal(true)
-                              setEditingAdult(item);
-                            }}/>
-                            <DeleteOutlined style={{
-                              cursor:"pointer",fontSize:20,color:"red"
-                            }} 
-                            onClick={() => {
-                                                  settempArray(prev =>
-                                                  prev.filter(
-                                                    a => !(a.firstName === item.firstName && a.lastName === item.lastName)
-                                                  )
-                                                );
+                          {/* {item.genderValue === "Male" ? "Mr" : "Ms"} */}
+                          {idx + 1} -  {item.firstName} {item.lastName}
 
-                                                  setSelectedAdults(prev =>
-                              prev.filter(a => !(a.firstName === item.firstName && a.lastName === item.lastName))
-                            );
-
-                            setDisabledAdults(prev =>
-                              prev.filter(key =>
-                                // find the adult object for this key
-                                !selectedAdults.some(
-                                  a => a.key === key &&
-                                      a.firstName === item.firstName &&
-                                      a.lastName === item.lastName
-                                )
-                              )
-                            );
-
-                          }}/>
-                          </div>
-                          <Modal 
-                footer={null}
-                                        open={editNewModal}
-                                        closable 
-                                        width={"45%"}
-                                        onCancel={() => seteditNewModal(false)}
-                                        style={{
-                                            marginTop:50  
-                                        }}>
-                                          <Text style={{
-                                            fontWeight:500,fontSize:16
-                                          }}>
-                                            Edit Adult
-                                          </Text>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",
-                                          width:"95%",alignItems:"center",justifyContent:"center",flexDirection:"column",marginTop:10
-                                          }}>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                          <Form>
-                              <Form.Item
-                                rules={[{ required: true }]}
-                                validateTrigger="onBlur"
-                              // validateStatus={firstNameError ? "error" : ""}
-                              // help={firstNameError ? "" : ""}
-                              >
-                                <FloatingInput
-                                  label="First Name"
-                                  value={editingAdult?.firstName || ""} 
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value;
-                                    setEditingAdult(prev => ({ ...prev, firstName: newValue }));
-                                    setFirstNameError(false);
-                                        
-                                  }}
-                                  error={
-                                    firstNameError && "Your first name should have 1–27 characters"
-                                  }
-                                />
-                              </Form.Item>
-                            </Form>
-
-
-                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="Last Name"
-                                  value={editingAdult?.lastName || ""}
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value
-                                    setEditingAdult(prev => ({ ...prev, lastName: newValue }));
-                                    setLastNameError(false);
-                                  }}
-                                  error={lastNameError && "Your last name should have 1–27 characters "}
-                                />
-                              </Form.Item>
-                            </Form>
-                                          </div>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="DOB (DD/MM/YYYY)"
-                                  type={dayjs("DD/MM/YYYY")}
-                                  value={editingAdult?.DOBValue || ""}
-                                  onChange={handleEditDOBChange}  
-                                  
-                                  error={DOBError && "Enter Valid Age"}
-
-
-
-                                />
-
-                              </Form.Item>
-                            </Form>
-
-                            <ConfigProvider
-                              theme={{
-                                components: {
-                                  Segmented: {
-                                    itemSelectedBg: "#fc790d",
-                                    itemSelectedColor: "white"
-                                  },
-                                }
-                              }}
-                            >
-
-
-
-                              <Segmented
-                                value={editingAdult?.genderValue || "Male"}
-                                options={["Male", "Female"]}
-                                style={{
-                                  background: "#e7e7e7ff",
-                                  borderRadius: "10px",
-                                  boxShadow: "0 0 5px rgba(0,0,0,0.1)",
-                                  fontWeight: 500,
-                                  border: "1.5px solid #c9c9c9", 
-                                  height: 50,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "flex-end",
-                                  paddingLeft: 12,
-                                  paddingRight: 12,
-                                  fontSize: 15,
-                                  backgroundColor: "white", transition: "0.2s ease",
-                                  position:"relative",left:25 
-                                }}
-                                onChange={(val) => {
-    
-                                  setEditingAdult(prev => ({ ...prev, genderValue: val }));
-                                }}/>
-                            </ConfigProvider>
-                                          </div>
-                                        
-                                          </div>
-                                          <div style={{
-                                           display:"flex",justifyContent:"flex-end",width:"97%",gap:10,flexDirection:"row"
-                                          }}>
-                                            <button style={{
-                                              borderRadius: 10,
-                                              width:"100px",
-                                              height:"35px",
-                                              fontSize:"16px",
-                                              color:"black",background:"white",border: "1px solid #b8b8bcff"
-                                            }} onClick={(e) => {
-                                            seteditNewModal(false)
-                                              }}>
-                                              CANCEL
-                                            </button>
-                                            <button
-                                              type="primary"
-                                              style={{
-                                                background: "#ff7a00",
-                                                border: "none",
-                                                borderRadius: 10,
-                                                width:"100px",
-                                                height:"35px",
-                                                fontSize:"16px",
-                                                color:"white",
-                                                position:"relative",
-                                                
-                                              }}
-                                              onClick={handleEdit}
-                                            >
-                                              UPDATE
-                                            </button>
-                                          </div>
-                                        </Modal>
                         </div>
                       ))}
                     </div>
-                 
+                  )}
                   <br />
                   {travellers.Children > 0 && (
                     <div>
@@ -2859,7 +2368,212 @@ const handleFirstNameChange = (value, key) => {
 
 
                 <div>
-                  
+                  {travellerAdultListMap.map((item, idx) => {
+                    const isSelected = activeAdultIndex === idx;
+                    // Use selectedAdults for data source if available to ensure sync
+                    const personData = selectedAdults[idx] || tempArray[idx] || {};
+                    const isCompleted = personData.firstName && personData.lastName && personData.title && personData.nationality;
+
+                    return (
+                      <div
+                        key={idx}
+                        style={{
+                          height: "auto",
+                          marginTop: 15,
+                          border: "1px solid #ddd",
+                          padding: 10,
+                          borderRadius: 8,
+                          backgroundColor: "#fff"
+                        }}
+                      >
+                        {/* Accordion Header */}
+                        <div
+                          style={{ display: "flex", justifyContent: "space-between", cursor: "pointer", alignItems: "center" }}
+                          onClick={() => handleAdultInputActive(idx)}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                            <div style={{
+                              background: isSelected ? "#000" : "#8a8a8a",
+                              color: "#fff",
+                              borderRadius: "50%",
+                              width: 20,
+                              height: 20,
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              fontSize: 12
+                            }}>
+                              {isSelected ? <UpOutlined style={{ fontSize: 10 }} /> : <DownOutlined style={{ fontSize: 10 }} />}
+                            </div>
+                            <Text style={{ fontWeight: 700, fontSize: 16 }}>
+                              {`Adult ${idx + 1}`}
+                              {personData.firstName ? ` - ${personData.title || ''} ${personData.firstName} ${personData.lastName}` : ''}
+                            </Text>
+                          </div>
+
+                          {isCompleted ? (
+                            <CheckCircleFilled style={{ color: "#238c46", fontSize: 20 }} />
+                          ) : null}
+                        </div>
+
+
+                        {isSelected && (
+                          <div style={{ marginTop: 15 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 15 }}>
+                              <Text style={{ fontSize: 16, fontWeight: 600 }}>Adult {idx + 1}</Text>
+                              <Text
+                                style={{ color: "#ec5b24", fontWeight: 600, cursor: "pointer" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  // Clear details
+                                  setSelectedAdults(prev => {
+                                    const updated = [...prev];
+                                    updated[idx] = { ...updated[idx], title: '', firstName: '', lastName: '', genderValue: 'Male', DOBValue: '', nationality: 'India' };
+                                    return updated;
+                                  });
+                                  // Also try to clear tempArray if possible/needed, assuming tempArray is used for display
+                                  if (typeof settempArray === 'function') {
+                                    settempArray(prev => {
+                                      const updated = [...prev];
+                                      updated[idx] = { ...updated[idx], title: '', firstName: '', lastName: '', genderValue: 'Male', DOBValue: '', nationality: 'India' };
+                                      return updated;
+                                    });
+                                  }
+                                }}
+                              >
+                                Clear Details
+                              </Text>
+                            </div>
+
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
+                              {/* Title */}
+                              <div style={{ width: 100 }}>
+                                <Form>
+                                  <Form.Item>
+                                    <Select
+                                      placeholder="Title"
+                                      value={personData.title || "Mr"}
+                                      onChange={(v) => {
+                                        setSelectedAdults(prev => {
+                                          const updated = [...prev];
+                                          updated[idx] = { ...updated[idx], title: v };
+                                          return updated;
+                                        });
+                                      }}
+                                      options={[{ value: 'Mr', label: 'Mr' }, { value: 'Ms', label: 'Ms' }, { value: 'Mrs', label: 'Mrs' }]}
+                                      style={{ width: "100%", height: 50 }}
+                                    />
+                                  </Form.Item>
+                                </Form>
+                              </div>
+
+                              {/* First Name */}
+                              <Form style={{ flex: 1 }}>
+                                <Form.Item rules={[{ required: true }]} style={{ marginBottom: 0 }}>
+                                  <FloatingInput
+                                    label="First & Middle Name"
+                                    value={personData.firstName || ""}
+                                    onChange={(v) => handleFirstNameChange(v, idx)}
+                                    error={firstNameError && "Your first name should have 1–27 characters"}
+                                  />
+                                </Form.Item>
+                              </Form>
+
+                              {/* Last Name */}
+                              <Form style={{ flex: 1 }}>
+                                <Form.Item style={{ marginBottom: 0 }}>
+                                  <FloatingInput
+                                    label="Last Name"
+                                    value={personData.lastName || ""}
+                                    onChange={(v) => handleLastNameChange(v, idx)}
+                                    error={lastNameError && "Your last name should have 1–27 characters "}
+                                  />
+                                </Form.Item>
+                              </Form>
+                            </div>
+
+                            {/* Nationality Row */}
+                            <div style={{ width: "100%", marginTop: 15 }}>
+                              <Form>
+                                <Form.Item style={{ marginBottom: 0 }}>
+                                  <Select
+                                    placeholder="Select Nationality"
+                                    value={personData.nationality || "India"}
+                                    onChange={(v) => {
+                                      setSelectedAdults(prev => {
+                                        const updated = [...prev];
+                                        updated[idx] = { ...updated[idx], nationality: v };
+                                        return updated;
+                                      });
+                                    }}
+                                    options={[{ value: 'India', label: 'India' }, { value: 'Other', label: 'Other' }]}
+                                    style={{ width: "30%", height: 50 }}
+                                  />
+                                </Form.Item>
+                              </Form>
+                            </div>
+
+                            {/* Gender and DOB (Keep them as user logic likely needs them) */}
+                            <div style={{ display: "flex", gap: 15, marginTop: 15, alignItems: "center" }}>
+                              <Form style={{ flex: 1 }}>
+                                <Form.Item style={{ marginBottom: 0 }}>
+                                  <FloatingInput
+                                    label="DOB (DD/MM/YYYY)"
+                                    type={dayjs("DD/MM/YYYY")}
+                                    value={personData.DOBValue || ""}
+                                    onChange={(v) => handleDOBChange(v, idx)}
+                                    error={DOBError && "Enter Valid Age"}
+                                  />
+                                </Form.Item>
+                              </Form>
+                              <ConfigProvider
+                                theme={{
+                                  components: {
+                                    Segmented: {
+                                      itemSelectedBg: "#fc790d",
+                                      itemSelectedColor: "white"
+                                    },
+                                  }
+                                }}
+                              >
+                                <Segmented
+                                  value={personData.genderValue || "Male"}
+                                  options={["Male", "Female"]}
+                                  style={{
+                                    background: "#f1f1f1",
+                                    borderRadius: "10px",
+                                    boxShadow: "0 0 5px rgba(0,0,0,0.1)",
+                                    fontWeight: 500,
+                                    border: "1.5px solid #c9c9c9",
+                                    height: 50,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    fontSize: 15,
+                                    backgroundColor: "white"
+                                  }}
+                                  onChange={(value) => {
+                                    setSelectedAdults((prev) => {
+                                      const updated = [...prev];
+                                      updated[idx] = { ...updated[idx], genderValue: value };
+                                      return updated;
+                                    });
+                                  }} />
+                              </ConfigProvider>
+                            </div>
+
+                            {/* Hidden Modal logic preserved if needed */}
+                            <Modal footer={null}
+                              open={openModal}
+                              closable
+                              width={"23%"}
+                              style={{ marginTop: 100 }}
+                              onCancel={() => setOpenModal(false)}>
+                            </Modal>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
 
 
                   {travellerChildListMap.map((item, idx) => (
@@ -3133,9 +2847,693 @@ const handleFirstNameChange = (value, key) => {
       </div>
 
 
-      
+      {/* Edit Traveller Modal */}
+      <Modal
+        title="Edit Traveller Details"
+        open={isEditModalOpen}
+        onOk={handleSaveEdit}
+        onCancel={() => setIsEditModalOpen(false)}
+        okText="Save"
+        cancelText="Cancel"
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: 15 }}>
+          <div>
+            <Text strong>First Name</Text>
+            <Input
+              value={editFirstName}
+              onChange={(e) => setEditFirstName(e.target.value)}
+            />
+          </div>
+          <div>
+            <Text strong>Last Name</Text>
+            <Input
+              value={editLastName}
+              onChange={(e) => setEditLastName(e.target.value)}
+            />
+          </div>
+          <div>
+            <Text strong>Gender</Text>
+            <Radio.Group
+              value={editGender}
+              onChange={(e) => setEditGender(e.target.value)}
+            >
+              <Radio value="Male">Male</Radio>
+              <Radio value="Female">Female</Radio>
+            </Radio.Group>
+          </div>
+          <div>
+            <Text strong>Date of Birth (DD/MM/YYYY)</Text>
+            <Input
+              value={editDOB}
+              onChange={(e) => setEditDOB(e.target.value)}
+              placeholder="DD/MM/YYYY"
+            />
+          </div>
+        </div>
+      </Modal>
     </>
   )
 
 }
 export default ReviewTravellerDetails;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{adults.map((person, index) => {
+                            const isSelected = selectedAdults.some(a => a.key === person.key);
+                            const existsInStore = selectedAdults.some(t => t.key === person.key);
+                            const disableExtra = selectedAdults.length >= travellers.Adults;
+
+                            const handleFirstNameChange = (value) =>{
+                              
+                              const NAME_REGEX = /^[A-Za-z\s'-]{1,27}$/;
+
+                              const isValid = NAME_REGEX.test(value);
+                              if (value === ""  || !isValid) {
+                                setFirstNameError(true)
+                              }
+                              else {
+                                setFirstNameError(false)
+                              }
+
+                              setSelectedAdults((prev) => {
+                                const updated = [...prev];
+                                updated = { ...updated, firstName: value };
+                                setadultFirstName(value);
+                                return updated;
+                              });
+                            }
+
+                            return (
+                              <div
+                                key={person.key}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 10,
+                                }}
+                              >
+                                <div style={{
+                                  display:"flex",
+                                  flexDirection:"column"  
+                                }}>
+                                  <div>
+                                    <input
+                                  type="checkbox"
+                                  checked={Boolean(isSelected || alreadySelected)}
+                                  // disabled={disableExtra}
+                                  onChange={() => handleSelectAdult(person)}
+                                  style={{ height: 20, width: 20 }}
+                                />
+
+                                <span style={{ fontSize: 16 }}>
+                                  {/* {person.genderValue === "Male" ? "Mr" : "Ms"} */}
+                                  {person.firstName} {person.lastName}
+                                </span>
+                                </div>
+                                <div>
+                                {isSelected && (
+                                    <div
+                            style={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              gap: "34px",
+                              marginTop: 15,
+                            }}
+                          >
+                            <Form>
+                              <Form.Item
+                                rules={[{ required: true }]}
+                                validateTrigger="onBlur"
+                              // validateStatus={firstNameError ? "error" : ""}
+                              // help={firstNameError ? "" : ""}
+                              >
+                                <FloatingInput
+                                  label="First Name"
+                                  value={person.firstName || ""}
+                                  onChange={(v) => handleFirstNameChange(v)} 
+                                  error={
+                                    firstNameError && "Your first name should have 1–27 characters"
+                                  }
+                                />
+                              </Form.Item>
+                            </Form>
+
+
+                            <Form>
+                              <Form.Item>
+                                <FloatingInput
+                                  label="Last Name"
+                                  value={person.lastName || ""}
+                                  // onChange={(v) => handleLastNameChange(v, idx)}
+                                  error={lastNameError && "Your last name should have 1–27 characters "}
+                                />
+                              </Form.Item>
+                            </Form>
+
+                            <Form>
+                              <Form.Item rules={[{ required: true }]}>
+                                <FloatingInput
+                                  label="DOB (DD/MM/YYYY)"
+                                  type={dayjs("DD/MM/YYYY")}
+                                  value={person.DOBValue || ""}
+                                  // onChange={(v) => handleDOBChange(v, idx)}
+                                  error={DOBError && "Enter Valid Age"}
+
+
+                                />
+
+                              </Form.Item>
+                            </Form>
+
+                            <ConfigProvider
+                              theme={{
+                                components: {
+                                  Segmented: {
+                                    itemSelectedBg: "#fc790d",
+                                    itemSelectedColor: "white"
+                                  },
+                                }
+                              }}
+                            >
+
+
+
+                              <Segmented
+                                value={person.genderValue || "Male"}
+                                options={["Male", "Female"]}
+                                style={{
+                                  background: "#f1f1f1",
+                                  borderRadius: "10px",
+                                  boxShadow: "0 0 5px rgba(0,0,0,0.1)",
+                                  fontWeight: 500,
+                                  border: "1.5px solid #c9c9c9",
+                                  textAlign: "center",
+                                  justifyContent: "center",
+                                  height: 50,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  paddingLeft: 12,
+                                  paddingRight: 12,
+                                  fontSize: 15,
+                                  backgroundColor: "white", transition: "0.2s ease",
+                                }}
+                                onChange={(value) => {
+                                  setSelectedAdults((prev) => {
+                                    const updated = [...prev];
+                                    updated = { ...updated, genderValue: value };
+
+                                    return updated;
+
+                                  });
+                                }} />
+                            </ConfigProvider>
+
+                            <Modal footer={null}
+                              open={openModal}
+                              closable
+                              width={"23%"}
+                              style={{ marginTop: 100 }}
+                              onCancel={() => setOpenModal(false)}>
+
+                            </Modal>
+
+                          </div>
+                                  )}
+                                </div>
+                                <div>
+                                  {travellerAdultListMap.map((item,idx)=>( 
+                                    <div key={idx}>
+                                      <input
+                                  type="checkbox"
+                                  checked={Boolean(isSelected || alreadySelected)}
+                                  // disabled={disableExtra}
+                                  onChange={() => handleSelectAdult(person)}
+                                  style={{ height: 20, width: 20 }}
+                                />
+
+                                <span style={{ fontSize: 16 }}>
+                                  {/* {person.genderValue === "Male" ? "Mr" : "Ms"} */}
+                                  Adult {idx +1}
+                                </span>
+                                    </div>
+                                  ))}
+                                </div>
+                                </div>
+                                
+                                
+                              </div>
+                            );
+                          })}
+
+
+                          //Dummy 2
+
+
+                          {add?.length > 0 ? (
+                                            <div style={{
+                                              border: ".5px solid #cccccc",
+                                              borderRadius: "20px",
+                                              marginTop: 20,
+                                              background: "white", padding: 20
+                                            }}>
+                                              {travellers.Adults > 0 && adults.length > 0 && (
+                                                <div>
+                                                  <Text style={{
+                                                    fontSize: 15, fontWeight: 500
+                                                  }}>
+                                                    Adults (12 yrs or above)
+                                                  </Text>
+                                                  <ConfigProvider
+                                                    theme={{
+                                                      token: {
+                                                        colorBgElevated: "black",
+                                                        colorText: "white",
+                                                      },
+                                                    }}
+                                                  >
+                                                    {contextHolder}
+                          
+                                                  </ConfigProvider>
+                          
+                                                  <div style={{
+                                                    display: "flex",
+                                                    flexDirection:"column",
+                                                    // gap: "50px",
+                                                    // flexWrap: "wrap",
+                                                    marginTop: 10
+                                                  }}>
+                                                    <div>
+                                                      
+                                                      </div>
+                          
+                                                    <div>
+                                                    
+                                                    </div>
+                          
+                                                  </div>
+                          
+                          
+                          
+                          
+                                                </div>
+                                              )}
+                                              <div style={{
+                                                marginTop: 10
+                                              }}>
+                                                {travellers.Children > 0 && children.length > 0 && (
+                                                  <div>
+                                                    <Divider style={{
+                                                      borderColor: "#8a8a8a"
+                                                    }} />
+                                                    <Text style={{
+                                                      fontSize: 15, fontWeight: 500
+                                                    }}>Child (2-12 yrs)</Text>
+                                                    <div style={{
+                                                      display: "flex",
+                                                      gap: "50px",
+                                                      flexWrap: "wrap",
+                                                      marginTop: 10
+                                                    }}>
+                                                      {children.map((person, index) => {
+                                                        const isSelected = selectedChildren.some(a => a.key === person.key);
+                                                        // const disableExtra = selectedAdults.length >= travellers.Adults;
+                          
+                                                        return (
+                                                          <div
+                                                            key={person.key}
+                                                            style={{
+                                                              display: "flex",
+                                                              alignItems: "center",
+                                                              gap: 10,
+                                                            }}
+                                                          >
+                                                            <input
+                                                              type="checkbox"
+                                                              checked={isSelected}
+                                                              // disabled={disableExtra}
+                                                              onChange={() => handleSelectChildren(person)}
+                                                              style={{ height: 20, width: 20 }}
+                                                            />
+                          
+                                                            <span style={{ fontSize: 16 }}>
+                                                              {/* {person.genderValue === "Male" ? "Mr" : "Ms"} */}
+                                                              {person.firstName} {person.lastName}
+                                                            </span>
+                                                            
+                                                          </div>
+                                                        );
+                                                      })}
+                                                    </div>
+                          
+                                                  </div>
+                                                )}
+                                              </div>
+                                              
+                          
+                                              <div style={{
+                                                marginTop: 10
+                                              }}>
+                                                {travellers.Infants > 0 && infants.length > 0 && (
+                                                  <div>
+                                                    <Divider style={{
+                                                      borderColor: "#8a8a8a"
+                                                    }} />
+                                                    <Text style={{
+                                                      fontSize: 15, fontWeight: 500
+                                                    }}>Infants (0-2 yrs)</Text>
+                                                    <div style={{
+                                                      display: "flex",
+                                                      gap: "50px",
+                                                      flexWrap: "wrap",
+                                                      marginTop: 10
+                                                    }}>
+                                                      {infants.map((person, index) => {
+                                                        const isSelected = selectedInfants.some(a => a.key === person.key);
+                                                        // const disableExtra = selectedAdults.length >= travellers.Infants;
+                          
+                                                        return (
+                                                          <div
+                                                            key={person.key}
+                                                            style={{
+                                                              display: "flex",
+                                                              alignItems: "center",
+                                                              gap: 10,
+                                                            }}
+                                                          >
+                                                            <input
+                                                              type="checkbox"
+                                                              checked={isSelected}
+                                                              // disabled={disableExtra}
+                                                              onChange={() => handleSelectInfants(person)}
+                                                              style={{ height: 20, width: 20 }}
+                                                            />
+                          
+                                                            <span style={{ fontSize: 16 }}>
+                                                              {/* {person.genderValue === "Male" ? "Mr" : "Ms"} */}
+                                                              {person.firstName} {person.lastName}
+                                                            </span>
+                                                            
+                                                            
+                                                          </div>
+                                                        );
+                                                      })}
+                                                    </div>
+                          
+                                                  </div>
+                                                )}
+                                              </div>
+                          
+                          
+                                            </div>
+                                          ) : null}
+
+                          {adults.map((person,idxx) => {
+                                                      const isSelected =  getselected(person) || selectedAdults.some(a => a.key === person.key);
+                                                      // const existsInStore = selectedAdults.some(a => a.key === person.key);
+                          
+                                                      return (
+                                                        <div>
+                                                        <div key={person.key} style={{ display: "flex", flexDirection: "column" }}>
+                                                          
+                                                          {/* CHECKBOX FOR EXISTING PERSON */}
+                                                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                                            <input
+                                                              type="checkbox"
+                                                              checked={isSelected}
+                                                              // onChange={() => {
+                                                              //   handleSelectAdult(person);
+                                                              //   setactiveAdultIndex(person.key);   
+                                                              // }}
+                                                              style={{ height: 20, width: 20 }}
+                                                            />
+                                                            <span>{person.firstName} {person.lastName}</span>
+                                                          </div>
+                          
+                                                          {/* IF SELECTED → SHOW EDIT FORM */}
+                                                          {isSelected && activeAdultIndex === person.key && (
+                                                            <div>
+                                                              <div
+                                                      style={{
+                                                        display: "flex",
+                                                        flexWrap: "wrap",
+                                                        gap: "34px",
+                                                        marginTop: 15,
+                                                      }}
+                                                    >
+                                                      <Form>
+                                                        <Form.Item
+                                                          rules={[{ required: true }]}
+                                                          validateTrigger="onBlur"
+                                                        // validateStatus={firstNameError ? "error" : ""}
+                                                        // help={firstNameError ? "" : ""}
+                                                        >
+                                                          <FloatingInput
+                                                            label="First Name"
+                                                            value={selectedAdults[idxx]?.firstName || ""}
+                                                            // onChange={(v) => handleFirstNameChange(v, idxx)}
+                                                            error={
+                                                              firstNameError && "Your first name should have 1–27 characters"
+                                                            }
+                                                          />
+                                                        </Form.Item>
+                                                      </Form>
+                          
+                          
+                                                      <Form>
+                                                        <Form.Item>
+                                                          <FloatingInput
+                                                            label="Last Name"
+                                                            value={selectedAdults[idxx]?.lastName || ""}
+                                                            // onChange={(v) => handleLastNameChange(v, idxx)}
+                                                            error={lastNameError && "Your last name should have 1–27 characters "}
+                                                          />
+                                                        </Form.Item>
+                                                      </Form>
+                          
+                                                      <Form>
+                                                        <Form.Item>
+                                                          <FloatingInput
+                                                            label="DOB (DD/MM/YYYY)"
+                                                            type={dayjs("DD/MM/YYYY")}
+                                                            value={selectedAdults[idxx]?.DOBValue || ""}
+                                                            // onChange={(v) => handleDOBChange(v, idxx)}
+                                                            error={DOBError && "Enter Valid Age"}
+                          
+                          
+                                                          />
+                          
+                                                        </Form.Item>
+                                                      </Form>
+                          
+                                                      <ConfigProvider
+                                                        theme={{
+                                                          components: {
+                                                            Segmented: {
+                                                              itemSelectedBg: "#fc790d",
+                                                              itemSelectedColor: "white"
+                                                            },
+                                                          }
+                                                        }}
+                                                      >
+                          
+                          
+                          
+                                                        <Segmented
+                                                          value={selectedAdults[idxx]?.genderValue || "Male"}
+                                                          options={["Male", "Female"]}
+                                                          style={{
+                                                            background: "#f1f1f1",
+                                                            borderRadius: "10px",
+                                                            boxShadow: "0 0 5px rgba(0,0,0,0.1)",
+                                                            fontWeight: 500,
+                                                            border: "1.5px solid #c9c9c9",
+                                                            textAlign: "center",
+                                                            justifyContent: "center",
+                                                            height: 50,
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            paddingLeft: 12,
+                                                            paddingRight: 12,
+                                                            fontSize: 15,
+                                                            backgroundColor: "white", transition: "0.2s ease",
+                                                          }}
+                                                          // onChange={(value) => {
+                                                          //   setSelectedAdults((prev) => {
+                                                          //     const updated = [...prev];
+                                                          //     updated[idxx] = { ...updated[idxx], genderValue: value };
+                          
+                                                          //     return updated;
+                          
+                                                          //   });
+                                                          // }} 
+                                                          />
+                                                      </ConfigProvider>
+                          
+                                          
+                          
+                                                    </div>
+                                                            </div>
+                                                          )}
+                          
+                                                        </div>
+                                                        <div>
+                                                          {travellerAdultListMap.map((item, idx) => {
+                                                      const newKey = `new-${idx}`; // unique key for add-new mode
+                                                      const isSelected = activeAdultIndex === newKey;
+                                                      const keyy = selectedAdults.length > 0?idxx +1:idx 
+                          
+                                                      return (
+                                                        <div key={idx}>
+                          
+                                                          {/* ALWAYS SHOW ADD NEW CHECKBOX */}
+                                                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                                            <input
+                                                              type="checkbox"
+                                                              checked={isSelected} 
+                                                              onChange={() => {
+                                                                setactiveAdultIndex(newKey); 
+                                                                // if (selectedAdults.some(a => a.key === item.key)) {
+                                                                //     setSelectedAdults(prev => prev.filter(a => a.key !== item.key));
+                                                                //     return;
+                                                                //   } 
+                                                                //                                     if (selectedAdults.length >= maxAllowed) {
+                                                                //     messageApi.open({
+                                                                //       content: `You cannot select more than ${travellers?.Adults}  ${travellers?.Adults == 1 ? `Adult` : `Adults`}`,
+                                                                //       duration: 3,
+                                                                //     });
+                                                                //     return;
+                                                                //   } 
+                                                              }}
+                                                            />
+                                                            <span>Adult {idx + 1}</span>
+                                                          </div>
+                          
+                                                          {/* OPEN ADD NEW FORM */}
+                                                          {isSelected && (
+                                                            <div
+                                                      style={{
+                                                        display: "flex",
+                                                        flexWrap: "wrap",
+                                                        gap: "34px",
+                                                        marginTop: 15,
+                                                      }}
+                                                    >
+                                                      <Form>
+                                                        <Form.Item
+                                                          rules={[{ required: true }]}
+                                                          validateTrigger="onBlur"
+                                                        // validateStatus={firstNameError ? "error" : ""}
+                                                        // help={firstNameError ? "" : ""}
+                                                        >
+                                                          <FloatingInput
+                                                            label="First Name"
+                                                            value={selectedAdults[keyy]?.firstName || ""}
+                                                            // onChange={(v) => handleFirstNameChange(v, keyy)}
+                                                            error={
+                                                              firstNameError && "Your first name should have 1–27 characters"
+                                                            }
+                                                          />
+                                                        </Form.Item>
+                                                      </Form>
+                          
+                          
+                                                      <Form>
+                                                        <Form.Item>
+                                                          <FloatingInput
+                                                            label="Last Name"
+                                                            value={selectedAdults[keyy]?.lastName || ""}
+                                                            // onChange={(v) => handleLastNameChange(v, keyy)}
+                                                            error={lastNameError && "Your last name should have 1–27 characters "}
+                                                          />
+                                                        </Form.Item>
+                                                      </Form>
+                          
+                                                      <Form>
+                                                        <Form.Item>
+                                                          <FloatingInput
+                                                            label="DOB (DD/MM/YYYY)"
+                                                            type={dayjs("DD/MM/YYYY")}
+                                                            value={selectedAdults[keyy]?.DOBValue || ""}
+                                                            // onChange={(v) => handleDOBChange(v, keyy)}
+                                                            error={DOBError && "Enter Valid Age"}
+                          
+                          
+                                                          />
+                          
+                                                        </Form.Item>
+                                                      </Form>
+                          
+                                                      <ConfigProvider
+                                                        theme={{
+                                                          components: {
+                                                            Segmented: {
+                                                              itemSelectedBg: "#fc790d",
+                                                              itemSelectedColor: "white"
+                                                            },
+                                                          }
+                                                        }}
+                                                      >
+                          
+                          
+                          
+                                                        <Segmented
+                                                          value={selectedAdults[keyy]?.genderValue || "Male"}
+                                                          options={["Male", "Female"]}
+                                                          style={{
+                                                            background: "#f1f1f1",
+                                                            borderRadius: "10px",
+                                                            boxShadow: "0 0 5px rgba(0,0,0,0.1)",
+                                                            fontWeight: 500,
+                                                            border: "1.5px solid #c9c9c9",
+                                                            textAlign: "center",
+                                                            justifyContent: "center",
+                                                            height: 50,
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            paddingLeft: 12,
+                                                            paddingRight: 12,
+                                                            fontSize: 15,
+                                                            backgroundColor: "white", transition: "0.2s ease",
+                                                          }}
+                                                          // onChange={(value) => {
+                                                          //   setSelectedAdults((prev) => {
+                                                          //     const updated = [...prev];
+                                                          //     updated[idx] = { ...updated[idx], genderValue: value };
+                          
+                                                          //     return updated;
+                          
+                                                          //   });
+                                                          // }} 
+                                                          />
+                                                      </ConfigProvider>
+                          
+                                          
+                          
+                                                    </div>
+                                                          )}
+                          
+                                                        </div>
+                                                      );
+                                                    })}
+                                                        </div>
+                                                        </div>
+                                                      );
+                                                      
+                                                      })}
+
+
+
+                                                      /// Dummy 33
