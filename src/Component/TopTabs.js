@@ -37,7 +37,9 @@ const TopTabs = () =>{
       return(
         <>
         <div className={`navbar ${scrolled ? "navbar" : ""}`}>
-      <div className="logo">GMPM</div>
+      <div><img src="https://images.ixigo.com/image/upload/Header/aac1498d8f956aa99344f08773c70fb6-evncq.webp" style={{
+        height:40
+      }}/></div>
       <Tabs/>
       <LoginDropdown/>
     </div>

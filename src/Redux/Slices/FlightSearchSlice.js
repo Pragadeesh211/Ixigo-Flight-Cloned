@@ -26,9 +26,14 @@ const initialState = {
   onewaySelectedFlight:[],
   returnSelectedFlight:[],
   totalAmount:0,
+  finalAmount:0,
   refundValue:{
     planType: null,
-    price: 0}
+    price: 0},
+  travellerDetails:[],
+  currentState:1,
+  decrementState:1,
+  shouldReset:false
 };
 
 const flightSearchSlice = createSlice({
@@ -64,10 +69,24 @@ const flightSearchSlice = createSlice({
         setOnewaySelectedFlight: (state, action) => { state.onewaySelectedFlight = action.payload; },
         setReturnSelectedFlight: (state, action) => { state.returnSelectedFlight = action.payload; },
         setTotalAmount: (state, action) => { state.totalAmount = action.payload; },
+        setFinalAmount: (state, action) => { state.finalAmount = action.payload; },
         setRefundPlan: (state, action) => {
           state.refundValue.planType = action.payload.planType;
           state.refundValue.price = action.payload.price;
         },
+        setTravellerDetails: (state, action) => { state.travellerDetails = action.payload; },
+        incrementCurrentState: (state) => {
+      state.currentState += 1;
+    },
+    decrementCurrentState: (state) => {
+      state.currentState -= 1;
+    },
+    setCurrentState: (state, action) => {
+  console.log("Setting currentState to", action.payload);
+  state.currentState = action.payload;
+},
+
+        setShouldReset: (state, action) => { state.shouldReset = action.payload; },
         resetSearch: () => initialState,
     }
 })
@@ -98,7 +117,13 @@ export const {
   setReturnSelectedFlight,
   setDrawerOpen,
   setTotalAmount,
+  setFinalAmount,
+  setTravellerDetails,
+  setCurrentState,
+  incrementCurrentState,
+  decrementCurrentState,
   setRefundPlan,
+  setShouldReset,
 } = flightSearchSlice.actions;
 
 export default flightSearchSlice.reducer;

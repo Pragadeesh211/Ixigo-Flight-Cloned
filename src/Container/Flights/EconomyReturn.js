@@ -3,7 +3,7 @@ import FlightListSearchCard from "./FlightListSearchCard";
 import Link,{useNavigate} from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RightOutlined,CloseOutlined, CloseCircleFilled,ClockCircleOutlined,ArrowRightOutlined,AppstoreOutlined,CheckOutlined  } from "@ant-design/icons";
-import { Typography,Card,Checkbox,Col, InputNumber, Row, Slider, Space,ConfigProvider,Button, Tag, Drawer,Tabs,Badge,Avatar, Tooltip,FloatButton,Segmented } from "antd";
+import { Typography,Card,Checkbox,Col, InputNumber, Row, Slider, Space,ConfigProvider,Button, Tag, Drawer,Tabs,Badge,Avatar, Tooltip,FloatButton,Segmented, Skeleton } from "antd";
 import { 
   setFrom,
   setTo,
@@ -3328,7 +3328,18 @@ useEffect(() => {
             },
           ];
         
+const [pageLoading, setPageLoading] = useState(true);
 
+
+
+
+useEffect(() => {
+  setPageLoading(true);
+
+  const timer = setTimeout(() => setPageLoading(false), 1500);
+
+  return () => clearTimeout(timer);
+}, [toCity, fromCity, selectedDate,travellerValue,selectedReturnDate]); 
         
         
         
@@ -3338,7 +3349,50 @@ useEffect(() => {
       
 
     return(
-        <>
+      <>
+      {
+         pageLoading ? (
+      <div style={{ display: "flex", gap: "20px", padding: "20px" }}>
+    
+    {/* LEFT FILTER SKELETON */}
+    <div
+      style={{
+        width: "300px",
+        background: "#fff",
+        padding: "16px",
+        borderRadius: "10px",
+        boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+        height: "600px"
+      }}
+    >
+      <Skeleton active paragraph={{ rows: 16 }} />
+    </div>
+
+    {/* CENTER LIST SKELETON (multiple flight cards) */}
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "20px" }}>
+      {[...Array(6)].map((_, i) => (
+        <div
+          key={i}
+          style={{
+            background: "#fff",
+            padding: "16px",
+            borderRadius: "10px",
+            boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+            height: "60px",
+            width:"75%"
+          }}
+        >
+          <Skeleton active paragraph={{ rows: 1 }} />
+        </div>
+      ))}
+    </div>
+
+
+    
+
+  </div>
+    ):(
+      <>
         <div>
           <div style={{
                         display:"flex",
@@ -4911,6 +4965,10 @@ useEffect(() => {
                       </Drawer>   
                       
         </div>
+        </>
+    )
+      }
+        
         </>
     )
 }

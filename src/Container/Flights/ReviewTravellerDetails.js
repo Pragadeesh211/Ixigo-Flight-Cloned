@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import PageSelectionTabs from "../../Component/PageSelectionTabs";
-import { Card, Typography, Input, Button, Radio, Space, ConfigProvider, Drawer, Tooltip, Col, Row, message, Divider, Dropdown, Segmented, Modal, Form, Alert, Select } from "antd";
+import { Card, Typography, Input, Button, Radio, Space, ConfigProvider, Drawer, Tooltip, Col, Row, message, Divider, Dropdown, Segmented, Modal, Form, Alert, Select, Skeleton } from "antd";
 import { RightOutlined, CloseOutlined, CheckOutlined, EditOutlined, UpOutlined, DownOutlined, CheckCircleFilled, DeleteFilled, DeleteOutlined } from "@ant-design/icons";
 import {
   setOpenDrawer,
   setPhoneNo
 } from "../../Redux/Slices/ProfileSlice";
-import { setOnewaySelectedFlight, setTotalAmount, setRefundPlan, setRefundFeeAdd } from "../../Redux/Slices/FlightSearchSlice";
+import { setOnewaySelectedFlight, setTotalAmount, setRefundPlan, setRefundFeeAdd, setTravellerDetails, setCurrentState, setShouldReset, setDecrementState, decrementCurrentState, incrementCurrentState, setPromoRadioValue, setFinalAmount } from "../../Redux/Slices/FlightSearchSlice";
 import { useDispatch, useSelector } from "react-redux";
 import LoginPage from "../../Component/LoginPage";
 import dayjs from "dayjs";
@@ -26,13 +26,16 @@ import ReturnFlightDetails from "../../Component/ReturnFlightDetails";
 import "./EconomySwiper.css";
 import FloatingInput from "../../Component/FloatInput";
 import { addTraveller, editTraveller } from "../../Redux/Slices/TravellerSlice";
-import AddTraveller from "../../Component/AddTraveller";
+import Link,{useNavigate,useLocation} from "react-router-dom";
+import ContinueButton from "../../Component/ContinueButton";
 
 dayjs.extend(duration);
 
 const { Text } = Typography;
 
 const ReviewTravellerDetails = () => {
+
+  const navigate = useNavigate();
   const [promoCodeValue, setPromoCodeValue] = useState("")
   const [promoCodeValue2, setPromoCodeValue2] = useState("")
   const [radioValue, setRadioValue] = useState(0);
@@ -43,6 +46,7 @@ const ReviewTravellerDetails = () => {
     openDrawer,
     phoneNo
   } = useSelector((state) => state.profile);
+  const location = useLocation();
   const {
     from,
     fromAirport,
@@ -65,8 +69,12 @@ const ReviewTravellerDetails = () => {
     cancelFeeAdd,
     rescheduleFeeAdd,
     refundFeeAdd,
-    refundValue
+    refundValue,
+    shouldReset,
+    currentState,
+    promoRadioValue
   } = useSelector((state) => state.flightSearch);
+  // const shouldReset = useSelector(state => state.app.shouldReset);
 
   const { add, added, dobCheckValue } = useSelector((state) => state.traveller);
 
@@ -169,6 +177,13 @@ const ReviewTravellerDetails = () => {
     CalculateFullAmount();
   }, [onewaySelectedFlight, returnSelectedFlight, travellerValue, travelClass, returnTripUI]);
 
+  useEffect(() => {
+  if (location.pathname === "/ReviewTravellerDetails") {
+    dispatch(setCurrentState(1));
+    dispatch(setTravellerDetails([]));
+    // dispatch(setRefundPlan({ planType: null, price: 0 }));
+  }
+}, [location, dispatch]);
 
 
 
@@ -303,7 +318,7 @@ const ReviewTravellerDetails = () => {
       setCancelPrice(getCancelFee(price));
       setReschedulePrice(getRescheduleFee(price));
     }
-  }, [onewaySelectedFlight, travelClass]);
+  }, [onewaySelectedFlight, travelClass,returnSelectedFlight]);
 
 
   const handleSelect = (option) => {
@@ -335,7 +350,7 @@ const ReviewTravellerDetails = () => {
 
 
   };
-
+console.log("endaa",refundValue)
   const getFinalAmount = () => {
     const promoAmount = promoOfferList?.[0]?.amount || 0;
 
@@ -425,7 +440,10 @@ const ReviewTravellerDetails = () => {
   const [firstNameError, setFirstNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
   const [DOBError, setDOBError] = useState(false);
+  const [DOBAgeVerify, setDOBAgeVerify] = useState(false);
   const [tempArray, settempArray] = useState([]);
+  const [tempChildArray, setTempChildArray] = useState([]);
+  const [tempInfantArray, setTempInfantArray] = useState([]);
   const [adultFirstName, setadultFirstName] = useState("")
   const [adultLastName, setadultLastName] = useState("")
   const [adultDOB, setadultDOB] = useState("")
@@ -436,26 +454,30 @@ const ReviewTravellerDetails = () => {
 
   const [activeAdultIndex, setactiveAdultIndex] = useState(0)
 
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingTraveller, setEditingTraveller] = useState(null);
-  const [editFirstName, setEditFirstName] = useState("");
-  const [editLastName, setEditLastName] = useState("");
-  const [editGender, setEditGender] = useState("");
-  const [editDOB, setEditDOB] = useState("");
+  // const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  // const [editingTraveller, setEditingTraveller] = useState(null);
+  // const [editFirstName, setEditFirstName] = useState("");
+  // const [editLastName, setEditLastName] = useState("");
+  // const [editGender, setEditGender] = useState("");
+  // const [editDOB, setEditDOB] = useState("");
 
   const [existingModal,setExistingModal] = useState(false);
   const [addNewModal,setAddNewModal] = useState(false);
+  const [addNewChildModal,setAddNewChildModal] = useState(false);
   const [editNewModal,seteditNewModal] = useState(false);
+  const [editNewChildModal,seteditChildNewModal] = useState(false);
   const [disabledAdults, setDisabledAdults] = useState([]); 
+  const [disabledChild, setDisabledChild] = useState([]); 
   const [editingAdult, setEditingAdult] = useState(null);
+  const [editingChild, setEditingChild] = useState(null);
 
 
   
 
   
-  useEffect(()=>{
-    settempArray([])
-  },[])
+  // useEffect(()=>{
+  //   settempArray([])
+  // },[])
 
 
 //  useEffect(() => {
@@ -509,7 +531,7 @@ const ReviewTravellerDetails = () => {
     });
     return;
   }
-
+  
   
   if (selectedAdults.length >= maxAllowed || tempArray.length >= maxAllowed) {
     messageApi.open({
@@ -527,22 +549,38 @@ const ReviewTravellerDetails = () => {
 
 console.log("seeeee",selectedAdults)
   const handleSelectChildren = (person) => {
+    const onlyOneAllowed = travellers?.Children === 1; 
+  const isAlreadySelected = Array.isArray(selectedChildren) && selectedChildren.some(a => a.key === person.key);
 
 
-    if (selectedChildren.some(a => a.key === person.key)) {
-      setSelectedChildren(prev => prev.filter(a => a.key !== person.key));
-      return;
-    }
+    if (isAlreadySelected) {
+    setSelectedChildren(prev => prev.filter(a => a.key !== person.key));
+    setTempChildArray(prev => prev.filter(a => a.key !== person.key));
+    return;
+  }
 
-    if (selectedChildren.length >= maxAllowedChildren) {
-      messageApi.open({
-        content: `You cannot select more than ${travellers?.Children} ${travellers?.Children == 1 ? `Child` : `Children`}`,
-        duration: 3,
-      });
-      return;
-    }
+  
+  if (onlyOneAllowed && tempChildArray.length >= 1) {
+    messageApi.open({
+      type: "warning",
+      content: `Only ${travellers?.Children} ${travellers?.Children === 1 ? "Child" : "Children"} allowed. Remove existing Child to select a new one.`,
+      duration: 3,
+    });
+    return;
+  }
 
-    setSelectedChildren(prev => [...prev, person]);
+  
+  if (selectedChildren.length >= maxAllowedChildren || tempChildArray.length >= maxAllowedChildren) {
+    messageApi.open({
+      type: "warning",
+      content: `Only ${travellers?.Children} ${travellers?.Children === 1 ? "Child" : "Children"} allowed. Remove existing Child to select a new one.`,
+      duration: 3,
+    });
+    return;
+  }
+
+  
+  setSelectedChildren(prev => [...prev, person]);
   };
 
   const handleSelectInfants = (person) => {
@@ -705,10 +743,40 @@ console.log("seeeee",selectedAdults)
     
     
       setDOBError(false);
+      setDOBAgeVerify(false)
 
 
     setadultDOB(maskedValue); 
   };
+
+  const handleaddChildDOBChange = (e) => {
+    const rawValue = e.target.value;
+    const cleanValue = rawValue.replace(/[^\d]/g, ""); // keep only digits
+
+    let maskedValue = "";
+    if (cleanValue.length > 0) {
+      maskedValue = cleanValue.substring(0, 2);
+    }
+    if (cleanValue.length >= 3) {
+      maskedValue += "/" + cleanValue.substring(2, 4);
+    }
+    if (cleanValue.length >= 5) {
+      maskedValue += "/" + cleanValue.substring(4, 8);
+    }
+
+    maskedValue = maskedValue.substring(0, 10);
+
+    // Validate with Day.js
+    
+    
+      setDOBError(false);
+      setDOBAgeVerify(false);
+
+
+    setadultDOB(maskedValue);  
+  };
+
+
 
   const handleAdd = () =>{
    
@@ -730,6 +798,11 @@ console.log("seeeee",selectedAdults)
         setDOBError(true);
         return;
       }
+      const age = getAge(adultDOB); 
+    if (age < 12) {
+      setDOBAgeVerify(true); 
+      return;
+    }
       const newRecord = {
         key: selectedAdults.length,
         firstName: adultFirstName,
@@ -744,6 +817,47 @@ console.log("seeeee",selectedAdults)
       setadultDOB("");
       setadultGender("Male");
       setAddNewModal(false)
+  }
+
+  const handleChildAdd = () =>{
+   
+    const NAME_REGEX = /^[A-Za-z\s'-]{1,27}$/;
+  
+
+      const DOB_REGEX = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19|20)\d{2}$/;
+      const isValid = DOB_REGEX.test(adultDOB);
+
+      if (!adultFirstName || adultFirstName.length > 32 || !NAME_REGEX.test(adultFirstName)) {
+        setFirstNameError(true);
+        return;
+      }
+      if (!adultLastName || adultLastName.length > 32 || !NAME_REGEX.test(adultLastName)) {
+        setLastNameError(true);
+        return;
+      }
+      if (!adultDOB || !isValid) {
+        setDOBError(true);
+        return;
+      }
+      const age = getAge(adultDOB); 
+  if (age > 12 || age<2) {
+    setDOBAgeVerify(true); 
+    return;
+  }
+      const newRecord = {
+        key: selectedAdults.length,
+        firstName: adultFirstName,
+        lastName: adultLastName,
+        genderValue: adultGender || "Male",
+        DOBValue: adultDOB,
+      };
+      setTempChildArray(prev => [...prev, newRecord]);
+
+      setadultFirstName("");
+      setadultLastName("");
+      setadultDOB("");
+      setadultGender("Male");
+      setAddNewChildModal(false)
   }
 
   const handleEdit = () =>{
@@ -762,15 +876,52 @@ console.log("seeeee",selectedAdults)
         setLastNameError(true);
         return;
       }
-      if (!editingAdult.DOBValue || !isValid) {
+      if (!editingAdult.DOBValue || !isValid) { 
         setDOBError(true);
         return;
       }
+      const age = getAge(editingAdult?.DOBValue); 
+    if (age < 12) {
+      setDOBAgeVerify(true); 
+      return;
+    }
     
       settempArray(prev =>
     prev.map(a => a.key === editingAdult.key ? editingAdult : a)
   ); 
       seteditNewModal(false)
+  }
+
+  const handleChildEdit = () =>{
+   
+    const NAME_REGEX = /^[A-Za-z\s'-]{1,27}$/;
+  
+
+      const DOB_REGEX = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19|20)\d{2}$/; 
+      const isValid = DOB_REGEX.test(editingChild?.DOBValue);
+
+      if (!editingChild.firstName || editingChild.firstName.length > 32 || !NAME_REGEX.test(editingChild.firstName)) {
+        setFirstNameError(true);
+        return;
+      }
+      if (!editingChild.lastName || editingChild.lastName.length > 32 || !NAME_REGEX.test(editingChild.lastName)) {
+        setLastNameError(true);
+        return;
+      }
+      if (!editingChild?.DOBValue || !isValid) {
+        setDOBError(true);
+        return;
+      }
+      const age = getAge(editingChild?.DOBValue); 
+    if (age > 12 || age<2) {
+      setDOBAgeVerify(true); 
+      return;
+    }
+    
+      setTempChildArray(prev =>
+    prev.map(a => a.key === editingChild.key ? editingChild : a)
+  ); 
+      seteditChildNewModal(false)
   }
 
 
@@ -795,9 +946,40 @@ console.log("seeeee",selectedAdults)
     
     
       setDOBError(false);
-
+      setDOBAgeVerify(false);
 
     setEditingAdult(prev => ({ ...prev, DOBValue: maskedValue }));
+  };
+
+  const handleChildEditDOBChange = (e) => { 
+    const rawValue = e.target.value;
+    const cleanValue = rawValue.replace(/[^\d]/g, ""); 
+
+    let maskedValue = "";
+    if (cleanValue.length > 0) {
+      maskedValue = cleanValue.substring(0, 2);
+    }
+    if (cleanValue.length >= 3) {
+      maskedValue += "/" + cleanValue.substring(2, 4);
+    }
+    if (cleanValue.length >= 5) {
+      maskedValue += "/" + cleanValue.substring(4, 8);
+    }
+
+    maskedValue = maskedValue.substring(0, 10);
+
+    
+    
+    
+      setDOBError(false);
+      setDOBAgeVerify(false);
+
+
+    setEditingChild(prev => {
+  if (!prev) return { DOBValue: maskedValue };
+  return { ...prev, DOBValue: maskedValue };
+});
+
   };
 
   const handleFirstNameChange = (value, idx) => {
@@ -933,11 +1115,61 @@ const handleFirstNameChange = (value, key) => {
  
 
 
-  // // console.log("selected121212121",tempArray)
+  const [pageLoading, setPageLoading] = useState(true);
+  
+  
+  
+  
+  useEffect(() => {
+    setPageLoading(true);
+  
+    const timer = setTimeout(() => setPageLoading(false), 1500);
+  
+    return () => clearTimeout(timer);
+  }, []); 
 
   return (
     <>
-      <div
+    {pageLoading?(
+      <>
+      <div style={{ display: "flex", gap: "20px", padding: "20px",marginTop:70 }}>
+          
+         
+          <div
+            style={{
+                display: "flex",
+                background: "#fff",
+                width:"28%",
+                padding: 20, borderRadius: 20,
+                paddingBottom: "60px",
+                maxHeight: "auto",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+              }}
+          >
+            <Skeleton active paragraph={{ rows: 16 }} />
+          </div>
+      
+         <div
+            style={{
+              width: 975,
+              background: "#fff",
+              padding: "16px",
+              borderRadius: "10px",
+              boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+              height: "600px"
+            }}
+          >
+            <Skeleton active paragraph={{ rows: 16 }} />
+          </div>
+      
+      
+          
+      
+        </div>
+      </>
+    ):(
+      <>
+        <div
         style={{
           backgroundColor: "#4f4f4f14",
           paddingTop: "70px",
@@ -2303,14 +2535,8 @@ const handleFirstNameChange = (value, key) => {
                     fontSize: 18, fontWeight: 500
                   }}>Passengers</Text>
                   <br />
-                  <Text style={{
-                    fontWeight: 500
-                  }}>ADULTS</Text>
-                <div style={{
-                  display:"flex",justifyContent:"space-between",marginTop:10
-                }}>
-                <button style={{
-                  border:"none",background:"transparent",color:"#008cff",fontSize:13,fontWeight:700
+                  <button style={{
+                  border:"none",background:"transparent",color:"#008cff",fontSize:13,fontWeight:700,display:"flex",position:"relative",right:5
                 }} onClick={()=>{
                   // if(tempArray.length>=maxAllowed){
                   //   messageApi.open({
@@ -2321,7 +2547,14 @@ const handleFirstNameChange = (value, key) => {
                   // else{
                     setExistingModal(true)
                   // }
-                  }}>ADD EXISTING ADULT +</button>
+                  }}>ADD EXISTING TRAVELLERS +</button>
+                  
+                <div style={{
+                  display:"flex",justifyContent:"space-between",marginTop:10
+                }}>
+                <Text style={{
+                    fontWeight: 500
+                  }}>ADULTS</Text>
                 <button style={{
                   border:"none",background:"transparent",color:"#008cff",fontSize:13,fontWeight:700
                 }} onClick={()=>{
@@ -2347,120 +2580,23 @@ const handleFirstNameChange = (value, key) => {
                  
                                          </ConfigProvider>
 
-                {/* Existing Modal */}
-                <Modal 
-                footer={null}
-                                        open={existingModal}
-                                        closable
-                                        width={"30%"}
-                                        onCancel={() => {setExistingModal(false)
-                                          setSelectedAdults(prev =>
-                                                  prev.filter(a => disabledAdults.includes(a.key))
-                                                );
-                                        }}
-                                        style={{
-                                            marginTop:50 
-                                        }}>
-                                          {adults.map((person,idx)=>{
-                                            const isSelected = Array.isArray(selectedAdults) && Array.isArray(tempArray) && selectedAdults.some(a => a.key === person.key);
-                                            const isDisabled = disabledAdults.includes(person.key);
-                                            return(
-                                              <>
-                                              <div key={person.key} style={{ display: "flex", flexDirection: "column" }}>
-                                
-                                {/* CHECKBOX FOR EXISTING PERSON */}
-                                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                  <input
-                                    type="checkbox"
-                                    checked={isSelected}
-                                     disabled={isDisabled}
-                                    onChange={() => {
-                                      handleSelectAdult(person);
-                                         
-                                    }}
-                                    style={{ height: 20, width: 20 }}
-                                  />
-                                  <span>{person.firstName} {person.lastName}</span>
-                                </div>
-
-                               
-
-                              </div>
-                                              </>
-                                            )
-                                          })}
-                                          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 20,gap:20 }}>
-                                           <button
-                                                style={{
-                                                  borderRadius: 10,
-                                                  width: "100px",
-                                                  height: "35px",
-                                                  fontSize: "16px",
-                                                  color: "black",
-                                                  background: "white",
-                                                  border: "1px solid #b8b8bcff",
-                                                }}
-                                               onClick={() => {
-                                                setSelectedAdults(prev =>
-                                                  prev.filter(a => disabledAdults.includes(a.key))
-                                                );
-
-                                                setExistingModal(false); 
-                                              }}
-
-                                              >
-                                                SKIP
-                                              </button>
-                                      <button
-                                        style={{
-                                          background: "#ff7a00",
-                                          border: "none",
-                                          borderRadius: 10,
-                                          width: "100px",
-                                          height: "35px",
-                                          fontSize: "16px",
-                                          color: "white",
-                                        }}
-                                        onClick={() => {
-                                    
-                                    setDisabledAdults(prev => [
-                                      ...prev,
-                                      ...selectedAdults.map(a => a.key)
-                                    ]);
-
-                                    
-                                    setExistingModal(false);
-
-                                    
-                                    settempArray(prev => [
-                                ...prev,
-                                ...selectedAdults
-                                  .filter(a => a && !disabledAdults.includes(a.key)) 
-                                  .map((a, idx) => ({
-                                    key: prev.length + idx,
-                                    firstName: a.firstName || "",
-                                    lastName: a.lastName || "",
-                                    DOBValue: a.DOBValue || "", 
-                                    genderValue: a?.genderValue || "Male",
-                                  }))
-                              ]);
-
-
-                                  }}
-
-                                      >
-                                        SELECT
-                                      </button>
-                                    </div> 
-
-                </Modal>
+                
 
                  <Modal 
                 footer={null}
                                         open={addNewModal}
                                         closable
                                         width={"45%"}
-                                        onCancel={() => setAddNewModal(false)}
+                                        onCancel={() => {setAddNewModal(false)
+                                          setadultFirstName("");
+                                            setadultLastName("");
+                                            setadultDOB("");
+                                            setadultGender("Male");
+                                          setFirstNameError(false);
+                                            setLastNameError(false);
+                                            setDOBError(false);
+                                            setDOBAgeVerify(false)
+                                        }}
                                         style={{
                                             marginTop:50  
                                         }}>
@@ -2470,7 +2606,7 @@ const handleFirstNameChange = (value, key) => {
                                           <br/>
                                           <div style={{
                                             display:"flex",
-                                          width:"95%",alignItems:"center",justifyContent:"center",flexDirection:"column"
+                                          width:"95%",alignItems:"center",justifyContent:"center",flexDirection:"column",marginTop:10
                                           }}>
                                           <div style={{
                                             display:"flex",justifyContent:"space-between",width:"95%"
@@ -2531,7 +2667,13 @@ const handleFirstNameChange = (value, key) => {
                                   value={adultDOB}
                                   onChange={handleaddDOBChange}  
                                   
-                                  error={DOBError && "Enter Valid Age"}
+                                  error={
+                                      DOBError
+                                        ? "Enter Valid Age"
+                                        : DOBAgeVerify 
+                                        ? "Age should be above 12 years"
+                                        : undefined
+                                    }
 
 
 
@@ -2590,6 +2732,15 @@ const handleFirstNameChange = (value, key) => {
                                               color:"black",background:"white",border: "1px solid #b8b8bcff"
                                             }} onClick={(e) => {
                                             setAddNewModal(false)
+                                            setadultFirstName("");
+                                            setadultLastName("");
+                                            setadultDOB("");
+                                            setadultGender("Male");
+                                            setFirstNameError(false);
+                                            setLastNameError(false);
+                                            setDOBError(false);
+                                            setDOBAgeVerify(false);
+
                                               }}>
                                               CANCEL
                                             </button>
@@ -2615,9 +2766,7 @@ const handleFirstNameChange = (value, key) => {
                 </div>
                 
 
-                <div style={{
-                  marginTop: 10
-                }}>
+                <div >
                   
                   
                     <div style={{
@@ -2674,7 +2823,12 @@ const handleFirstNameChange = (value, key) => {
                                         open={editNewModal}
                                         closable 
                                         width={"45%"}
-                                        onCancel={() => seteditNewModal(false)}
+                                        onCancel={() => {seteditNewModal(false)
+                                          setFirstNameError(false);
+                                            setLastNameError(false);
+                                            setDOBError(false);
+                                            setDOBAgeVerify(false);
+                                        }}
                                         style={{
                                             marginTop:50  
                                         }}>
@@ -2742,7 +2896,13 @@ const handleFirstNameChange = (value, key) => {
                                   value={editingAdult?.DOBValue || ""}
                                   onChange={handleEditDOBChange}  
                                   
-                                  error={DOBError && "Enter Valid Age"}
+                                  error={
+                                    DOBError
+                                      ? "Enter Valid Age"
+                                      : DOBAgeVerify
+                                      ? "Age should be above 12 years"
+                                      : undefined
+                                  }
 
 
 
@@ -2802,6 +2962,10 @@ const handleFirstNameChange = (value, key) => {
                                               color:"black",background:"white",border: "1px solid #b8b8bcff"
                                             }} onClick={(e) => {
                                             seteditNewModal(false)
+                                            setFirstNameError(false);
+                                            setLastNameError(false);
+                                            setDOBError(false);
+                                            setDOBAgeVerify(false);
                                               }}>
                                               CANCEL
                                             </button>
@@ -2829,29 +2993,430 @@ const handleFirstNameChange = (value, key) => {
                     </div>
                  
                   <br />
-                  {travellers.Children > 0 && (
+                  
                     <div>
-                      <Text style={{
-                        fontWeight: 500
-                      }}>Children</Text>
-                      {selectedChildren.length > 0 && (
-                        <div style={{
-                          marginTop: 10
+                      <div style={{
+                  display:"flex",justifyContent:"space-between",marginTop:10
+                }}>
+                  <Text style={{
+                    fontWeight: 500
+                  }}>CHILDREN</Text>
+
+                  <button style={{
+                  border:"none",background:"transparent",color:"#008cff",fontSize:13,fontWeight:700
+                }} onClick={()=>{
+                  if(tempChildArray.length>=maxAllowedChildren){
+                    messageApi.open({
+                    content: `Only ${travellers?.Children} ${travellers?.Children === 1 ? "Child" : "Children"} allowed. Remove existing Child to add a new one.`,
+                    duration: 3,
+                  });
+                  }
+                  else{
+                    setAddNewChildModal(true)
+                  }
+                 }}>ADD NEW CHILD +</button>
+                </div>
+                <Modal 
+                footer={null}
+                                        open={addNewChildModal}
+                                        closable
+                                        width={"45%"}
+                                        onCancel={() => {setAddNewChildModal(false)
+                                          setadultFirstName("");
+                                            setadultLastName("");
+                                            setadultDOB("");
+                                            setadultGender("Male");
+                                          setFirstNameError(false);
+                                            setLastNameError(false);
+                                            setDOBError(false);
+                                            setDOBAgeVerify(false);
+                                        }}
+                                        style={{
+                                            marginTop:50  
+                                        }}>
+                                          <Text>
+                                            Add New Child
+                                          </Text>
+                                          <br/>
+                                          <div style={{
+                                            display:"flex",
+                                          width:"95%",alignItems:"center",justifyContent:"center",flexDirection:"column"
+                                          }}>
+                                          <div style={{
+                                            display:"flex",justifyContent:"space-between",width:"95%"
+                                          }}>
+                                          <Form>
+                              <Form.Item
+                                rules={[{ required: true }]}
+                                validateTrigger="onBlur"
+                              // validateStatus={firstNameError ? "error" : ""}
+                              // help={firstNameError ? "" : ""}
+                              >
+                                <FloatingInput
+                                  label="First Name"
+                                  value={adultFirstName}
+                                  onChange={(e)=>{
+                                    const newValue = e.target.value
+                                            if(adultFirstName !== newValue){ 
+                                              setFirstNameError(false)
+                                            }
+                                            setadultFirstName(newValue);
+                                        
+                                  }}
+                                  error={
+                                    firstNameError && "Your first name should have 1–27 characters"
+                                  }
+                                />
+                              </Form.Item>
+                            </Form>
+
+
+                            <Form>
+                              <Form.Item>
+                                <FloatingInput
+                                  label="Last Name"
+                                  value={adultLastName}
+                                  onChange={(e)=>{
+                                    const newValue = e.target.value
+                                            if(adultLastName !== newValue){ 
+                                              setLastNameError(false)
+                                            }
+                                            setadultLastName(newValue); 
+                                        
+                                  }}
+                                  error={lastNameError && "Your last name should have 1–27 characters "}
+                                />
+                              </Form.Item>
+                            </Form>
+                                          </div>
+                                          <br/>
+                                          <div style={{
+                                            display:"flex",justifyContent:"space-between",width:"95%"
+                                          }}>
+                                            <Form>
+                              <Form.Item>
+                                <FloatingInput
+                                  label="DOB (DD/MM/YYYY)"
+                                  type={dayjs("DD/MM/YYYY")}
+                                  value={adultDOB}
+                                  onChange={handleaddChildDOBChange}  
+                                  
+                                  error={
+                                  DOBError
+                                    ? "Enter Valid Age"
+                                    : DOBAgeVerify 
+                                    ? "Age should be  2-12 years"
+                                    : undefined
+                                }
+
+
+
+                                />
+
+                              </Form.Item>
+                            </Form>
+
+                            <ConfigProvider
+                              theme={{
+                                components: {
+                                  Segmented: {
+                                    itemSelectedBg: "#fc790d",
+                                    itemSelectedColor: "white"
+                                  },
+                                }
+                              }}
+                            >
+
+
+
+                              <Segmented
+                                value={adultGender || "Male"}
+                                options={["Male", "Female"]} 
+                                style={{
+                                  background: "#f1f1f1",
+                                  borderRadius: "10px",
+                                  boxShadow: "0 0 5px rgba(0,0,0,0.1)",
+                                  fontWeight: 500,
+                                  border: "1.5px solid #c9c9c9", 
+                                  height: 50,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "flex-end",
+                                  paddingLeft: 12,
+                                  paddingRight: 12,
+                                  fontSize: 15,
+                                  backgroundColor: "white", transition: "0.2s ease",
+                                  position:"relative",left:25 
+                                }}
+                                onChange={(val) => {
+                                  setadultGender(val);
+                                }} />
+                            </ConfigProvider>
+                                          </div>
+                                        
+                                          </div>
+                                          <div style={{
+                                           display:"flex",justifyContent:"flex-end",width:"97%",gap:10,flexDirection:"row"
+                                          }}>
+                                            <button style={{
+                                              borderRadius: 10,
+                                              width:"100px",
+                                              height:"35px",
+                                              fontSize:"16px",
+                                              color:"black",background:"white",border: "1px solid #b8b8bcff"
+                                            }} onClick={(e) => {
+                                            setAddNewChildModal(false)
+                                            setadultFirstName("");
+                                            setadultLastName("");
+                                            setadultDOB("");
+                                            setadultGender("Male");
+                                            setFirstNameError(false);
+                                            setLastNameError(false);
+                                            setDOBError(false);
+                                            setDOBAgeVerify(false);
+
+                                              }}>
+                                              CANCEL
+                                            </button>
+                                            <button
+                                              type="primary"
+                                              style={{
+                                                background: "#ff7a00",
+                                                border: "none",
+                                                borderRadius: 10,
+                                                width:"100px",
+                                                height:"35px",
+                                                fontSize:"16px",
+                                                color:"white",
+                                                position:"relative",
+                                                
+                                              }}
+                                              onClick={handleChildAdd}
+                                            >
+                                              ADD
+                                            </button>
+                                          </div>
+                                        </Modal>
+                <div>
+                  {tempChildArray.map((item, idx) => (
+                        <div key={idx} style={{
+                          display: "flex", justifyContent: "space-between",border: "1px solid #c0c0c0ff",alignItems:"center",padding:12,borderRadius:8,marginTop:10,
+                          transition:"all 0.3 ease"
                         }}>
-                          {selectedChildren.map((item, idx) => (
-                            <div key={idx} style={{
-                              display: "flex", justifyContent: "space-between"
-                            }}>
-                              {/* {item.genderValue === "Male" ? "Mr" : "Ms"} */}
-                              {idx + 1} -  {item.firstName} {item.lastName}
+                          <Text style={{
+                            fontSize:15,fontWeight:500,textTransform:"uppercase"
+                          }}>
+                         Child {idx + 1} -  {item.firstName} {item.lastName}
+                         </Text>
+                          <div style={{
+                            display:"flex",flexDirection:"row",gap:15
+                          }}>
+                            <EditOutlined style={{
+                              cursor:"pointer",fontSize:20,color: "#008cff"
+                            }} 
+                            onClick={()=>{seteditChildNewModal(true)
+                              setEditingChild(item);
+                            }}/>
+                            <DeleteOutlined style={{
+                              cursor:"pointer",fontSize:20,color:"red"
+                            }} 
+                            onClick={() => {
+                                                  setTempChildArray(prev =>
+                                                  prev.filter(
+                                                    a => !(a.firstName === item.firstName && a.lastName === item.lastName)
+                                                  )
+                                                );
 
-                            </div>
-                          ))}
+                                                  setSelectedChildren(prev =>
+                              prev.filter(a => !(a.firstName === item.firstName && a.lastName === item.lastName))
+                            );
+
+                            setDisabledChild(prev =>
+                              prev.filter(key =>
+                                // find the adult object for this key
+                                !selectedChildren.some(
+                                  a => a.key === key &&
+                                      a.firstName === item.firstName &&
+                                      a.lastName === item.lastName
+                                )
+                              )
+                            );
+
+                          }}/>
+                          </div>
+                          <Modal 
+                footer={null}
+                                        open={editNewChildModal}
+                                        closable 
+                                        width={"45%"}
+                                        onCancel={() => {seteditChildNewModal(false)
+                                          setFirstNameError(false);
+                                            setLastNameError(false);
+                                            setDOBError(false);
+                                        }}
+                                        style={{
+                                            marginTop:50  
+                                        }}>
+                                          <Text style={{
+                                            fontWeight:500,fontSize:16
+                                          }}>
+                                            Edit Child
+                                          </Text>
+                                          <br/>
+                                          <div style={{
+                                            display:"flex",
+                                          width:"95%",alignItems:"center",justifyContent:"center",flexDirection:"column",marginTop:10
+                                          }}>
+                                          <div style={{
+                                            display:"flex",justifyContent:"space-between",width:"95%"
+                                          }}>
+                                          <Form>
+                              <Form.Item
+                                rules={[{ required: true }]}
+                                validateTrigger="onBlur"
+                              // validateStatus={firstNameError ? "error" : ""}
+                              // help={firstNameError ? "" : ""}
+                              >
+                                <FloatingInput
+                                  label="First Name"
+                                  value={editingChild?.firstName || ""} 
+                                  onChange={(e)=>{
+                                    const newValue = e.target.value;
+                                    setEditingChild(prev => ({ ...prev, firstName: newValue }));
+                                    setFirstNameError(false);
+                                        
+                                  }}
+                                  error={
+                                    firstNameError && "Your first name should have 1–27 characters"
+                                  }
+                                />
+                              </Form.Item>
+                            </Form>
+
+
+                            <Form>
+                              <Form.Item>
+                                <FloatingInput
+                                  label="Last Name"
+                                  value={editingChild?.lastName || ""}
+                                  onChange={(e)=>{
+                                    const newValue = e.target.value
+                                    setEditingChild(prev => ({ ...prev, lastName: newValue }));
+                                    setLastNameError(false);
+                                  }}
+                                  error={lastNameError && "Your last name should have 1–27 characters "}
+                                />
+                              </Form.Item>
+                            </Form>
+                                          </div>
+                                          <br/>
+                                          <div style={{
+                                            display:"flex",justifyContent:"space-between",width:"95%"
+                                          }}>
+                                            <Form>
+                              <Form.Item>
+                                <FloatingInput
+                                  label="DOB (DD/MM/YYYY)"
+                                  type={dayjs("DD/MM/YYYY")}
+                                  value={editingChild?.DOBValue || ""} 
+                                  onChange={handleChildEditDOBChange}  
+                                  
+                                  error={
+                                  DOBError
+                                    ? "Enter Valid Age"
+                                    : DOBAgeVerify 
+                                    ? "Age should be  2-12 years"
+                                    : undefined
+                                }
+
+
+
+                                />
+
+                              </Form.Item>
+                            </Form>
+
+                            <ConfigProvider
+                              theme={{
+                                components: {
+                                  Segmented: {
+                                    itemSelectedBg: "#fc790d",
+                                    itemSelectedColor: "white"
+                                  },
+                                }
+                              }}
+                            >
+
+
+
+                              <Segmented
+                                value={editingChild?.genderValue || "Male"}
+                                options={["Male", "Female"]}
+                                style={{
+                                  background: "#e7e7e7ff",
+                                  borderRadius: "10px",
+                                  boxShadow: "0 0 5px rgba(0,0,0,0.1)",
+                                  fontWeight: 500,
+                                  border: "1.5px solid #c9c9c9", 
+                                  height: 50,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "flex-end",
+                                  paddingLeft: 12,
+                                  paddingRight: 12,
+                                  fontSize: 15,
+                                  backgroundColor: "white", transition: "0.2s ease",
+                                  position:"relative",left:25 
+                                }}
+                                onChange={(val) => {
+    
+                                  setEditingChild(prev => ({ ...prev, genderValue: val }));
+                                }}/>
+                            </ConfigProvider>
+                                          </div>
+                                        
+                                          </div>
+                                          <div style={{
+                                           display:"flex",justifyContent:"flex-end",width:"97%",gap:10,flexDirection:"row"
+                                          }}>
+                                            <button style={{
+                                              borderRadius: 10,
+                                              width:"100px",
+                                              height:"35px",
+                                              fontSize:"16px",
+                                              color:"black",background:"white",border: "1px solid #b8b8bcff"
+                                            }} onClick={(e) => {
+                                            seteditChildNewModal(false)
+                                            setFirstNameError(false);
+                                            setLastNameError(false);
+                                            setDOBError(false);
+                                            setDOBAgeVerify(false);
+                                              }}>
+                                              CANCEL
+                                            </button>
+                                            <button
+                                              type="primary"
+                                              style={{
+                                                background: "#ff7a00",
+                                                border: "none",
+                                                borderRadius: 10,
+                                                width:"100px",
+                                                height:"35px",
+                                                fontSize:"16px",
+                                                color:"white",
+                                                position:"relative",
+                                                
+                                              }}
+                                              onClick={handleChildEdit}
+                                            >
+                                              UPDATE
+                                            </button>
+                                          </div>
+                                        </Modal>
                         </div>
-                      )}
+                      ))}
+                </div>
                     </div>
-                  )}
-
                 </div>
 
 
@@ -2862,13 +3427,7 @@ const handleFirstNameChange = (value, key) => {
                   
 
 
-                  {travellerChildListMap.map((item, idx) => (
-                    <div key={idx}>
-                      {item.type === 'Adult' ? `Adult ${idx + 1}` : null}
-                      {item.type === 'Child' ? `Child ${idx + 1}` : null}
-                      {item.type === 'Infants' ? `Infant ${idx + 1}` : null}
-                    </div>
-                  ))}
+                  
 
 
 
@@ -2922,38 +3481,62 @@ const handleFirstNameChange = (value, key) => {
 
               </div>
               <div>
-                <button
-                  type="primary"
-                  style={{
-                    background: "#ff7a00",
-                    border: "none",
-                    borderRadius: 10,
-                    width: "145px",
-                    height: "40px",
-                    fontSize: "17px",
-                    color: "white",
-                    cursor: "pointer"
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
+                <ContinueButton
+                  
+                  onClick={() => {
+                    
 
                     if (!phoneNo) {
                       dispatch(setOpenDrawer(true));
                       return;
                     }
 
+                    
+                    if(tempArray.length !== travellers?.Adults){
+                      messageApi.destroy("adults-check");
+                      messageApi.open({
+                      key: "adults-check",
+                      type: "error",
+                      content: `Please add ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} to Continue`,
+                      duration: 3,
+                    });
+                    return;
+                    }
+
+                    if(tempChildArray.length !== travellers?.Children){
+                      messageApi.destroy("child-check");
+                      messageApi.open({
+                      key: "child-check",
+                      type: "error",
+                      content: `Please add ${travellers?.Children} ${travellers?.Children === 1 ? "Child" : "Children"} to Continue`,
+                      duration: 3,
+                    });
+                    return;
+                    }
                     if (refundValue.planType === null) {
                       startShake();
                       if (shakeref.current) {
                         shakeref.current.focus();
                       }
+                      return;
                     }
-                  }}
+                    dispatch(setCurrentState(2));
+                    dispatch(setPromoRadioValue(promoOfferList[0].amount))
+                    dispatch(setFinalAmount(finalAmount))
+                    navigate("/addOns")
+                    const combinedArray = [
+                      ...tempArray.map(a => ({ ...a, type: "adult" })),
+                      ...tempChildArray.map(c => ({ ...c, type: "child" }))
+                    ];
+                    dispatch(setTravellerDetails(combinedArray))
+                     
+                    
 
+                  }}
+                  text="Continue"
                 >
-                  Continue <RightOutlined style={{ fontSize: 13 }} />
-                </button>
+                   
+                </ContinueButton>
               </div>
             </div>
           </Col>
@@ -3129,8 +3712,244 @@ const handleFirstNameChange = (value, key) => {
           </div>
 
         </Drawer>
+        <Drawer
+          title={null}
+          closable={false}
+          destroyOnHidden
+          placement="right"
+          trigger={["click"]}
+          arrow
+          open={existingModal}
+          onClose={() => {setExistingModal(false)
+            if(travellers.Children>0 && selectedChildren.length>0){
+                                               setSelectedChildren(prev =>
+                                                  prev.filter(a => disabledChild.includes(a.key))
+                                                );
+                                               }
+                                                setSelectedAdults(prev =>
+                                                  prev.filter(a => disabledAdults.includes(a.key))
+                                                );
+          }}
+
+          overlayStyle={{
+            marginBottom: "10px"
+          }}
+          maskClosable={true}
+          width={"28%"}
+          style={{
+            // padding: "24px",
+            background: "#fff",
+            // borderRadius: "8px 0 0 8px",
+            overflow: "auto",
+          }}>
+            <Text style={{
+              fontWeight:700,fontSize:17,color:"#008cff"
+            }}>
+              ADD EXISTING TRAVELLERS
+            </Text>
+            <div style={{
+              marginTop:20
+            }}>
+              <div style={{
+                                                display:"flex",justifyContent:"center",border:"1px solid #b8b8bcff",borderRadius:10,marginTop:20,padding:10,flexDirection:"column"
+                                              }}>
+                                                 <Text  style={{
+                                                fontWeight:700,fontSize:16
+                                              }}>Adults(12 years or above)</Text>
+            {adults.map((person,idx)=>{
+                                            const isSelected = Array.isArray(selectedAdults) && Array.isArray(tempArray) && selectedAdults.some(a => a.key === person.key);
+                                            const isDisabled = disabledAdults.includes(person.key);
+                                            return(
+                                              <>
+                                              
+                                             
+                                              <div key={person.key} style={{ display: "flex", flexDirection: "column",marginTop:10 }}>
+                                
+                                {/* CHECKBOX FOR EXISTING PERSON */}
+                                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                  <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                     disabled={isDisabled}
+                                    onChange={() => {
+                                      handleSelectAdult(person);
+                                         
+                                    }}
+                                    style={{ height: 20, width: 20 }}
+                                  />
+                                  
+                                  <span style={{
+                                    fontSize:15,fontWeight:500
+                                  }}>{person.firstName} {person.lastName}</span>
+                                </div>
+
+                               
+
+                              </div>
+                              
+                                              </>
+                                            )
+                                          })}
+                                          </div>
+                                          {travellers.Children>0 && children.length>0 && (
+                                            <div style={{
+                                                display:"flex",justifyContent:"center",border:"1px solid #b8b8bcff",borderRadius:10,marginTop:20,padding:10,flexDirection:"column"
+                                              }}>
+                                                 <Text  style={{
+                                                fontWeight:700,fontSize:16
+                                              }}>Children(2 to 12 years)</Text>
+                                              {children.map((person,idx)=>{
+                                            const isSelected = Array.isArray(selectedChildren) && Array.isArray(tempChildArray) && selectedChildren.some(a => a.key === person.key);
+                                            const isDisabled = disabledChild.includes(person.key);
+                                            return(
+                                              <>
+                                              
+                                             
+                                              <div key={person.key} style={{ display: "flex", flexDirection: "column",marginTop:10 }}>
+                                
+                                {/* CHECKBOX FOR EXISTING PERSON */}
+                                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                  <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                     disabled={isDisabled}
+                                    onChange={() => {
+                                      handleSelectChildren(person);
+                                         
+                                    }}
+                                    style={{ height: 20, width: 20 }}
+                                  />
+                                  
+                                  <span style={{
+                                    fontSize:15,fontWeight:500
+                                  }}>{person.firstName} {person.lastName}</span>
+                                </div>
+
+                               
+
+                              </div>
+                              
+                                              </>
+                                            )
+                                          })}
+                                              </div>
+                                          )}
+                                           <div style={{
+                                            position:"fixed",
+                                            bottom: 0,
+                                            width: "25.2%",
+                                            height:"7%",
+                                            zIndex: 1000,
+                                            background: "#fff",
+                                            padding: "10px 20px",
+                                            right:"2px",
+                                            boxShadow: "0 5px 25px rgba(0, 0, 0, 0.3)",
+                                            display:"flex",
+                                            justifyContent:"space-between",
+                                            alignItems:"center"
+                                            }}>
+                                           <button
+                                                style={{
+                                                  borderRadius: 10,
+                                                  width: "100px",
+                                                  height: "35px",
+                                                  fontSize: "16px",
+                                                  color: "black",
+                                                  background: "white",
+                                                  border: "1px solid #b8b8bcff",
+                                                }}
+                                               onClick={() => {
+                                               if(travellers.Children>0 && selectedChildren.length>0){
+                                               setSelectedChildren(prev =>
+                                                  prev.filter(a => disabledChild.includes(a.key))
+                                                );
+                                               }
+                                                setSelectedAdults(prev =>
+                                                  prev.filter(a => disabledAdults.includes(a.key))
+                                                );
+
+                                                setExistingModal(false); 
+                                              }}
+
+                                              >
+                                                SKIP
+                                              </button>
+                                      <button
+                                        style={{
+                                          background: "#ff7a00",
+                                          border: "none",
+                                          borderRadius: 10,
+                                          width: "100px",
+                                          height: "35px",
+                                          fontSize: "16px",
+                                          color: "white",
+                                        }}
+                                        onClick={() => {
+                                        if(travellers.Children>0 && selectedChildren.length>0){
+                                        setDisabledChild(prev => [
+                                      ...prev,
+                                      ...selectedChildren.map(a => a.key)
+                                    ]);
+
+                                    
+                                    
+
+                                    
+                                    setTempChildArray(prev => [
+                                ...prev,
+                                ...selectedChildren
+                                  .filter(a => a && !disabledChild.includes(a.key)) 
+                                  .map((a, idx) => ({
+                                    key: prev.length + idx,
+                                    firstName: a.firstName || "",
+                                    lastName: a.lastName || "",
+                                    DOBValue: a?.DOBValue || "", 
+                                    genderValue: a?.genderValue || "Male",
+                                  }))
+                              ]);
+
+                                        }
+
+                                        //Adult
+                                        setDisabledAdults(prev => [
+                                      ...prev,
+                                      ...selectedAdults.map(a => a.key)
+                                    ]);
+
+                                    
+                                    setExistingModal(false);
+
+                                    
+                                    settempArray(prev => [
+                                ...prev,
+                                ...selectedAdults
+                                  .filter(a => a && !disabledAdults.includes(a.key)) 
+                                  .map((a, idx) => ({
+                                    key: prev.length + idx,
+                                    firstName: a.firstName || "",
+                                    lastName: a.lastName || "",
+                                    DOBValue: a.DOBValue || "", 
+                                    genderValue: a?.genderValue || "Male",
+                                  }))
+                              ]);
+
+                                    
+                                    
+
+                                  }}
+
+                                      >
+                                        SELECT
+                                      </button>
+                                    </div> 
+
+                                          </div>
+        </Drawer>
         <LoginPage />
       </div>
+      </>
+    )}
+      
 
 
       

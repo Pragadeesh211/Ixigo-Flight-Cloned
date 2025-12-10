@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React,{useEffect, useState} from "react";
 import { Button, message, Steps, theme, ConfigProvider,Dropdown,Space,Typography } from 'antd';
 import ReviewTravellerDetails from "../Container/Flights/ReviewTravellerDetails";
 import "./PageSelect.css"
@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import {useNavigate} from "react-router-dom";
 import LoginDropdown from "./LoginDropdown";
-
+import AddOns from "../Container/Flights/AddOns";
 
 
 const {Text} = Typography;
@@ -26,6 +26,9 @@ const PageSelectionTabs = () =>{
     phoneNo,
     name
   } = useSelector((state) => state.profile);
+  const {
+    currentState
+  } = useSelector((state) => state.flightSearch);
 
   const [open,setOpen] = useState(false)
     const steps = [
@@ -39,15 +42,20 @@ const PageSelectionTabs = () =>{
   },
   {
     title: 'Add-ons',
-    content: 'Add-ons',
+    content: <AddOns/>,
   },
   {
     title: 'Payment',
     content: 'Payment',
   },
 ];
+const [current, setCurrent] = useState(currentState);
 const { token } = theme.useToken();
-  const [current, setCurrent] = useState(1);
+useEffect(()=>{
+setCurrent(currentState)
+},[currentState])
+  
+
   const next = () => {
     setCurrent(current + 1);
   };

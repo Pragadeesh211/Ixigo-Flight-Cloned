@@ -41,7 +41,7 @@ const CardCarousel = () => {
           768: { slidesPerView: 3 },
           1024: { slidesPerView: 4 },
         }}
-        className="offer-swiper"
+        className="offer-swiper1"
       >
         {cardData.map((card) => (
           <SwiperSlide key={card.id}>

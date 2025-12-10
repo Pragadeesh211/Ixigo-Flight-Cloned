@@ -132,7 +132,7 @@ const Flights = () => {
     <div>
       <h2 style={{
         display: "flex",
-        width: "90%",
+        width: "95%",
         margin: "30px auto",
         fontFamily:"Roboto"
       }}>Today's Flight Offers</h2>
@@ -143,11 +143,11 @@ const Flights = () => {
     <div>
       <h2 style={{
         display: "flex",
-        width: "90%",
+        width: "95%",
         margin: "30px auto",
         fontFamily:"Roboto"
       }}>Popular Flight Routes</h2>
-       <div style={{ width: "90%", margin: "auto", }}>
+       <div style={{ width: "95%", margin: "auto", }}>
       <Row gutter={[24, 24]} justify="center">
         {flightData.slice(0, visibleCount).map((flight) => (
           <Col key={flight.id} xs={24} sm={12} md={8}>
@@ -230,7 +230,7 @@ const Flights = () => {
     <div>
       <h2 style={{
         display: "flex",
-        width: "90%",
+        width: "95%",
         margin: "30px auto",
         fontFamily:"Roboto"
       }}>Popular Domestic Airlines</h2>
@@ -239,7 +239,7 @@ const Flights = () => {
         border: "1px solid #d9d9d9",
         gap:"15px",
         borderRadius:"20px",
-        width:"90%",
+        width:"95%",
         
       }} >
     <Row justify="center"  gutter={[16, 16]} style={{
@@ -282,7 +282,7 @@ const Flights = () => {
     <div>
       <h2 style={{
         display: "flex",
-        width: "90%",
+        width: "95%",
         margin: "30px auto",
         fontFamily:"Roboto",
         
@@ -301,7 +301,7 @@ const Flights = () => {
             background: "#fff",
             borderRadius: "10px",
             boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
-            width:"90%"
+            width:"95%"
             
     
           }}
@@ -334,7 +334,7 @@ const Flights = () => {
     }}>
       <div style={{
         display: "flex",
-        width: "90%",
+        width: "95%",
         
         
       }}>

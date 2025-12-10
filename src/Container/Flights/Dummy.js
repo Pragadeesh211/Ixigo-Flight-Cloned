@@ -3537,3 +3537,145 @@ export default ReviewTravellerDetails;
 
 
                                                       /// Dummy 33
+
+
+                                                      {/* Existing Modal */}
+                                                                      <Modal 
+                                                                      footer={null}
+                                                                                              open={existingModal}
+                                                                                              closable
+                                                                                              width={"30%"}
+                                                                                              onCancel={() => {setExistingModal(false)
+                                                                                                setSelectedAdults(prev =>
+                                                                                                        prev.filter(a => disabledAdults.includes(a.key))
+                                                                                                      );
+                                                                                              }}
+                                                                                              style={{
+                                                                                                  marginTop:50 
+                                                                                              }}>
+                                                                                                {adults.map((person,idx)=>{
+                                                                                                  const isSelected = Array.isArray(selectedAdults) && Array.isArray(tempArray) && selectedAdults.some(a => a.key === person.key);
+                                                                                                  const isDisabled = disabledAdults.includes(person.key);
+                                                                                                  return(
+                                                                                                    <>
+                                                                                                    <div key={person.key} style={{ display: "flex", flexDirection: "column" }}>
+                                                                                      
+                                                                                      {/* CHECKBOX FOR EXISTING PERSON */}
+                                                                                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                                                                        <input
+                                                                                          type="checkbox"
+                                                                                          checked={isSelected}
+                                                                                           disabled={isDisabled}
+                                                                                          onChange={() => {
+                                                                                            handleSelectAdult(person);
+                                                                                               
+                                                                                          }}
+                                                                                          style={{ height: 20, width: 20 }}
+                                                                                        />
+                                                                                        <span>{person.firstName} {person.lastName}</span>
+                                                                                      </div>
+                                                      
+                                                                                     
+                                                      
+                                                                                    </div>
+                                                                                                    </>
+                                                                                                  )
+                                                                                                })}
+                                                                                                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 20,gap:20 }}>
+                                                                                                 <button
+                                                                                                      style={{
+                                                                                                        borderRadius: 10,
+                                                                                                        width: "100px",
+                                                                                                        height: "35px",
+                                                                                                        fontSize: "16px",
+                                                                                                        color: "black",
+                                                                                                        background: "white",
+                                                                                                        border: "1px solid #b8b8bcff",
+                                                                                                      }}
+                                                                                                     onClick={() => {
+                                                                                                      setSelectedAdults(prev =>
+                                                                                                        prev.filter(a => disabledAdults.includes(a.key))
+                                                                                                      );
+                                                      
+                                                                                                      setExistingModal(false); 
+                                                                                                    }}
+                                                      
+                                                                                                    >
+                                                                                                      SKIP
+                                                                                                    </button>
+                                                                                            <button
+                                                                                              style={{
+                                                                                                background: "#ff7a00",
+                                                                                                border: "none",
+                                                                                                borderRadius: 10,
+                                                                                                width: "100px",
+                                                                                                height: "35px",
+                                                                                                fontSize: "16px",
+                                                                                                color: "white",
+                                                                                              }}
+                                                                                              onClick={() => {
+                                                                                          
+                                                                                          setDisabledAdults(prev => [
+                                                                                            ...prev,
+                                                                                            ...selectedAdults.map(a => a.key)
+                                                                                          ]);
+                                                      
+                                                                                          
+                                                                                          setExistingModal(false);
+                                                      
+                                                                                          
+                                                                                          settempArray(prev => [
+                                                                                      ...prev,
+                                                                                      ...selectedAdults
+                                                                                        .filter(a => a && !disabledAdults.includes(a.key)) 
+                                                                                        .map((a, idx) => ({
+                                                                                          key: prev.length + idx,
+                                                                                          firstName: a.firstName || "",
+                                                                                          lastName: a.lastName || "",
+                                                                                          DOBValue: a.DOBValue || "", 
+                                                                                          genderValue: a?.genderValue || "Male",
+                                                                                        }))
+                                                                                    ]);
+                                                      
+                                                      
+                                                                                        }}
+                                                      
+                                                                                            >
+                                                                                              SELECT
+                                                                                            </button>
+                                                                                          </div> 
+                                                      
+                                                                      </Modal>
+
+
+// Dummy 4
+{travellers.Children > 0 && (
+                    <div>
+                      <Text style={{
+                        fontWeight: 500
+                      }}>Children</Text>
+                      {selectedChildren.length > 0 && (
+                        <div style={{
+                          marginTop: 10
+                        }}>
+                          {selectedChildren.map((item, idx) => (
+                            <div key={idx} style={{
+                              display: "flex", justifyContent: "space-between"
+                            }}>
+                              {/* {item.genderValue === "Male" ? "Mr" : "Ms"} */}
+                              {idx + 1} -  {item.firstName} {item.lastName}
+
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {travellerChildListMap.map((item, idx) => (
+                    <div key={idx}>
+                      {item.type === 'Adult' ? `Adult ${idx + 1}` : null}
+                      {item.type === 'Child' ? `Child ${idx + 1}` : null}
+                      {item.type === 'Infants' ? `Infant ${idx + 1}` : null}
+                    </div>
+                  ))}
