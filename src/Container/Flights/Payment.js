@@ -49,23 +49,16 @@ const Payment = () => {
     const [paymentStatus, setPaymentStatus] = useState("pending");
 
 
-    const checkPaymentStatus = async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve("success"), 1000);
-    });
-  };    
+     
 
-useEffect(() => {
-  if (paymentStatus === "success") return;
 
-  const timer = setTimeout(async () => {
-    const status = await checkPaymentStatus();
-    
 
-    if (status === "success") {
-      setPaymentStatus("success");
+  
 
-      Swal.fire({
+
+const handlePayment = () =>{
+  setPaymentStatus("success");
+  Swal.fire({
         title: "Payment Successful 🎉",
         text: "Your transaction has been completed!",
         icon: "success",
@@ -75,13 +68,7 @@ useEffect(() => {
           navigate("/");
         }
       });
-    }
-  }, ); 
-
-  
-}, []);
-
-
+}
 
 
     
@@ -333,10 +320,12 @@ useEffect(() => {
                         fontSize:20,fontWeight:500
                     }}>Scan QR for Payment</Text>
                     <QRCode
-        value="upi://pay?pa=yourupiid@bank&pn=YourName&am=100&cu=INR"
+                    value="true"
+        onClick={handlePayment}
         size={200}
         style={{
-            marginTop:20
+            marginTop:20,
+            cursor:"pointer"
         }}
       />
 

@@ -7,7 +7,7 @@ import FlightList from "./Container/Flights/FlightList";
 import { Route,Routes,BrowserRouter,useLocation } from "react-router-dom";
 import Navbar from "./Component/Navbar";
 import TopTabs from "./Component/TopTabs";
-import Economy from "./Container/Flights/Economy";
+import Oneway from "./Container/Flights/Oneway";
 import FlightListPage from "./Container/Flights/FlightListPage";
 import ReviewTravellerDetails from "./Container/Flights/ReviewTravellerDetails";
 import PageSelectionTabs from "./Component/PageSelectionTabs";
@@ -44,7 +44,7 @@ const App = () => {
   const showNavbarRoutes = ["/", "/hotels", "/trains", "/buses"];
 
   
-  const showTabsRoutes = ["/flightListPage","/Economy"];
+  const showTabsRoutes = ["/flightListPage"];
 
   const showPageSelectTabsRoutes = ["/ReviewTravellerDetails","/addOns","/payment"];
 
@@ -64,7 +64,6 @@ const App = () => {
         <Route path="/trains" element={<Trains />} />
         <Route path="/buses" element={<Buses />} />
         <Route path="/flightListPage" element={<FlightListPage />} />
-        <Route path="/Economy" element={<Economy/>} />
         <Route path="/ReviewTravellerDetails" element={<ReviewTravellerDetails/>} />
         <Route 
           path="/addOns" 

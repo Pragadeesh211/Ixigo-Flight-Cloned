@@ -66,7 +66,7 @@ const airlinePlainOptions=[
     {name:"Alliance Air",image:"https://images.ixigo.com/img/common-resources/airline-new/9I.png"}
 ]
 
-const EconomyReturn = () =>{
+const RoundTrip = () =>{
     const dispatch = useDispatch();
       const {
       from,
@@ -956,8 +956,56 @@ useEffect(() => {
       const FilterDetailShow1 = [
                                   ...(startReturnPrice !== 0 || endReturnPrice !== 51275 ? [`₹${startReturnPrice} - ₹${endReturnPrice}`] : []),
                                 ]
+          const today1 = dayjs().format("YYYY-MM-DD")
+            
       
-      // --- FILTER LOGIC ---
+          const toMinutes = (t) =>{
+            const [h,m] = t.split(":").map(Number)
+            return h * 60 + m;
+      
+          }
+
+      const handleCurrentTimeFilter =(departureTime) =>{ 
+    
+  const bufferMinutes = toMinutes("03:00");
+  const nowMinutes = toMinutes(currentTime);
+  const finalminutes = bufferMinutes + nowMinutes;
+
+  const finaldep = toMinutes(departureTime)
+
+  
+  
+
+  if(today1 !== depart) return finaldep;
+  
+  return finalminutes<=finaldep;
+
+   
+
+    
+  }
+
+  const handleCurrentTimeFilter1 =(departureTime) =>{ 
+    
+  const bufferMinutes = toMinutes("03:00");
+  const nowMinutes = toMinutes(currentTime);
+  const finalminutes = bufferMinutes + nowMinutes;
+
+  const finaldep = toMinutes(departureTime)
+
+  
+  
+
+  if(today1 !== returnpart) return finaldep;
+  
+  return finalminutes<=finaldep;
+
+   
+
+    
+  }
+      
+      //  FILTER LOGIC 
       const filteredFlights = useMemo(() => {
         return flights.filter((flight) => {
           //  Airline Filter
@@ -1002,7 +1050,7 @@ useEffect(() => {
             return true;
           }
       
-          //  Airline-specific filters 
+          //  Airline specific filters 
           const airlineFilters = ["Air India", "IndiGo","Air-India Express", "SpiceJet","Alliance Air"];
           let selectedAirlineFilters = checkedList.filter((f) =>
             airlineFilters.includes(f)
@@ -1024,6 +1072,10 @@ useEffect(() => {
           ) {
             return true;
           }
+
+          if(!handleCurrentTimeFilter(flight.departureTime)){
+        return false;
+    }
       
           return true; 
         });
@@ -1096,6 +1148,9 @@ useEffect(() => {
           ) {
             return true;
           }
+          if(!handleCurrentTimeFilter1(flight.departureTime)){
+        return false;
+    }
       
           return true; 
         });
@@ -4050,12 +4105,27 @@ useEffect(() => {
                         fontSize:"18px",fontWeight:600,fontFamily:"Roboto"
                       }}>{fromCode} - {toCode}</Text>
                       <Text strong type="secondary">
-                        {filteredFlights.length === 1? 
-                        `${filteredFlights.length} Flight Available`:
-                        `${filteredFlights.length} Flights Available`}
+                        {filteredFlights.length === 0
+                        ? null
+                        : filteredFlights.length === 1
+                          ? "1 Flight Available"
+                          : `${filteredFlights.length} Flights Available`}
                         </Text>
                     </div>
                     <div style={{ width: "100%", }}>
+                      {filteredFlights.length === 0 && (
+        <div style={{
+          display:"flex",justifyContent:"center",marginTop:20,flexDirection:"column",alignItems:"center"
+        }}>
+          <img src="https://edge.ixigo.com/st/vimaan/_next/static/media/noFlight.94c81339.svg"/>
+          <Text  style={{
+            fontSize:24,fontWeight:700,fontFamily:"Roboto",
+          }}>No flight available!</Text>
+          <Text style={{
+            fontSize:15,fontWeight:500
+          }}>Please modify the date or filters & try again.</Text>
+        </div>
+      )}
                           {filteredFlights.map((item, idx) =>{
                           
                             return(
@@ -4366,13 +4436,29 @@ useEffect(() => {
                         fontSize:"18px",fontWeight:600,fontFamily:"Roboto"
                       }}>{toCode} - {fromCode}</Text>
                       <Text strong type="secondary">
-                        {filteredFlightsReturn.length === 1? 
-                        `${filteredFlightsReturn.length} Flight Available`:
-                        `${filteredFlightsReturn.length} Flights Available`}
+                        {filteredFlights.length === 0
+                          ? null
+                          : filteredFlightsReturn.length === 1
+                            ? "1 Flight Available"
+                            : `${filteredFlightsReturn.length} Flights Available`}
                         </Text>
                     </div>
                     <div style={{ width: "100%", }}>
-                          {filteredFlightsReturn.map((item, idx) =>{
+                      {filteredFlights.length === 0 ? (
+        <div style={{
+          display:"flex",justifyContent:"center",marginTop:20,flexDirection:"column",alignItems:"center"
+        }}>
+          <img src="https://edge.ixigo.com/st/vimaan/_next/static/media/noFlight.94c81339.svg"/>
+          <Text  style={{
+            fontSize:24,fontWeight:700,fontFamily:"Roboto",
+          }}>No flight available!</Text>
+          <Text style={{
+            fontSize:15,fontWeight:500
+          }}>Please modify the date or filters & try again.</Text>
+        </div>
+      ):(
+        <>
+        {filteredFlightsReturn.map((item, idx) =>{
                           
                             return(
                             <div key={item.id}>
@@ -4580,6 +4666,9 @@ useEffect(() => {
                             </div>
                            );
                            })}
+        </>
+      )}
+                          
                         </div>
               </div>
               
@@ -4594,7 +4683,9 @@ useEffect(() => {
                       }}>
                        <Text>d</Text>
                       </div> */}
-                      <div
+                     {filteredFlights.length === 0 ?null:(
+                      <>
+                       <div
             style={{
               position: "fixed",
               bottom: 0,
@@ -4825,6 +4916,8 @@ useEffect(() => {
               
                 
             </div>
+                      </>
+                     )}
             <div>
                   
             
@@ -4973,4 +5066,4 @@ useEffect(() => {
     )
 }
 
-export default EconomyReturn;
+export default RoundTrip;

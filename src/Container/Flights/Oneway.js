@@ -61,7 +61,7 @@ const airlinePlainOptions=[
 
 
 
-const Economy = () =>{
+const Oneway = () =>{
     const dispatch = useDispatch();
   const {
   from,
@@ -579,7 +579,7 @@ const FilterDetailShow = [
     
   }
 
-// --- FILTER LOGIC ---
+// FILTER LOGIC 
 const filteredFlights = useMemo(() => {
   return flights.filter((flight) => {
     //  Airline Filter
@@ -624,7 +624,7 @@ const filteredFlights = useMemo(() => {
       return true;
     }
 
-    //  Airline-specific filters 
+    //  Airline filters 
     const airlineFilters = ["Air India", "IndiGo","Air-India Express", "SpiceJet"];
     let selectedAirlineFilters = checkedList.filter((f) =>
       airlineFilters.includes(f)
@@ -2766,12 +2766,29 @@ useEffect(() => {
       marginTop:"10px"
     }}>
       <Text strong type="secondary">
-        {filteredFlights.length === 1? 
-        `${filteredFlights.length} Flight Available`:
-        `${filteredFlights.length} Flights Available`}
+       {filteredFlights.length === 0
+          ? null
+          : filteredFlights.length === 1
+            ? "1 Flight Available"
+            : `${filteredFlights.length} Flights Available`}
+
+        
         </Text>
       </div>
     <div style={{ width: "100%", }}>
+      {filteredFlights.length === 0 && (
+        <div style={{
+          display:"flex",justifyContent:"center",marginTop:20,flexDirection:"column",alignItems:"center"
+        }}>
+          <img src="https://edge.ixigo.com/st/vimaan/_next/static/media/noFlight.94c81339.svg"/>
+          <Text  style={{
+            fontSize:24,fontWeight:700,fontFamily:"Roboto",
+          }}>No flight available!</Text>
+          <Text style={{
+            fontSize:15,fontWeight:500
+          }}>Please modify the date or filters & try again.</Text>
+        </div>
+      )}
       {filteredFlights.map((item, index) =>{
       
         return(
@@ -3219,7 +3236,7 @@ useEffect(() => {
     )
 }
 
-export default Economy ;
+export default Oneway ;
 
 
 // const airlineCount = filteredFlights.filter(f => f.airline === option.name).length;

@@ -152,8 +152,7 @@ const ReviewTravellerDetails = () => {
     };
   };
 
-  const [tempBase, setTempBase] = useState(0);
-  const [tempTax, setTempTax] = useState(0);
+  
 
   // // console.log("total", totalAmount)
 
@@ -181,7 +180,9 @@ const ReviewTravellerDetails = () => {
   if (location.pathname === "/ReviewTravellerDetails") {
     dispatch(setCurrentState(1));
     dispatch(setTravellerDetails([]));
-    // dispatch(setRefundPlan({ planType: null, price: 0 }));
+    if(refundValue.planType === "norefund"){
+    dispatch(setRefundPlan({ planType: null, price: 0 }));
+    }
   }
 }, [location, dispatch]);
 
@@ -2993,8 +2994,9 @@ const handleFirstNameChange = (value, key) => {
                     </div>
                  
                   <br />
-                  
-                    <div>
+                  {!travellers.Children === 0 && (
+                        <div>
+                      
                       <div style={{
                   display:"flex",justifyContent:"space-between",marginTop:10
                 }}>
@@ -3417,6 +3419,8 @@ const handleFirstNameChange = (value, key) => {
                       ))}
                 </div>
                     </div>
+                      )}
+                    
                 </div>
 
 
@@ -3469,9 +3473,19 @@ const handleFirstNameChange = (value, key) => {
                 <div style={{
                   display: "flex", marginTop: 12, marginLeft: 5
                 }}>
-                  <s style={{
-                    color: "#b22422"
-                  }}>{promoOfferList[0].amount ? (`₹ ${slashAmount.toLocaleString("en-IN")}`) : null}</s>
+            <s style={{ color: "#b22422" }}>
+            {promoOfferList[0].amount
+              ? `₹ ${
+                  (
+                    slashAmount +
+                    (refundValue?.planType === "Free Cancellation" || refundValue?.planType === "Rescheduling"
+                      ? refundValue.price * travellerValue 
+                      : 0)
+                  ).toLocaleString("en-IN")
+                }`
+              : null}
+          </s>
+
                   <Text style={{
                     color: "#5e616e", marginTop: -2, fontWeight: 500,
                   }}> &nbsp;  {travellerValue === 1
@@ -3513,7 +3527,7 @@ const handleFirstNameChange = (value, key) => {
                     });
                     return;
                     }
-                    if (refundValue.planType === null) {
+                    if (refundValue.planType === null ) {
                       startShake();
                       if (shakeref.current) {
                         shakeref.current.focus();

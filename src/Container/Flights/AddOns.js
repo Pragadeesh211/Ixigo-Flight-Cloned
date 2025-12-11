@@ -1097,7 +1097,15 @@ const [pageLoading, setPageLoading] = useState(true);
                 }}>
                    <s style={{
                     color: "#b22422"
-                  }}>{promoRadioValue ? (`₹ ${totalAmount.toLocaleString("en-IN")}`) : null}</s>
+                  }}>{promoRadioValue ? `₹ ${
+                  (
+                    totalAmount +
+                    (refundValue?.planType === "Free Cancellation" || refundValue?.planType === "Rescheduling"
+                      ? refundValue.price * travellerValue 
+                      : 0)
+                  ).toLocaleString("en-IN")
+                }`
+              : null}</s>
                   <Text style={{
                     color: "#5e616e", marginTop: -2, fontWeight: 500, 
                   }}> &nbsp;  {travellerValue === 1
@@ -1146,7 +1154,18 @@ const [pageLoading, setPageLoading] = useState(true);
                   <>
                   <ContinueButton
                   text="Next Flight" 
-                  onClick={()=>setSwapButton(true)}
+                  onClick={()=>{
+                    if(selected.length !== travellerValue){
+                     messageApi.destroy("check");
+                                           messageApi.open({
+                                           key: "check",
+                                           type: "error",
+                                           content: `Please select ${travellerValue} ${travellerValue === 1 ? "Seat" : "Seats"} from  ${fromCode} - ${toCode} then move to next flight`,
+                                           duration: 3,
+                                         });
+                                         return; 
+                    }
+                    setSwapButton(true)}}
                 >
                    
                 </ContinueButton>
@@ -1156,27 +1175,19 @@ const [pageLoading, setPageLoading] = useState(true);
                   <ContinueButton
                   text="Continue" 
                   onClick={()=>{
-                    if(selected.length !== travellerValue){
-                     messageApi.destroy("check");
-                                           messageApi.open({
-                                           key: "check",
-                                           type: "error",
-                                           content: `Please select ${travellerValue} ${travellerValue === 1 ? "Seat" : "Seats"} in ${fromCode} - ${toCode} to Continue`,
-                                           duration: 3,
-                                         });
-                                         return; 
-                    }
+                    
 
                     if(selected2.length !== travellerValue){
                      messageApi.destroy("check");
                                            messageApi.open({
                                            key: "check",
                                            type: "error",
-                                           content: `Please select ${travellerValue} ${travellerValue === 1 ? "Seat" : "Seats"} in ${toCode} - ${fromCode} to Continue`,
+                                           content: `Please select ${travellerValue} ${travellerValue === 1 ? "Seat" : "Seats"} from  ${toCode} - ${fromCode} to Continue`,
                                            duration: 3,
                                          });
                                          return; 
                     }
+                    dispatch(setCurrentState(3))
                     navigate("/payment")
                   }}
                   

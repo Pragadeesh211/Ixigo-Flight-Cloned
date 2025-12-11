@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import FlightListSearchCard from "./FlightListSearchCard";
-import Economy from "./Economy";
-import EconomyReturn from "./EconomyReturn";
+import Oneway from "./Oneway";
+import RoundTrip from "./RoundTrip";
 import { useDispatch, useSelector } from "react-redux";
 import { Skeleton } from "antd";
 import Link,{useNavigate} from "react-router-dom";
@@ -49,9 +49,9 @@ const FlightListPage = () =>{
             <div>
                 {
                     !returnTripUI?(<div>
-                    <Economy/>
+                    <Oneway/>
                 </div>):(
-                    <EconomyReturn/>
+                    <RoundTrip/>
                 )
                 
                 }
