@@ -7,7 +7,7 @@ import FlightList from "./Container/Flights/FlightList";
 import { Route,Routes,BrowserRouter,useLocation } from "react-router-dom";
 import Navbar from "./Component/Navbar";
 import TopTabs from "./Component/TopTabs";
-import Economy from "./Container/Flights/Economy";
+import Oneway from "./Container/Flights/Oneway";
 import FlightListPage from "./Container/Flights/FlightListPage";
 import ReviewTravellerDetails from "./Container/Flights/ReviewTravellerDetails";
 import PageSelectionTabs from "./Component/PageSelectionTabs";
@@ -16,6 +16,10 @@ import EditProfile from "./Component/EditProfile";
 import MyTravellers from "./Component/MyTravellers";
 import AddTraveller from "./Component/AddTraveller";
 import EditTraveller from "./Component/EditTraveller";
+import AddOns from "./Container/Flights/AddOns";
+import Payment from "./Container/Flights/Payment";
+import ProtectedRoute from "./ProtectedRoute";
+import { useSelector } from "react-redux";
 
 
 
@@ -31,14 +35,18 @@ const App = () => {
 
   const MainLayout = () => {
   const location = useLocation();
+  const {
+    openDrawer,
+    phoneNo
+  } = useSelector((state) => state.profile); 
 
-  // Define routes where Navbar should appear
+  
   const showNavbarRoutes = ["/", "/hotels", "/trains", "/buses"];
 
-  // Define route where Tabs should appear
-  const showTabsRoutes = ["/flightListPage","/Economy"];
+  
+  const showTabsRoutes = ["/flightListPage"];
 
-  const showPageSelectTabsRoutes = ["/ReviewTravellerDetails"];
+  const showPageSelectTabsRoutes = ["/ReviewTravellerDetails","/addOns","/payment"];
 
   const showNavbar = showNavbarRoutes.includes(location.pathname);
   const showTabs = showTabsRoutes.includes(location.pathname);
@@ -56,13 +64,64 @@ const App = () => {
         <Route path="/trains" element={<Trains />} />
         <Route path="/buses" element={<Buses />} />
         <Route path="/flightListPage" element={<FlightListPage />} />
-        <Route path="/Economy" element={<Economy/>} />
         <Route path="/ReviewTravellerDetails" element={<ReviewTravellerDetails/>} />
-        <Route path="/Account" element={<Account/>} />
-        <Route path="/editProfile" element={<EditProfile/>} />
-        <Route path="/myTravellers" element={<MyTravellers/>} />
-        <Route path="/addTraveller" element={<AddTraveller/>} />
-        <Route path="/editTraveller" element={<EditTraveller/>} />
+        <Route 
+          path="/addOns" 
+          element={
+            <ProtectedRoute phone={phoneNo}>
+              <AddOns />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/payment" 
+          element={
+            <ProtectedRoute phone={phoneNo}>
+              <Payment />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/Account" 
+          element={
+            <ProtectedRoute phone={phoneNo}>
+              <Account />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/editProfile" 
+          element={
+            <ProtectedRoute phone={phoneNo}>
+              <EditProfile />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/myTravellers" 
+          element={
+            <ProtectedRoute phone={phoneNo}> 
+              <MyTravellers />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/addTraveller" 
+          element={
+            <ProtectedRoute phone={phoneNo}>
+              <AddTraveller />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/editTraveller" 
+          element={
+            <ProtectedRoute phone={phoneNo}>
+              <EditTraveller />
+            </ProtectedRoute>
+          } 
+        />
+        
       </Routes>
     </>
   );
@@ -71,3 +130,4 @@ const App = () => {
 
 
 export default App;
+

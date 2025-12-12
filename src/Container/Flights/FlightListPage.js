@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import FlightListSearchCard from "./FlightListSearchCard";
-import Economy from "./Economy";
-import EconomyReturn from "./EconomyReturn";
+import Oneway from "./Oneway";
+import RoundTrip from "./RoundTrip";
 import { useDispatch, useSelector } from "react-redux";
 import { Skeleton } from "antd";
 import Link,{useNavigate} from "react-router-dom";
@@ -17,10 +17,12 @@ import {
   setTravelClass,
  } from "../../Redux/Slices/FlightSearchSlice";
 import LoginPage from "../../Component/LoginPage";
+import useScreenSize from "../../Component/UseScreenSize";
 
 
 const FlightListPage = () =>{
     const dispatch = useDispatch();
+    const {isMobile} = useScreenSize();
       const {
         from,
         to,
@@ -42,30 +44,41 @@ const FlightListPage = () =>{
 
     return(
         <>
-        <div style={{
+        {isMobile? (
+            <>
+            {
+                    !returnTripUI?(<div>
+                    <Oneway/>
+                </div>):(
+                    <RoundTrip/>
+                )
+                
+                }
+            </>
+
+        ):(
+            <>
+            <div style={{
             backgroundColor: "#f2f4f7",
         }}>
             <FlightListSearchCard/>
             <div>
                 {
                     !returnTripUI?(<div>
-                    <Economy/>
+                    <Oneway/>
                 </div>):(
-                    <EconomyReturn/>
+                    <RoundTrip/>
                 )
                 
                 }
-            {/* {travelClass === "Economy" &&(
-                !returnTripUI?(<div>
-                    <Economy/>
-                </div>):(
-                    <EconomyReturn/>
-                )
-                )}
-            {travelClass === "Premium Economy" &&(<p>Hi</p>)} */}
+        
             </div>
         </div>
         <LoginPage/>
+            </>
+        )}
+    
+        
         </>
     )
 }

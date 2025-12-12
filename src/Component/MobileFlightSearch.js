@@ -22,12 +22,11 @@ import {
   setTravelClass,
 } from "../Redux/Slices/FlightSearchSlice";
 import useScreenSize from "./UseScreenSize";
-import MobileFlightSearch from "./MobileFlightSearch";
 
 
 const { Text } = Typography;
 
-const FlightSearchCard = () => {
+const MobileFlightSearch = () => {
 
   const dispatch = useDispatch();
   const { isMobile } = useScreenSize();
@@ -586,17 +585,10 @@ const FlightSearchCard = () => {
   }
 
   return (
-    <>
-      {isMobile ? (
+    
+   
         <>
-          <MobileFlightSearch/>
-          
-
-        </>
-      ) : (
-        <>
-
-          <div style={{ display: "flex", justifyContent: "space-evenly", width: "220px" }}>
+          <div style={{ display: "flex", justifyContent: "space-evenly", width: "90%", alignItems: "center" }}>
             <Button shape="round" size="medium" type={returnTrip ? "default" : "primary"}
               onClick={handleOneWay}
               style={{
@@ -611,41 +603,44 @@ const FlightSearchCard = () => {
                 fontSize: 16
               }}>Return Trip</Button>
           </div>
-
-
-          {/* <FlightSearchDropdown/> */}
-
-          <div style={{
-            marginTop: "30px"
-          }}>
-            <Card style={{
-              background: "#f2f4f7",
-              borderRadius: "12px",
+          <div
+            style={{
+              width: "95%",
+              border: "1px solid",
+              marginTop: 10,
               display: "flex",
-              marginTop: "10px",
-              height: "55px",
-              alignItems: "center",
-              boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)",
-              position: "relative"
-
-            }} >
-              <Row justify="space-between"
-                align="middle"
+              borderRadius: 10,
+              height: "auto",
+              padding: 10,
+              flexDirection:"column"
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                width: "100%",
+                alignItems:"center",
+                border:"1px solid grey",
+                borderRadius:10,
+                height:50
+              }}
+            >
+              <div
                 style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  alignItems: "center"
-                }} >
-                <Col style={{
-                  borderRight: "3px solid white",
-                  width: "290px"
-                }}>
-                  <p style={{
+                  width: "50%",
+                  padding: "5px",
+                 
+                  
+                }}
+              >
+                <p style={{
                     fontFamily: "Roboto",
                     color: "grey",
                     fontSize: "12px",
-                    top: "5px",
                     position: "relative",
+                    
                   }}>
                     From
                   </p>
@@ -659,11 +654,11 @@ const FlightSearchCard = () => {
                       ref={inputFromRef}
                       style={{
                         position: "relative",
-                        bottom: "13px",
+                        bottom: "15px",
                         height: "30px",
                         right: "11px",
                         fontFamily: "Roboto",
-                        fontSize: "18px",
+                        fontSize: "14px",
                         fontWeight: "550"
                       }}
                       variant="borderless"
@@ -689,36 +684,25 @@ const FlightSearchCard = () => {
 
 
                   </Dropdown>
-                </Col>
-                <div
-                  style={{
-                    background: "#fff",
-                    borderRadius: "50%",
-                    width: "36px",
-                    height: "36px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                    cursor: "pointer",
-                    position: "relative",
-                    right: "20px"
-                  }}
-                  onClick={handleSwapChange} >
-                  <SwapOutlined style={{ fontSize: "18px", color: "black" }} />
-                </div>
-                <Col style={{
-                  borderRight: "3px solid white",
-                  position: "relative",
-                  width: "252px"
-
-                }}>
-                  <p style={{
+              </div>
+              <div >
+                <SwapOutlined style={{ fontSize: "18px", color: "black" }} onClick={()=>handleSwapChange()}/>
+              </div>
+              <div
+                style={{
+                  width: "50%",
+                  padding: "5px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",   
+                  textAlign: "end"
+                }}
+              >
+                <p style={{
                     fontFamily: "Roboto",
                     color: "grey",
                     fontSize: "12px",
-                    top: "5px",
-                    position: "relative"
+                    position: "relative",
                   }}>
                     To
                   </p>
@@ -732,12 +716,13 @@ const FlightSearchCard = () => {
                       ref={inputToRef}
                       style={{
                         position: "relative",
-                        bottom: "13px",
+                        bottom: "15px",
                         height: "30px",
-                        right: "11px",
                         fontFamily: "Roboto",
-                        fontSize: "18px",
-                        fontWeight: "550"
+                        fontSize: "14px",
+                        fontWeight: "550",
+                        textAlign: "end" ,
+                        left:10
                       }}
                       variant="borderless"
                       value={displayTo}
@@ -760,32 +745,43 @@ const FlightSearchCard = () => {
 
                     </Input>
                   </Dropdown>
-                </Col >
-
-                <Col style={{
-                  borderRight: "3px solid white",
-                  position: "relative",
-                  left: "20px",
-                  width: "135px"
-                }}>
-                  <p style={{
+              </div>
+               
+            </div>
+            
+            <div style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                width: "100%",
+                alignItems:"center",
+                border:"1px solid grey",
+                borderRadius:10,
+                height:50,
+                marginTop:10
+              }}>
+              <div style={{
+                width:"50%",
+                padding:5
+              }}>
+                <p style={{
                     fontFamily: "Roboto",
                     color: "grey",
                     fontSize: "12px",
-                    top: "5px",
-                    position: "relative"
+                    position: "relative",
+                    top:45
                   }}>
                     Departure
                   </p>
                   <Text
                     style={{
                       position: "relative",
-                      bottom: "13px",
                       height: "30px",
                       // right:"11px",
                       fontFamily: "Roboto",
-                      fontSize: "18px",
-                      fontWeight: "550"
+                      fontSize: "14px",
+                      fontWeight: "550",
+                      top:35
                     }}
                   >{dep.weekday}, {dep.day} {dep.month}</Text>
 
@@ -794,129 +790,86 @@ const FlightSearchCard = () => {
                     onChange={handleChange}
                     disabledDate={disabledDate}
                     format="YYYY-MM-DD"
-                    className="hidden-datepicker"
+                    className="hidden-datepicker1"
                     style={{
-                      marginBottom: "10px"
+                      marginBottom: "60px",
+
                     }}
                   />
-                </Col>
-                <Col
+              </div>
+              {returnTrip && <Text style={{
+                fontSize:18,fontWeight:700
+              }}>-</Text>}
+              <div style={{
+                  width: "50%",
+                  padding: "5px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",   
+                  textAlign: "end"
+                }}>
+                {returnTrip? 
+                (
+                  <>
+                  <p style={{
+                    fontFamily: "Roboto",
+                    color: "grey",
+                    fontSize: "12px",
+                    position: "relative",
+                    top:25
+                  }}>
+                    Return
+                  </p>
+                  <Text
+                    style={{
+                      position: "relative",
+                      height: "30px",
 
-                >
-                  {returnTrip ? (
-                    <div
-                      style={{
-                        borderRight: "3px solid white",
-                        position: "relative",
-                        left: "40px",
-                        width: "135px",
-                        height: "65px",
-                      }}
-                    >
-                      <p
-                        style={{
-                          fontFamily: "Roboto",
-                          color: "grey",
-                          fontSize: "12px",
-                          top: "9px",
-                          position: "relative",
-                        }}
-                      >
-                        Return
-                      </p>
-
-
-
-
-                      <div style={{ position: "relative", display: "block" }}>
-                        <Text
-                          style={{
-                            position: "relative",
-                            bottom: "9px",
-                            height: "30px",
-                            fontFamily: "Roboto",
-                            fontSize: "18px",
-                            fontWeight: "550",
-                          }}
-                        >
-                          {ret.weekday}, {ret.day} {ret.month}
-                        </Text>
-
-                        <button
-                          style={{
-                            position: "absolute",
-                            right: "1px",
-                            transform: "translateY(-20%)",
-                            border: "none",
-                            background: "none",
-                            fontSize: "16px",
-                            color: "#000000ff",
-                            cursor: "pointer",
-                            zIndex: 10,
-                          }}
-                          onClick={() => dispatch(toggleReturnTrip(false))}
-                        >
-                          <CloseOutlined />
-                        </button>
-
-                      </div>
-
-
-                      <DatePicker
+                      fontFamily: "Roboto",
+                      fontSize: "14px",
+                      fontWeight: "550",
+                      top:13
+                    }}
+                  >{ret.weekday}, {ret.day} {ret.month}</Text>
+                  <DatePicker
                         value={dayjs(retTemp, "YYYY-MM-DD")}
                         onChange={handleReturnChange}
                         format="YYYY-MM-DD"
-                        className="hidden-datepicker"
+                        className="hidden-datepicker1"
                         disabledDate={(current) => current && current < dayjs().add(1, "day").startOf("day")}
                         style={{
                           marginBottom: "10px",
-                          width: "10px",
+                        
                         }}
                       />
-                    </div>
-                  ) : (
-                    <div
-                      style={{
-                        borderRight: "3px solid white",
-                        position: "relative",
-                        left: "40px",
-                        width: "135px",
-                        height: "60px",
-                        display: "flex",
-                        alignItems: "center",
-                        cursor: "pointer",
-                        opacity: 0.6,
-                      }}
-                      onClick={() => dispatch(toggleReturnTrip(true))}
-                    >
-                      <Text
-                        style={{
-                          position: "relative",
-                          color: "grey",
-                          fontFamily: "Roboto",
-                          fontSize: "18px",
-                          fontWeight: "500",
-                        }}
-                      >
-                        Return
-                      </Text>
-                    </div>
-                  )}
-
-                </Col>
-                <div style={{
-                  width: "250px",
-
-                }}>
-                  <Dropdown
+                  </>
+                ):(
+                  null
+                )}
+              </div>
+            </div>
+             <div style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems:"center",
+                textAlign:"center",
+                width: "100%",
+                alignItems:"center",
+                border:"1px solid grey",
+                borderRadius:10,
+                height:50,
+                marginTop:10
+              }}>
+                <Dropdown
                     trigger={["click"]}
-                    placement="bottomLeft"
+                    placement="bottom"
                     arrow
                     open={openTC}
                     onOpenChange={(v) => setOpenTC(v)}
                     popupRender={maketravellerClass}
                     overlayStyle={{
-                      marginBottom: "10px"
+                      marginBottom: "10px",
                     }}
                   >
                     {/* ✅ Must be ONE element */}
@@ -924,11 +877,11 @@ const FlightSearchCard = () => {
                       style={{
                         borderRight: "3px solid white",
                         position: "relative",
-                        left: "70px",
-                        cursor: "pointer", // optional: makes it feel clickable
-                        height: "55px",             // ✅ fix the height
+                      
+                        cursor: "pointer", 
+                        height: "55px",             
                         display: "flex",
-                        flexDirection: "column",    // stack the label + text vertically
+                        flexDirection: "column",    
 
                       }}
                     >
@@ -940,6 +893,8 @@ const FlightSearchCard = () => {
                           top: "10px",
                           position: "relative",
                           margin: 0,
+                          alignItems:"center",
+                          textAlign:"center"
                         }}
                       >
                         Travellers & Class
@@ -953,11 +908,7 @@ const FlightSearchCard = () => {
                           fontFamily: "Roboto",
                           fontSize: "18px",
                           fontWeight: "550",
-                          whiteSpace: "nowrap",      // keep on one line
-                          overflow: "hidden",        // hide overflow
-                          textOverflow: "ellipsis",  // show "..."
-                          display: "inline-block",   // required for ellipsis to work
-                          maxWidth: "245px",         // adjust width as needed
+                        
                           // verticalAlign: "middle",
                         }}
                       >{travellersValue === 1
@@ -967,51 +918,30 @@ const FlightSearchCard = () => {
                       </Typography.Text>
                     </div>
                   </Dropdown>
-                </div>
-
-                <div style={{
-
-                }}>
-
-                  <button
-                    style={{
-                      fontFamily: "Roboto",
-                      fontSize: 23,
-                      width: "193px",
-                      height: "55px",
-                      position: "relative",
-                      left: "70px",
-                      borderTopRightRadius: "10px",
-                      borderBottomRightRadius: "10px",
-                      borderLeftRadius: "none",
-                      background: "#ff7a00",
-                      border: "none",
-                      color: "white",
-                      cursor: "pointer",
-                      fontFamily: "Roboto",
-                      fontWeight: 500,
-
-
-                    }}
-                    onClick={handleSearch}
-                  >
-                    Search <RightOutlined style={{ fontSize: 18 }} />
-                  </button>
-
-                </div>
-
-
-              </Row>
-            </Card>
+              </div>
+              <div style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+                width: "100%",
+                alignItems:"center",
+                background:"#ff7a00",
+                borderRadius:10,
+                height:50,
+                marginTop:10,
+                cursor:"pointer",
+                color:"white",
+                fontSize:20
+              }} onClick={handleSearch}>
+                Search
+              </div>
           </div>
-
-
-
+          
 
         </>
-      )}
-    </>
+     
+
   )
 }
 
-export default FlightSearchCard;
+export default MobileFlightSearch;

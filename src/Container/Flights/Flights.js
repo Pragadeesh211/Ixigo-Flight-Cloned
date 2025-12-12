@@ -10,6 +10,8 @@ import { image } from "fontawesome";
 import FlightTabs from "../../Component/FlightTabs";
 import FlightSearchCard from "../../Component/FlightSearchCard";
 import LoginPage from "../../Component/LoginPage";
+import "../../Component/FlightSearchCard.css";
+import useScreenSize from "../../Component/UseScreenSize";
 
 const gridStyle = {
   width: '25%',
@@ -81,6 +83,7 @@ const Flights = () => {
 
   const [visibleCount, setVisibleCount] = useState(6);
   const showMore = visibleCount < flightData.length;
+  const {isMobile} = useScreenSize();
 
  
 
@@ -118,21 +121,20 @@ const Flights = () => {
 
   return (
     <>
-
-    <div style={{ display: "flex", justifyContent: "center",height:"200px" }}>
+    {isMobile ?(
+      <>
+      <div style={{ display: "flex", justifyContent: "center",height:"auto",marginTop:100 }}>
             <Card variant="borderless"
               style={{
                 width: "95%", boxShadow: "0 0 15px 3px rgba(0, 0, 0, 0.25)",
-              }} >
+              }} className="search-card">
                 <FlightSearchCard/>
               </Card>
     </div>
-    
-    
-    <div>
+      <div>
       <h2 style={{
         display: "flex",
-        width: "90%",
+        width: "95%",
         margin: "30px auto",
         fontFamily:"Roboto"
       }}>Today's Flight Offers</h2>
@@ -143,11 +145,11 @@ const Flights = () => {
     <div>
       <h2 style={{
         display: "flex",
-        width: "90%",
+        width: "95%",
         margin: "30px auto",
         fontFamily:"Roboto"
       }}>Popular Flight Routes</h2>
-       <div style={{ width: "90%", margin: "auto", }}>
+       <div style={{ width: "95%", margin: "auto", }}>
       <Row gutter={[24, 24]} justify="center">
         {flightData.slice(0, visibleCount).map((flight) => (
           <Col key={flight.id} xs={24} sm={12} md={8}>
@@ -230,7 +232,7 @@ const Flights = () => {
     <div>
       <h2 style={{
         display: "flex",
-        width: "90%",
+        width: "95%",
         margin: "30px auto",
         fontFamily:"Roboto"
       }}>Popular Domestic Airlines</h2>
@@ -239,7 +241,7 @@ const Flights = () => {
         border: "1px solid #d9d9d9",
         gap:"15px",
         borderRadius:"20px",
-        width:"90%",
+        width:"95%",
         
       }} >
     <Row justify="center"  gutter={[16, 16]} style={{
@@ -282,7 +284,7 @@ const Flights = () => {
     <div>
       <h2 style={{
         display: "flex",
-        width: "90%",
+        width: "95%",
         margin: "30px auto",
         fontFamily:"Roboto",
         
@@ -301,7 +303,7 @@ const Flights = () => {
             background: "#fff",
             borderRadius: "10px",
             boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
-            width:"90%"
+            width:"95%"
             
     
           }}
@@ -334,7 +336,235 @@ const Flights = () => {
     }}>
       <div style={{
         display: "flex",
-        width: "90%",
+        width: "95%",
+        
+        
+      }}>
+      <FlightTabs/>
+      </div>
+
+     
+    </div>
+      </>
+    ):(
+      <>
+
+    <div style={{ display: "flex", justifyContent: "center",height:"200px" }}>
+            <Card variant="borderless"
+              style={{
+                width: "95%", boxShadow: "0 0 15px 3px rgba(0, 0, 0, 0.25)",
+              }} className="search-card">
+                <FlightSearchCard/>
+              </Card>
+    </div>
+    
+    
+    <div>
+      <h2 style={{
+        display: "flex",
+        width: "95%",
+        margin: "30px auto",
+        fontFamily:"Roboto"
+      }}>Today's Flight Offers</h2>
+    
+    <CardCarousel/>
+    </div>
+
+    <div>
+      <h2 style={{
+        display: "flex",
+        width: "95%",
+        margin: "30px auto",
+        fontFamily:"Roboto"
+      }}>Popular Flight Routes</h2>
+       <div style={{ width: "95%", margin: "auto", }}>
+      <Row gutter={[24, 24]} justify="center">
+        {flightData.slice(0, visibleCount).map((flight) => (
+          <Col key={flight.id} xs={24} sm={12} md={8}>
+            <Card
+              
+              bordered
+              style={{
+                borderRadius: "16px",
+                height: "auto",
+                border: "1px solid #d9d9d9",
+              }}
+              bodyStyle={{ display: "flex",
+            alignItems: "flex-start",
+            padding: 0,
+           }}
+            >
+              <img
+                src={flight.img}
+                alt={flight.title}
+                style={{
+                  width: "60px",
+                  height: "70px",
+                  // objectFit: "cover",
+                  borderTopLeftRadius:"16px",
+                  borderBottomLeftRadius:"16px",
+                  
+                }}
+              />
+              <div style={{marginLeft:"16px",marginTop:"10px"}}>
+                <Text strong style={{ fontSize: "16px", display: "block",fontFamily:"Roboto" }}>
+                  {flight.title}
+                </Text>
+                <Text type="secondary" style={{fontWeight:400,fontSize:"14px",fontFamily:"Roboto"}}>To: </Text>
+                {flight.destinations.map((city, idx) => (
+                  <Link
+                    
+                    key={idx}
+                    style={{ color: "#0056D2", marginRight: 6,fontSize:"14px",fontFamily:"Roboto" }}
+                    href="#"
+                  >
+                    {city}
+                    {idx !== flight.destinations.length - 1 && " •"}
+                  </Link>
+                ))}
+              </div>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      {/* View More Button */}
+      <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <Button
+          type="link"
+          onClick={() =>
+            showMore
+              ? setVisibleCount(flightData.length)
+              : setVisibleCount(6)
+          }
+          style={{
+            color: "#ff6600",
+            fontWeight: 500,
+            fontSize: "16px",
+          }}
+        >
+          {showMore ? (
+            <>
+              View More <DownOutlined />
+            </>
+          ) : (
+            <>
+              View Less <UpOutlined />
+            </>
+          )}
+        </Button>
+      </div>
+    </div>
+    </div>
+
+    <div>
+      <h2 style={{
+        display: "flex",
+        width: "95%",
+        margin: "30px auto",
+        fontFamily:"Roboto"
+      }}>Popular Domestic Airlines</h2>
+      <div style={{display: "flex",justifyContent:"center",alignItems:"center"}}>
+      <Card style={{
+        border: "1px solid #d9d9d9",
+        gap:"15px",
+        borderRadius:"20px",
+        width:"95%",
+        
+      }} >
+    <Row justify="center"  gutter={[16, 16]} style={{
+      display:"flex",
+      alignItems:"center",
+      flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: "0%",
+    }}>
+      {airlines.map((item, index)=>(
+        <Col span={4}
+        key={index}
+        xs={12} sm={2} md={4}
+        style={{
+          display:"flex",
+          alignItems:"center",
+          flexDirection:"column"
+        }}
+        >
+          <img src={item.image}
+          style={{
+            height:40,
+            width:40
+          }}
+          >
+          </img>
+          <p style={{
+            fontWeight:500,
+            fontSize:16,
+            color:"blue"
+          }}>{item.name}</p>
+        </Col>
+      ))}
+  
+</Row>
+      </Card>
+      </div>
+    </div>
+
+    <div>
+      <h2 style={{
+        display: "flex",
+        width: "95%",
+        margin: "30px auto",
+        fontFamily:"Roboto",
+        
+      }}>Frequently Asked Questions</h2>
+      <div style={{display: "flex",justifyContent:"center",alignItems:"center"}}>
+
+      
+       <Collapse
+          accordion
+          bordered={true}
+          expandIconPosition="end"
+          expandIcon={({ isActive }) =>
+            isActive ? <UpOutlined /> : <DownOutlined />
+          }
+          style={{
+            background: "#fff",
+            borderRadius: "10px",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+            width:"95%"
+            
+    
+          }}
+          
+        >
+          {frequentData.map((item,index)=>(
+            <Panel key={index}
+            header={item.header}
+            style={{fontSize:"18px",fontWeight:650,fontFamily:"Roboto"}}
+            >
+            
+            <p style={{fontSize:"15px",fontWeight:500,fontFamily:"Roboto",color:"grey"}}>
+              {item.para}
+            </p>
+            </Panel>
+          ))}
+          
+        </Collapse>
+        
+        </div>
+    </div>
+
+    <div style={{
+      width:"100%",
+      display:"flex",
+      justifyContent:"center",
+      alignItems:"center",
+      backgroundColor:"#e9e9e9ff",
+      marginTop:"20px"
+    }}>
+      <div style={{
+        display: "flex",
+        width: "95%",
         
         
       }}>
@@ -347,6 +577,9 @@ const Flights = () => {
     <h3 style={{marginTop:10}}></h3>
     <LoginPage/>
     </>
+    )}
+    </>
+    
   );
 };
 

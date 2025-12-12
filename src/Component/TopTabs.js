@@ -7,11 +7,14 @@ import {
 } from "../Redux/Slices/ProfileSlice";
 import { useDispatch, useSelector } from "react-redux";
 import LoginDropdown from "./LoginDropdown";
+import useScreenSize from "./UseScreenSize";
+
 
 const {Text} = Typography;
 
 const TopTabs = () =>{
   const dispatch = useDispatch();
+  const { isMobile } = useScreenSize();
 
   const {
     openDrawer
@@ -36,11 +39,21 @@ const TopTabs = () =>{
 
       return(
         <>
-        <div className={`navbar ${scrolled ? "navbar" : ""}`}>
-      <div className="logo">GMPM</div>
+        {isMobile ? (
+          null
+        ):(
+          <>
+          <div className={`navbar ${scrolled ? "navbar" : ""}`}>
+      <div><img src="https://images.ixigo.com/image/upload/Header/aac1498d8f956aa99344f08773c70fb6-evncq.webp" style={{
+        height:40
+      }}/></div>
       <Tabs/>
       <LoginDropdown/>
     </div>
+          </>
+        )
+        
+    }
         </>
       )
     

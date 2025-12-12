@@ -7,6 +7,7 @@ import {
 } from "../Redux/Slices/ProfileSlice";
 import { useSelector,useDispatch } from "react-redux";
 import "./PageSelect.css"
+
  
 
 const {Text} = Typography;
@@ -127,7 +128,7 @@ const handleVerify = () =>{
 
 
     return(
-        <div >
+        <div className="Login-drawer">
            
             <Drawer
           title={null}
@@ -138,17 +139,18 @@ const handleVerify = () =>{
           arrow
           open={openDrawer}
           onClose={() => dispatch(setOpenDrawer(false))}
-
+          lassName="Login-drawer"
           overlayStyle={{
             marginBottom: "10px"
           }}
           maskClosable={true}
-          width={"28.5%"}
+        
           style={{
             // padding: "24px",
             background: "#fff",
             // borderRadius: "8px 0 0 8px",
             overflow: "auto",
+            
           }}>
             {!showOTP?(<div>
             <div style={{

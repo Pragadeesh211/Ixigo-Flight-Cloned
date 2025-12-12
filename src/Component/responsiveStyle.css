@@ -1,0 +1,38 @@
+.Login-drawer{
+        width: 28.5%;
+    }
+
+@media (max-width: 767px) {
+    .login-text{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        max-width: 80px;
+        
+    }
+    .Login-drawer{
+        width: 200px;
+    }
+    .active{
+        position: relative;
+        height: 10;
+        text-decoration: none;
+        /* right: 50px; */
+    }
+    .no-underline.active::after {
+    display: none;
+  }
+    
+     .tabs{
+        position: relative;
+        width: 100%;
+        /* font-size: 50px; */
+        flex-wrap: wrap;
+        bottom: 80px;
+        
+    }
+    .imgs{
+        width: 5px;
+    } 
+}

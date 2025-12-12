@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React,{useEffect, useState} from "react";
 import { Button, message, Steps, theme, ConfigProvider,Dropdown,Space,Typography } from 'antd';
 import ReviewTravellerDetails from "../Container/Flights/ReviewTravellerDetails";
 import "./PageSelect.css"
@@ -11,8 +11,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import {useNavigate} from "react-router-dom";
 import LoginDropdown from "./LoginDropdown";
-
-
+import AddOns from "../Container/Flights/AddOns";
+import Payment from "../Container/Flights/Payment";
+import useScreenSize from "./UseScreenSize";
 
 const {Text} = Typography;
 
@@ -20,12 +21,16 @@ const PageSelectionTabs = () =>{
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const {isMobile} = useScreenSize();
 
   const {
     openDrawer,
     phoneNo,
     name
   } = useSelector((state) => state.profile);
+  const {
+    currentState
+  } = useSelector((state) => state.flightSearch);
 
   const [open,setOpen] = useState(false)
     const steps = [
@@ -39,15 +44,20 @@ const PageSelectionTabs = () =>{
   },
   {
     title: 'Add-ons',
-    content: 'Add-ons',
+    content: <AddOns/>,
   },
   {
     title: 'Payment',
-    content: 'Payment',
+    content: <Payment/>,
   },
 ];
+const [current, setCurrent] = useState(currentState);
 const { token } = theme.useToken();
-  const [current, setCurrent] = useState(1);
+useEffect(()=>{
+setCurrent(currentState)
+},[currentState])
+  
+
   const next = () => {
     setCurrent(current + 1);
   };
@@ -67,7 +77,12 @@ const handleOpen = () =>{
 }
 
    return(
-        <>
+    <>
+        {
+          isMobile?(
+            null
+          ):(
+            <>
         
         <div className={"navbarSteps"} style={{
             boxShadow: "0 2px 10px rgba(0,0,0,0.1)"
@@ -146,6 +161,9 @@ const handleOpen = () =>{
         </div>
         
         </>
+          )
+        }
+       </> 
     )
 }
 export default PageSelectionTabs;

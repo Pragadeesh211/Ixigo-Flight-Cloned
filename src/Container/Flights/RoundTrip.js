@@ -3,7 +3,7 @@ import FlightListSearchCard from "./FlightListSearchCard";
 import Link,{useNavigate} from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RightOutlined,CloseOutlined, CloseCircleFilled,ClockCircleOutlined,ArrowRightOutlined,AppstoreOutlined,CheckOutlined  } from "@ant-design/icons";
-import { Typography,Card,Checkbox,Col, InputNumber, Row, Slider, Space,ConfigProvider,Button, Tag, Drawer,Tabs,Badge,Avatar, Tooltip,FloatButton,Segmented } from "antd";
+import { Typography,Card,Checkbox,Col, InputNumber, Row, Slider, Space,ConfigProvider,Button, Tag, Drawer,Tabs,Badge,Avatar, Tooltip,FloatButton,Segmented, Skeleton, Divider } from "antd";
 import { 
   setFrom,
   setTo,
@@ -25,6 +25,8 @@ import {
   setReturnSelectedFlight,
   setTotalAmount,
   setRefundFeeAdd,
+  setRefundPlan,
+  setCancelValue,
  } from "../../Redux/Slices/FlightSearchSlice";
  import {Swiper,SwiperSlide} from "swiper/react";
  import 'swiper/css';
@@ -46,6 +48,8 @@ import NoPowerIcon from "../../Images/NoPowerIcon.png"
 import NoVideoIcon from "../../Images/NoVideoIcon.png"
 import OnewayFlightDetails from "../../Component/OnewayFlightDetails";
 import ReturnFlightDetails from "../../Component/ReturnFlightDetails";
+import useScreenSize from "../../Component/UseScreenSize";
+import MobileFlightSearch from "../../Component/MobileFlightSearch"; 
 
 dayjs.extend(duration);
 
@@ -64,8 +68,11 @@ const airlinePlainOptions=[
     {name:"Alliance Air",image:"https://images.ixigo.com/img/common-resources/airline-new/9I.png"}
 ]
 
-const EconomyReturn = () =>{
+const RoundTrip = () =>{
     const dispatch = useDispatch();
+    const {isMobile} = useScreenSize();
+    const [openSearch,setOpenSearch]=useState(false);
+    const [filters,setFilters] = useState(false);
       const {
       from,
       fromAirport,
@@ -94,8 +101,11 @@ const EconomyReturn = () =>{
 
       const depart = dayjs(departure).format("YYYY-MM-DD");
       const returnpart = dayjs(returnDate).add(1,"day").format("YYYY-MM-DD");
+
         const [selectedDate, setSelectedDate] = useState(depart);
         const [selectedReturnDate, setSelectedReturnDate] = useState(returnpart)
+        const swiperRef = useRef(null);
+        const swiperRef1 = useRef(null);
 
         useEffect(() => {
                 const minReturnDate = dayjs(selectedDate).add(1, "day").format("YYYY-MM-DD");
@@ -110,49 +120,118 @@ const EconomyReturn = () =>{
               console.log()
 
       
-        console.log("ABCD",returnDate)
+        // console.log("ABCD",returnDate)
         // console.log(fromA)
         const [dateFareData, setDateFareData] = useState([]);
         const [dateFareData1, setDateFareData1] = useState([]);
+        const [i,seti] = useState()
+        const [j,setj] = useState()
       
       // Generate 18 days starting from TODAY
+
+      const formationDate = (isoString) => {
+  const date = new Date(isoString);
+  return date.toString();
+};
+
+      const departDate = formationDate(selectedDate);
+      const retDate = formationDate(selectedReturnDate)
+      console.log("selectiiiii",departDate)
+
+      
       useEffect(() => {
-        const today = new Date();
-        const daysArray = Array.from({ length: 18 }, (_, i) => {
-          const date = new Date(today);
-          date.setDate(today.getDate() + i);
+        if (!departDate) return;
+        const formatToLocalDateString = (isoString) => {
+        return new Date(isoString);
+      };
+      const convertedDate = formatToLocalDateString(departure);
+      
+        const startDate = convertedDate;   
+        // console.log("todaysss",startDate);
+        // console.log("selecttttt",selectedDate);
+        // console.log("convertdd",convertedDate);
+        const daysArray = (() => {
+        
+        const result = [];
+        const today = new Date(); 
+        const yesterday = new Date(today) 
+        yesterday.setDate(yesterday.getDate() -1)                 
+        const start = convertedDate;       
+        console.log("todaysss",today)
+      
+        for (let i = 10; i > 0; i--) {
+          const date = new Date(start);
+          date.setDate(start.getDate() - i);
+      
           
+          if (date < today) continue;
+      
           const formattedDate = date.toLocaleDateString("en-GB", {
             weekday: "short",
             day: "2-digit",
             month: "short",
           });
       
-          const economyRandomPrice = Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500;
-          const premiumEconomyRandomPrice = Math.floor(Math.random() * (7500 - 5000 + 1)) + 5000;
-          const businessRandomPrice = Math.floor(Math.random() * (18000 - 12000 + 1)) + 12000;
-      
-          return {
+          result.push({
             date: date.toISOString(),
             label: formattedDate,
             price: {
-            Economy: { price: economyRandomPrice},
-            "Premium Economy": { price: premiumEconomyRandomPrice}, 
-            Business: { price: businessRandomPrice },
-        },
-          };
-        });
+              Economy: { price: Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500 },
+              "Premium Economy": { price: Math.floor(Math.random() * (7500 - 5000 + 1)) + 5000 },
+              Business: { price: Math.floor(Math.random() * (18000 - 12000 + 1)) + 12000 }
+            }
+          });
+        }
       
-        setDateFareData(daysArray);
+      
         
-      }, []);
+        for (let i = 0; i < 18; i++) {
+          const date = new Date(start);
+          date.setDate(start.getDate() + i);
+          seti(i)
+      
+          const formattedDate = date.toLocaleDateString("en-GB", {
+            weekday: "short",
+            day: "2-digit",
+            month: "short",
+          });
+      
+          result.push({
+            date: date.toISOString(),
+            label: formattedDate,
+            price: {
+              Economy: { price: Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500 },
+              "Premium Economy": { price: Math.floor(Math.random() * (7500 - 5000 + 1)) + 5000 },
+              Business: { price: Math.floor(Math.random() * (18000 - 12000 + 1)) + 12000 }
+            }
+          });
+        }
+      
+        return result;
+      
+      })();
+      
+      setDateFareData(daysArray);
+      
+      }, [departure]);
+
+      const today = departDate;
+
+      // const date = new Date(today);
+          console.log("datesss",today) 
+    
       
       
       // console.log("Ran price",dateFareData.price);
       
       // Set selected date based on departure (default: today)
 
-      const [startPrice,setStartPrice] = useState(dateFareData[0]?.price)
+      const [startPrice,setStartPrice] = useState(0) 
+      useEffect(() => {
+  if (dateFareData.length > 0) {
+    setStartPrice(dateFareData[i]?.price?.[travelClass]?.price || 0);
+  }
+}, [dateFareData, travelClass,i]);
       const [endPrice,setEndPrice] = useState(51273)
       useEffect(() => {
   if (dateFareData.length > 0 && departure) {
@@ -171,13 +250,15 @@ const EconomyReturn = () =>{
 
     
     setSelectedDate(todayMatch ? todayMatch.date : dateFareData[0].date);
-    const finalPrice = todayMatch ? todayMatch.price : dateFareData[0].price;
+    const finalPrice = todayMatch ? todayMatch.price?.[travelClass]?.price : dateFareData[i]?.price?.[travelClass]?.price;
     setStartPrice(finalPrice);
 
    
     
   }
 }, [dateFareData, departure]);
+
+console.log("formattttt",selectedDate)
 
 
 //Return Date start
@@ -198,6 +279,7 @@ useEffect(() => {
   const daysArray = Array.from({ length: 18 }, (_, i) => {
     const date = new Date(base);
     date.setDate(base.getDate() + i);
+    setj(i)
 
     const economyRandomPrice = Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500;
           const premiumEconomyRandomPrice = Math.floor(Math.random() * (7500 - 5000 + 1)) + 5000;
@@ -241,9 +323,16 @@ useEffect(() => {
 //           }); 
 //       console.log("helooooo",selectedReturnDate) 
 
-console.log("collapse",dateFareData[0]?.date)
+console.log("collapse",dateFareData[i]?.price?.["Business"]?.price)
+console.log("collapse",startPrice) 
 
-const [startReturnPrice,setStartReturnPrice] = useState(dateFareData1[0]?.price)
+const [startReturnPrice,setStartReturnPrice] = useState(0)
+
+useEffect(() => {
+  if (dateFareData1.length > 0) {
+    setStartReturnPrice(dateFareData1[0]?.price?.[travelClass]?.price || 0);
+  }
+}, [dateFareData, travelClass]);
 const [endReturnPrice,setEndReturnPrice] = useState(51275)
 
 useEffect(() => {
@@ -263,7 +352,7 @@ useEffect(() => {
 
     
     setSelectedReturnDate(tomorrowMatch ? tomorrowMatch.date : dateFareData1[0].date);
-    const finalPrice = tomorrowMatch ? tomorrowMatch.price : dateFareData1[0].price;
+    const finalPrice = tomorrowMatch ? tomorrowMatch.price?.[travelClass]?.price : dateFareData1[j]?.price?.[travelClass]?.price;
     setStartReturnPrice(finalPrice);
   }
 }, [dateFareData1,returnDate]);
@@ -872,8 +961,56 @@ useEffect(() => {
       const FilterDetailShow1 = [
                                   ...(startReturnPrice !== 0 || endReturnPrice !== 51275 ? [`₹${startReturnPrice} - ₹${endReturnPrice}`] : []),
                                 ]
+          const today1 = dayjs().format("YYYY-MM-DD")
+            
       
-      // --- FILTER LOGIC ---
+          const toMinutes = (t) =>{
+            const [h,m] = t.split(":").map(Number)
+            return h * 60 + m;
+      
+          }
+
+      const handleCurrentTimeFilter =(departureTime) =>{ 
+    
+  const bufferMinutes = toMinutes("03:00");
+  const nowMinutes = toMinutes(currentTime);
+  const finalminutes = bufferMinutes + nowMinutes;
+
+  const finaldep = toMinutes(departureTime)
+
+  
+  
+
+  if(today1 !== depart) return finaldep;
+  
+  return finalminutes<=finaldep;
+
+   
+
+    
+  }
+
+  const handleCurrentTimeFilter1 =(departureTime) =>{ 
+    
+  const bufferMinutes = toMinutes("03:00");
+  const nowMinutes = toMinutes(currentTime);
+  const finalminutes = bufferMinutes + nowMinutes;
+
+  const finaldep = toMinutes(departureTime)
+
+  
+  
+
+  if(today1 !== returnpart) return finaldep;
+  
+  return finalminutes<=finaldep;
+
+   
+
+    
+  }
+      
+      //  FILTER LOGIC 
       const filteredFlights = useMemo(() => {
         return flights.filter((flight) => {
           //  Airline Filter
@@ -918,7 +1055,7 @@ useEffect(() => {
             return true;
           }
       
-          //  Airline-specific filters 
+          //  Airline specific filters 
           const airlineFilters = ["Air India", "IndiGo","Air-India Express", "SpiceJet","Alliance Air"];
           let selectedAirlineFilters = checkedList.filter((f) =>
             airlineFilters.includes(f)
@@ -940,6 +1077,10 @@ useEffect(() => {
           ) {
             return true;
           }
+
+          if(!handleCurrentTimeFilter(flight.departureTime)){
+        return false;
+    }
       
           return true; 
         });
@@ -1012,6 +1153,9 @@ useEffect(() => {
           ) {
             return true;
           }
+          if(!handleCurrentTimeFilter1(flight.departureTime)){
+        return false;
+    }
       
           return true; 
         });
@@ -1073,7 +1217,9 @@ useEffect(() => {
         CalculateFullDiscount();
       }, [selectedOnwards, selectedReturn]);
 
-
+      useEffect(()=>{
+        dispatch(setTotalAmount(0))
+      })
 
 
 
@@ -1118,6 +1264,11 @@ useEffect(() => {
         const [cancelFee,setCancelFee] = useState(259);
         
           const getCancelFee = (price) => {
+            if (price > 23000) return 2019;
+            if (price > 20000) return 1559;
+            if (price > 17000) return 1359;
+            if (price > 12500) return 1019;
+            if (price > 9000) return 959;
           if (price > 6000) return 719;
           if (price > 4500) return 519;
           if (price > 3500) return 359;
@@ -1127,11 +1278,23 @@ useEffect(() => {
         
         
           const getRescheduleFee = (price) => {
-          if (price > 6000) return 1019;
-          if (price > 4500) return 819;
-          if (price > 3500) return 659;
+            if (price > 23000) return 2519;
+            if (price > 20000) return 2319;
+            if (price > 17000) return 1559;
+            if (price > 12500) return 1419;
+            if (price > 9000) return 1259;
+            if (price > 6000) return 1019;
+            if (price > 4500) return 819;
+            if (price > 3500) return 659;
           return 459;
         };
+
+        useEffect(()=>{
+          dispatch(setRefundPlan({
+                planType : null,
+                price: 0,
+              }));
+        },[])
 
 
         const getTotalTraveller = () =>{
@@ -1157,6 +1320,7 @@ useEffect(() => {
         
 
         const get8HrsCancelTime = (departureTime) =>{
+          if (!departureTime) return { finalTime: "00:00", days: 0 };
             const [h1, m1] = departureTime.split(":").map(Number);
             const t2= "08:00";
             const [h2, m2] = t2.split(":").map(Number);
@@ -1196,6 +1360,7 @@ useEffect(() => {
           const [lessReturnday,setLessReturnDay] = useState()
 
           const get8HrsCancelReturnTime = (departureTime) =>{
+            if (!departureTime) return { finalTime: "00:00", days: 0 };
             const [h1, m1] = departureTime.split(":").map(Number);
             const t2= "08:00";
             const [h2, m2] = t2.split(":").map(Number);
@@ -1273,6 +1438,10 @@ useEffect(() => {
         
         setRemoveFeeAdd(true)
         dispatch(setRefundFeeAdd(true))
+         dispatch(setRefundPlan({
+                planType : "Free Cancellation",
+                price: calculateCancel*travellerValue,
+              }));
         if(removeRescheduleAdd){
           setRemoveRescheduleAdd(false)
         }
@@ -1289,6 +1458,10 @@ useEffect(() => {
         
         setRemoveRescheduleAdd(true)
         dispatch(setRefundFeeAdd(true))
+        dispatch(setRefundPlan({
+              planType: "Rescheduling",
+              price: calculateReschedule*travellerValue, 
+            }))
         
         if(removeFeeAdd){
           setRemoveFeeAdd(false)
@@ -2147,7 +2320,13 @@ useEffect(() => {
                     position:"relative",
                     top:20,
                     cursor:"pointer",
-                  }} onClick={()=>setRemoveFeeAdd(false)}>
+                  }} onClick={()=>{setRemoveFeeAdd(false)
+                    dispatch(setRefundFeeAdd(false))
+                                dispatch(setRefundPlan({
+                                                planType : null,
+                                                price: 0,
+                                              }));
+                  }}>
                     <Text style={{
                       color:"#fc790d",
                       fontWeight:500,
@@ -3075,7 +3254,14 @@ useEffect(() => {
                     position:"relative",
                     top:20,
                     cursor:"pointer",
-                  }} onClick={()=>setRemoveRescheduleAdd(false)}>
+                  }} onClick={()=>{
+                    setRemoveRescheduleAdd(false)
+                    dispatch(setRefundFeeAdd(false))
+                                dispatch(setRefundPlan({
+                                                planType : null,
+                                                price: 0,
+                                              }));
+                    }}>
                     <Text style={{
                       color:"#fc790d",
                       fontWeight:500,
@@ -3202,7 +3388,18 @@ useEffect(() => {
             },
           ];
         
+const [pageLoading, setPageLoading] = useState(true);
 
+
+
+
+useEffect(() => {
+  setPageLoading(true);
+
+  const timer = setTimeout(() => setPageLoading(false), 1500);
+
+  return () => clearTimeout(timer);
+}, [toCity, fromCity, selectedDate,travellerValue,selectedReturnDate]); 
         
         
         
@@ -3212,7 +3409,1012 @@ useEffect(() => {
       
 
     return(
+      <>
+      {isMobile?(
         <>
+        <div  style={{
+          position: "fixed",
+          top: 0,             
+          zIndex: 1000,       
+          background: "white",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          paddingBottom:"10px" 
+        }}>
+          <div style={{
+            display:"flex",
+            borderRadius:20,
+            textAlign:"center",
+            background:"#d5d6d8ff",
+            width:"90%",
+            alignItems:"center",
+            justifyContent:"center",
+            padding:10,
+            flexDirection:"column",
+            marginTop:10
+          }}
+          onClick={()=>setOpenSearch(true)}
+          >
+            <Text style={{
+              fontWeight:500,fontSize:16
+            }}>{fromCode} - {toCode}</Text>
+            <Text style={{
+              fontWeight:500
+            }}>
+              {travellerValue === 1
+                ? `${travellerValue} Traveller`
+                : `${travellerValue} Travellers`}
+              &nbsp; • {travelClass}
+            </Text>
+
+          </div>
+        </div>
+        <div style={{
+          marginTop:88,
+          position: "fixed",
+          top: 0,             
+          zIndex: 1000,       
+          background: "white",
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
+          paddingBottom:"3px",
+          padding:10,
+          textAlign:"center",
+          borderBottom:"1px solid grey"
+        }}>
+          <div style={{
+            width:"95%",
+            display:"flex",
+            justifyContent:"space-between",
+            
+          }}>
+            <div style={{
+              position:"relative",bottom:10
+            }}>
+              <Text style={{
+                          fontSize:"18px",fontWeight:700
+                        }}>₹{fullAmount.toLocaleString("en-IN")}</Text>
+                        <br/>
+                        <Text style={{
+                          color:"#238C46",fontSize:"14px",fontWeight:700
+                        }}>Extra ₹{fullDiscount.toLocaleString("en-IN")} Off</Text>
+            </div>
+          <button
+                              type="primary"
+                              style={{
+                                background: "#ff7a00",
+                                border: "none",
+                                borderRadius: 10,
+                                width:"130px",
+                                height:"40px",
+                                fontSize:"17px",
+                                color:"white",
+                                position:"relative",
+                                right:"5%"
+                              }}
+                              onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            navigate("/ReviewTravellerDetails");
+                            dispatch(setCancelFeeAdd(removeFeeAdd))
+                            dispatch(setRescheduleFeeAdd(removeRescheduleAdd))
+                              }}
+                            >
+                              Book
+                            </button>
+          </div>
+          <div >
+
+          </div>
+        </div>
+        <div style={{      
+              marginTop: 160,
+              position: "fixed",
+              top: 0,
+              zIndex: 1000,
+              background: "white",
+              display: "flex",
+              justifyContent: "space-between", 
+              alignItems: "center",            
+              width: "100%",
+              padding: "10px 20px",           
+              borderBottom: "1px solid grey",
+              height:50
+
+        }}>
+          <Text style={{fontSize:16,fontWeight:500}}>{fromCode} - {toCode}</Text> 
+          
+
+  <Divider type="vertical" style={{
+    border:"1px solid grey",position:"relative",right:"5%",height:66
+  }}/>
+          <Text style={{fontSize:16,fontWeight:500,
+            position:"relative",right:"10%"
+          }}>{toCode} - {fromCode}</Text>
+        </div>
+        <div style={{
+          display:"flex",
+          justifyContent:"space-between",
+          width:"100%"
+        }}>
+          <div style={{
+            marginTop:240,
+            width:"50%",paddingBottom:"240px"
+          }}>
+              {filteredFlights.map((item, idx) =>{
+                          
+                            return(
+                            <div key={item.id}>
+                              {/* Flight Card */}
+                              <Card
+                                hoverable
+                                style={{
+                                  width: "100%",
+                                  marginTop: 20,
+                                  borderRadius: 10,
+                                  boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                                  background:selectedFlightId === item.id
+                                      ?"rgb(242 249 255 / 1)":"white",
+                                  border:selectedFlightId === item.id?"1px solid #0770e4":"1px solid white",
+                                  display:"flex",
+                                  flexDirection:"column",
+                                  fontFamily:"Roboto",
+                                  transition: "all 0.3s ease",
+                                  
+                                }}
+                                bodyStyle={{
+                                padding: "10px"   // <=== Reduce padding here
+                              }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.boxShadow = "0 6px 16px rgba(0,0,0,0.15)";
+                                  e.currentTarget.style.transform = "scale(1.01)";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.boxShadow = "0 2px 5px rgba(0,0,0,0.1)";
+                                  e.currentTarget.style.transform = "scale(1)";
+                                }}
+                                onClick={()=>
+                                  showOnwards(item)
+                                
+                                }
+                              >
+                                <div
+                                  style={{
+                                    position: "absolute",
+                                    top: "-10px",
+                                    left: "15px",
+                                    display: "flex",
+                                    gap: "8px",
+                                    zIndex: 1, // ensures it stays above
+                                  }}
+                                >
+                                  {item.tags?.map((tag, idx) => {
+                                    if (tag === "Free Meal") {
+                                      return (
+                                       
+                                          
+                                          <img key={idx} style={{
+                                            width:"85px",
+                                            height:"20px"
+                                          }} src="https://images.ixigo.com/image/upload/b33f8ceebd2c632debc8d5bc4c5c00e6-cfqvx.png"></img>
+                                        
+                                      );
+                                    }
+                                    if (tag === "Earliest") {
+                                    return (<Tag
+                                      key={idx}
+                                color="blue"
+                                style={{
+                                  background: "#fcfcfcff",
+                                  borderRadius: "20px",
+                                  border: "1px solid #1890ff",
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                  
+                                }}
+                              >
+                                <ClockCircleOutlined  color="blue"/> {tag}
+                                    </Tag>)
+                                    }
+                                    return(
+                                    <Tag
+                                    key={idx}
+                                color="blue"
+                                style={{
+                                  background: "#fcfcfcff",
+                                  borderRadius: "20px",
+                                  border: "1px solid #1890ff",
+                                  fontSize: "12px",
+                                  fontWeight: 500,}}
+                                  >
+                                    {tag}
+                                    </Tag>
+                                    )
+                                  })}
+                                </div>
+                                <div style={{
+                                  display:"flex",flexDirection:"row",marginTop:10
+                                }}>
+                                  <img src={item.logo}  style={{
+                                    height:35
+                                  }}/>
+                                  <Text
+                            strong
+                            style={{
+                              fontSize: "14px",
+                              // position: "relative",
+                              bottom: "5px",
+                            }}
+                          >
+                            {item.airline}
+                          </Text>
+                                </div>
+                                <div style={{
+                                  display:"flex",
+                                  justifyContent:"space-between"
+                                }}>
+                                     {/* Flight From Timings */}
+                      <div style={{ textAlign: "center", flex: 1,position:"relative",left:"10px" }}>
+                        <Text  style={{ fontSize: 18,fontWeight:700 }}>
+                          {item.departureTime}
+                        </Text>
+                        <br />
+                        <Text strong style={{ fontSize: 16,position:"relative",bottom:"5px" }} type="secondary">
+                          {item.fromCode}
+                        </Text>
+                      </div>
+                    
+                      {/* Duration & Stops */}
+                      <div style={{ textAlign: "center", flex: 1 }}>
+                        <Text strong type="secondary">{item.durations}</Text>
+                        <br />
+                        <div style={{
+                          borderBottom: "1px solid #ccccccff",
+                          width:"80%",
+                          display:"flex",
+                          justifyContent:"center",
+                          position:"relative",
+                          left:"10px",
+                          top:"5px"
+                        }}>
+                    
+                        </div>
+                        <Text strong type="secondary" style={{
+                          position:"relative",
+                          top:"5px"
+                        }}>{item.stops}</Text>
+                      </div>
+                    
+                      
+                      {/* Flight To Timings */}
+                      <div style={{ textAlign: "center", flex: 1 }}>
+                        <Text  style={{ fontSize: 18,fontWeight:700 }}>
+                          {item.arrivalTime}
+                          <Text>
+                          {item.nextDayArrival && <sup style={{ 
+                            color: "red",
+                            fontWeight:500,
+                            position:"relative",
+                            bottom:5
+                           }}>+1</sup>}
+                          </Text>
+                        </Text>
+                        <br />
+                        <Text strong style={{ fontSize: 16,position:"relative",bottom:"5px" }} type="secondary">
+                          {item.toCode}
+                        </Text>
+                      </div>
+                   
+                      
+                      {/* Price and Offer */}
+                      
+                                </div>
+                                
+                                
+                              <div style={{ textAlign: "right", flex: 1,fontFamily:"Roboto",position:"relative",right:"5px", }}>
+                        <Text style={{ fontSize: 20,fontWeight:700 }}>
+                          ₹{item?.fareOptions?.[travelClass]?.price.toLocaleString("en-IN")}
+                        </Text>
+                        
+            
+                      </div>
+                    
+                              </Card>
+                    
+                              
+                              
+                            </div>
+                           );
+                           })}
+          </div>
+           <div style={{
+            marginTop:240,
+            width:"50%"
+          }}>
+              {filteredFlightsReturn.map((item, idx) =>{ 
+                          
+                            return(
+                            <div key={item.id}>
+                              {/* Flight Card */}
+                              <Card
+                                hoverable
+                                style={{
+                                  width: "100%",
+                                  marginTop: 20,
+                                  borderRadius: 10,
+                                  boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                                  background:selectedFlightReturnId === item.id
+                                      ?"rgb(242 249 255 / 1)":"white",
+                                  border:selectedFlightReturnId === item.id?"1px solid #0770e4":"1px solid white",
+                                  display:"flex",
+                                  flexDirection:"column",
+                                  fontFamily:"Roboto",
+                                  transition: "all 0.3s ease",
+                                  
+                                }}
+                                bodyStyle={{
+                                padding: "10px"   // <=== Reduce padding here
+                              }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.boxShadow = "0 6px 16px rgba(0,0,0,0.15)";
+                                  e.currentTarget.style.transform = "scale(1.01)";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.boxShadow = "0 2px 5px rgba(0,0,0,0.1)";
+                                  e.currentTarget.style.transform = "scale(1)";
+                                }}
+                                onClick={()=>
+                                  showReturn(item)
+                                
+                                }
+                              >
+                                <div
+                                  style={{
+                                    position: "absolute",
+                                    top: "-10px",
+                                    left: "15px",
+                                    display: "flex",
+                                    gap: "8px",
+                                    zIndex: 1, // ensures it stays above
+                                  }}
+                                >
+                                  {item.tags?.map((tag, idx) => {
+                                    if (tag === "Free Meal") {
+                                      return (
+                                       
+                                          
+                                          <img key={idx} style={{
+                                            width:"85px",
+                                            height:"20px"
+                                          }} src="https://images.ixigo.com/image/upload/b33f8ceebd2c632debc8d5bc4c5c00e6-cfqvx.png"></img>
+                                        
+                                      );
+                                    }
+                                    if (tag === "Earliest") {
+                                    return (<Tag
+                                      key={idx}
+                                color="blue"
+                                style={{
+                                  background: "#fcfcfcff",
+                                  borderRadius: "20px",
+                                  border: "1px solid #1890ff",
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                  
+                                }}
+                              >
+                                <ClockCircleOutlined  color="blue"/> {tag}
+                                    </Tag>)
+                                    }
+                                    return(
+                                    <Tag
+                                    key={idx}
+                                color="blue"
+                                style={{
+                                  background: "#fcfcfcff",
+                                  borderRadius: "20px",
+                                  border: "1px solid #1890ff",
+                                  fontSize: "12px",
+                                  fontWeight: 500,}}
+                                  >
+                                    {tag}
+                                    </Tag>
+                                    )
+                                  })}
+                                </div>
+                                <div style={{
+                                  display:"flex",flexDirection:"row",marginTop:10
+                                }}>
+                                  <img src={item.logo}  style={{
+                                    height:35
+                                  }}/>
+                                  <Text
+                            strong
+                            style={{
+                              fontSize: "14px",
+                              // position: "relative",
+                              bottom: "5px",
+                            }}
+                          >
+                            {item.airline}
+                          </Text>
+                                </div>
+                                <div style={{
+                                  display:"flex",
+                                  justifyContent:"space-between"
+                                }}>
+                                     {/* Flight From Timings */}
+                      <div style={{ textAlign: "center", flex: 1,position:"relative",left:"10px" }}>
+                        <Text  style={{ fontSize: 18,fontWeight:700 }}>
+                          {item.departureTime}
+                        </Text>
+                        <br />
+                        <Text strong style={{ fontSize: 16,position:"relative",bottom:"5px" }} type="secondary">
+                          {item.fromCode}
+                        </Text>
+                      </div>
+                    
+                      {/* Duration & Stops */}
+                      <div style={{ textAlign: "center", flex: 1 }}>
+                        <Text strong type="secondary">{item.durations}</Text>
+                        <br />
+                        <div style={{
+                          borderBottom: "1px solid #ccccccff",
+                          width:"80%",
+                          display:"flex",
+                          justifyContent:"center",
+                          position:"relative",
+                          left:"10px",
+                          top:"5px"
+                        }}>
+                    
+                        </div>
+                        <Text strong type="secondary" style={{
+                          position:"relative",
+                          top:"5px"
+                        }}>{item.stops}</Text>
+                      </div>
+                    
+                      
+                      {/* Flight To Timings */}
+                      <div style={{ textAlign: "center", flex: 1 }}>
+                        <Text  style={{ fontSize: 18,fontWeight:700 }}>
+                          {item.arrivalTime}
+                          <Text>
+                          {item.nextDayArrival && <sup style={{ 
+                            color: "red",
+                            fontWeight:500,
+                            position:"relative",
+                            bottom:5
+                           }}>+1</sup>}
+                          </Text>
+                        </Text>
+                        <br />
+                        <Text strong style={{ fontSize: 16,position:"relative",bottom:"5px" }} type="secondary">
+                          {item.toCode}
+                        </Text>
+                      </div>
+                   
+                      
+                      {/* Price and Offer */}
+                      
+                                </div>
+                                
+                                
+                              <div style={{ textAlign: "right", flex: 1,fontFamily:"Roboto",position:"relative",right:"5px", }}>
+                        <Text style={{ fontSize: 20,fontWeight:700 }}>
+                          ₹{item?.fareOptions?.[travelClass]?.price.toLocaleString("en-IN")}
+                        </Text>
+                        
+            
+                      </div>
+                    
+                              </Card>
+                    
+                              
+                              
+                            </div>
+                           );
+                           })}
+          </div>
+        </div>
+        {/* Down card1 */}
+        <div
+          style={{
+            position: "fixed",  
+            bottom: 0,            
+            width: "100%",       
+            height: "7%",        
+            background: "white", 
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+
+          }} 
+          >
+          <button style={{
+            display:"flex",
+            borderRadius:10,
+            textAlign:"center",
+            background:"#ff570fff",
+            width:"90%",
+            alignItems:"center",
+            justifyContent:"center",
+            border:"none",
+            height:40,
+            color:"white",fontSize:18,fontWeight:500
+          }} onClick={()=>setFilters(true)}>
+            Filters
+          </button>
+    </div>
+
+        <Drawer
+                title={null}
+                placement="top"
+                open={openSearch}
+                closable={true}
+                onClose={() => setOpenSearch(false)}
+                height={"50%"}
+                
+              >
+                <div
+                  
+                >
+                  <MobileFlightSearch
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                    }}
+                  />
+                </div>
+              </Drawer>
+              <Drawer
+                title={null}
+                placement="bottom"
+                open={filters}
+                closable={true}
+                onClose={() => setFilters(false)}
+                height={"100%"}
+                
+              >
+                <div style={{
+                display:"flex",
+                alignItems:"center",
+                flexDirection:"column"
+              }}>
+                <div style={{
+
+        width: "100%",
+        background: "#fff",
+        borderRadius: 10,
+        boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+       
+      }}>
+        <div style={{
+          borderBottom: "1px solid #ccccccff",
+                    padding:"12px",
+        }}>
+                  <div style={{
+                    height:"35px",
+                    alignItems:"center",
+                    
+                  }}>
+                    <div style={{
+                      display:"flex",
+                      flexDirection:"row",
+                      justifyContent:"space-between",
+                    }}>
+                    <Text strong style={{
+                      position:"relative",
+                      fontSize:"17px",
+                    fontFamily:"Roboto"
+                    }}>Filters</Text>
+                    {checkedList.length !== 0 || airlineCheckList.length !== 0 || startPrice !== startPrice || endPrice !== 51273
+                    ?(<Text strong style={{
+                      color:"#ff7a00",
+                      cursor:"pointer"
+                    }}
+                    onClick={()=>{
+                      setCheckedList([])
+                      setAirlineCheckList([])
+                      setStartPrice(startPrice);
+                      setEndPrice(51273);
+                    }}>Clear All</Text>)
+                    :null}
+                    </div>
+                    
+                  </div>
+                  <div>
+                    {(checkedList.length > 0 || airlineCheckList.length > 0 || startPrice !== startPrice || endPrice !== 51273) && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                        {
+                          FilterDetailShow.map((item, index) =>{
+                            if (item.includes("₹") && startPrice === startPrice && endPrice === 51273) return null;
+                            return(
+                            <Tag
+                              key={index}
+                              color="blue"
+                              style={{
+                                border: "1px solid #1890ff",
+                                background: "#f0f8ff",
+                                borderRadius: "20px",
+                                display: "flex",
+                                alignItems: "center",
+                                fontSize: "11px",
+                                maxWidth: "150px",
+                              }}
+                              closable
+                              closeIcon={
+                                <CloseCircleFilled
+                                  style={{
+                                    fontSize: "11px",
+                                    color: "#1890ff",
+                                    background: "#f0f8ff",
+                                    position: "relative",
+                                    top: "1px",
+                                  }}
+                                />
+                              }
+                              onClose={() => {
+                                // remove from both lists if it exists
+                                setCheckedList((prev) => prev.filter((x) => x !== item));
+                                setAirlineCheckList((prev) => prev.filter((x) => x !== item));
+
+                                // reset price if the tag is a price range
+                                if (item.includes("₹")) {
+                                  setStartPrice(startPrice);
+                                  setEndPrice(51273);
+                                  
+                                }
+                                if(item.includes("₹") && startPrice === startPrice && endPrice === 51273){
+                                    setStartPrice(startPrice);
+                                  setEndPrice(51273);
+                                  }
+                              }}
+                            >
+                              {item}
+
+                             
+                            </Tag>
+                        )})
+                        }
+                      </div>
+                    )}
+                  </div>
+                  </div>
+                  <div>
+      
+
+      {/* Recommended Filters */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 8,
+          width: "90%",
+          padding: "12px",
+        }}
+      >
+        <Text style={{ fontWeight: 550, fontSize: "17px",fontFamily:"Roboto" }}>
+          Recommended Filters
+        </Text>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <Text style={{ fontSize: 12 }}>All</Text>
+          <Checkbox
+            indeterminate={
+              checkedList.length > 0 && checkedList.length < plainOptions.length
+            }
+            onChange={(e) =>
+              setCheckedList(e.target.checked ? [...plainOptions] : [])
+            }
+            checked={checkedList.length === plainOptions.length}
+            style={{ transform: "scale(1.1)",border:"1px solid #848794",height:"17.5px",borderRadius:"5px" }}
+          />
+        </div>
+      </div>
+
+      {/* Individual Filters */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          gap: 10,
+          width: "90%",
+          padding: "12px",
+          marginTop: "-10px",
+        }}
+      >
+        {plainOptions.map((option) =>
+        
+        (
+          <label
+            key={option}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "row",
+          justifyContent: "space-between",
+              gap: 10,
+              cursor: "pointer",
+              fontFamily: "Roboto",
+              fontSize: "15px",
+            }}
+          >
+            <Text style={{
+              fontWeight:"500",
+              fontFamily:"Roboto",
+            }}>{option}</Text>
+            <Checkbox
+              checked={checkedList.includes(option)}
+              onChange={(e) => {
+                const newList = e.target.checked
+                  ? [...checkedList, option]
+                  : checkedList.filter((item) => item !== option);
+                setCheckedList(newList);
+
+                if (["Air India", "IndiGo"].includes(option)) {
+      if (e.target.checked) {
+        setAirlineCheckList((prev) => [...new Set([...prev, option])]);
+      } else {
+        setAirlineCheckList((prev) => prev.filter((a) => a !== option));
+      }
+    }
+  
+              }}
+              style={{ transform: "scale(1.1)",border:"1px solid #848794",height:"17.5px",borderRadius:"5px" }}
+            />
+            
+          </label>
+        ))}
+      </div>
+      <div style={{
+        padding:"12px"
+      }}>
+        <Text style={{
+            fontSize:"17px",
+            fontWeight:550,
+            fontFamily:"Roboto"
+        }}>
+            Flight Price
+        </Text>
+
+         <Row>
+      <Col span={24}>
+       <ConfigProvider
+    theme={{
+      token: {
+        dotSize:100,
+        controlSize:100,
+        dotActiveBorderColor:"blue",
+        // Seed Token
+        colorPrimary: '#0046beff',
+        // borderRadius: 2,
+
+        // // Alias Token
+        // colorBgContainer: '#f6ffed',
+      },
+    }}
+  >
+        <Slider
+          min={dateFareData[0]?.price?.[travelClass]?.price || 0}
+          max={51273}
+          value={endPrice}
+        onChange={(value) => setEndPrice(value)} 
+        // tooltip={{ open: false }}
+          
+          style={{
+            width:"90%"
+          }}
+        />
+        </ConfigProvider>
+      </Col>
+      {/* <Col span={4}>
+        <InputNumber
+          min={1}
+          max={20}
+          style={{ margin: '0 16px' }}
+          value={inputValue}
+          onChange={onChange}
+        />
+      </Col> */}
+    </Row>
+        <Row style={{
+            display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 8,
+          width: "95%",
+          padding: "2px",
+        }}>
+            <Text style={{ color:"#4f4c4cff" }}>
+              ₹{startPrice ? startPrice.toLocaleString("en-IN") : "0"}
+            </Text>
+            <Text style={{
+                color:"#4f4c4cff"
+            }}> ₹{endPrice.toLocaleString("en-IN")} </Text>
+        </Row>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 8,
+          width: "90%",
+          padding: "12px",
+        }}
+      >
+        <Text style={{ fontWeight: 550, fontSize: "17px",fontFamily:"Roboto" }}>
+          Airlines
+        </Text>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <Text style={{ fontSize: 12 }}>All</Text>
+          <Checkbox
+            indeterminate={
+              airlineCheckList.length > 0 && airlineCheckList.length < airlinePlainOptions.length
+            }
+            onChange={(e) =>{
+              
+              setAirlineCheckList(e.target.checked ? [...airlinePlainOptions.map(item=>item.name)] : [])
+            }}
+            checked={airlineCheckList.length === airlinePlainOptions.length}
+            style={{ transform: "scale(1.1)",border:"1px solid #848794",height:"17.5px",borderRadius:"5px" }}
+          />
+        </div>
+        
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          gap: 10,
+          width: "90%",
+          padding: "12px",
+          marginTop: "-10px",
+        }}
+      >
+        {airlinePlainOptions.map((option) => 
+         (
+            <label
+              key={option.name}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                gap: 10,
+                cursor: "pointer",
+                fontFamily: "Roboto",
+                fontSize: "15px",
+                marginTop: "5px",
+              }}
+            >
+              <div>
+                <img
+                  style={{
+                    height: 25,
+                    width: 30,
+                    position: "relative",
+                    top: "8px",
+                  }}
+                  src={option.image}
+                  alt={option.name}
+                />
+                <Text
+                  style={{
+                    fontWeight: "500",
+                    fontFamily: "Roboto",
+                    position: "relative",
+                    left: "5px",
+                  }}
+                >
+                  {option.name} 
+                  {/* ({filteredFlights.filter(f => f.airline === option.name).length}) */}
+                </Text>
+              </div>
+
+              <div>
+                <Checkbox
+                  checked={airlineCheckList.includes(option.name)}
+                  onChange={(e) => {
+                    const newList = e.target.checked
+                      ? [...airlineCheckList, option.name]
+                      : airlineCheckList.filter((item) => item !== option.name);
+                    setAirlineCheckList(newList);
+
+                    if (["Air India", "IndiGo"].includes(option.name)) {
+                      if (e.target.checked) {
+                        setCheckedList((prev) => [...new Set([...prev, option.name])]);
+                      } else {
+                        setCheckedList((prev) => prev.filter((a) => a !== option.name));
+                      }
+                    }
+                  }}
+                  style={{ transform: "scale(1.1)",border:"1px solid #848794",height:"17.5px",borderRadius:"5px" }}
+                />
+              </div>
+            </label>
+          )
+        )}
+
+      </div>
+    </div>
+
+
+     
+                  </div>
+                  <button style={{
+            display:"flex",
+            borderRadius:10,
+            textAlign:"center",
+            background:"#ff570fff",
+            width:"90%",
+            alignItems:"center",
+            justifyContent:"center",
+            border:"none",
+            height:40,
+            color:"white",fontSize:18,fontWeight:500,
+            marginTop:50
+          }} onClick={()=>setFilters(false)}>
+            Apply
+          </button>
+              </div>
+              </Drawer>
+        </>
+      ):(
+        <>
+      {
+         pageLoading ? (
+      <div style={{ display: "flex", gap: "20px", padding: "20px" }}>
+    
+    {/* LEFT FILTER SKELETON */}
+    <div
+      style={{
+        width: "300px",
+        background: "#fff",
+        padding: "16px",
+        borderRadius: "10px",
+        boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+        height: "600px"
+      }}
+    >
+      <Skeleton active paragraph={{ rows: 16 }} />
+    </div>
+
+    {/* CENTER LIST SKELETON (multiple flight cards) */}
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "20px" }}>
+      {[...Array(6)].map((_, i) => (
+        <div
+          key={i}
+          style={{
+            background: "#fff",
+            padding: "16px",
+            borderRadius: "10px",
+            boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+            height: "60px",
+            width:"75%"
+          }}
+        >
+          <Skeleton active paragraph={{ rows: 1 }} />
+        </div>
+      ))}
+    </div>
+
+
+    
+
+  </div>
+    ):(
+      <>
         <div>
           <div style={{
                         display:"flex",
@@ -3667,7 +4869,7 @@ useEffect(() => {
                                     }}
                                   >
                                     <Slider
-                                      min={dateFareData[0]?.price || 0}
+                                      min={dateFareData[0]?.price?.[travelClass]?.price || 0}
                                       max={51273}
                                       value={endPrice}
                                       onChange={(value) => setEndPrice(value)}
@@ -3722,7 +4924,7 @@ useEffect(() => {
                                     }}
                                   >
                                     <Slider
-                                      min={dateFareData1[0]?.price || 0}
+                                      min={dateFareData1[0]?.price?.[travelClass]?.price || 0}
                                       max={51275}
                                       value={endReturnPrice}
                                       onChange={(value) => setEndReturnPrice(value)}
@@ -3790,9 +4992,10 @@ useEffect(() => {
                     >
                       <Swiper
                         slidesPerView={3}
-                        spaceBetween={10}
+                        // spaceBetween={0}
                         navigation={true}
                         modules={[Navigation]}
+                        onSwiper={(swiper) => (swiperRef.current = swiper)}
                         className="dateswiper"
                       >
                         {dateFareData.map((item, index) => (
@@ -3808,6 +5011,10 @@ useEffect(() => {
                             ).padStart(2, "0")}`;
                             setSelectedDate(formattedDate)
                             dispatch(setDeparture(formattedDate));
+
+                            if (swiperRef.current) {
+                            swiperRef.current.slideTo(i, 400); 
+                          }
                   
                               }
                               }
@@ -3865,12 +5072,27 @@ useEffect(() => {
                         fontSize:"18px",fontWeight:600,fontFamily:"Roboto"
                       }}>{fromCode} - {toCode}</Text>
                       <Text strong type="secondary">
-                        {filteredFlights.length === 1? 
-                        `${filteredFlights.length} Flight Available`:
-                        `${filteredFlights.length} Flights Available`}
+                        {filteredFlights.length === 0
+                        ? null
+                        : filteredFlights.length === 1
+                          ? "1 Flight Available"
+                          : `${filteredFlights.length} Flights Available`}
                         </Text>
                     </div>
                     <div style={{ width: "100%", }}>
+                      {filteredFlights.length === 0 && (
+        <div style={{
+          display:"flex",justifyContent:"center",marginTop:20,flexDirection:"column",alignItems:"center"
+        }}>
+          <img src="https://edge.ixigo.com/st/vimaan/_next/static/media/noFlight.94c81339.svg"/>
+          <Text  style={{
+            fontSize:24,fontWeight:700,fontFamily:"Roboto",
+          }}>No flight available!</Text>
+          <Text style={{
+            fontSize:15,fontWeight:500
+          }}>Please modify the date or filters & try again.</Text>
+        </div>
+      )}
                           {filteredFlights.map((item, idx) =>{
                           
                             return(
@@ -4101,9 +5323,10 @@ useEffect(() => {
                     >
                       <Swiper
                         slidesPerView={3}
-                        spaceBetween={10}
+                        // spaceBetween={10}
                         navigation={true}
                         modules={[Navigation]}
+                        onSwiper={(swiper) => (swiperRef1.current = swiper)}
                         className="dateswiper"
                       >
                         {dateFareData1.map((item, index) => (
@@ -4120,7 +5343,10 @@ useEffect(() => {
 
                                       
                                       dispatch(setReturnDate(formattedDate));
-                                    }}
+                                      if (swiperRef1.current) {
+                                    swiperRef1.current.slideTo(index, 400); 
+                                  }
+                                            }}
 
                               
                               style={{
@@ -4177,13 +5403,29 @@ useEffect(() => {
                         fontSize:"18px",fontWeight:600,fontFamily:"Roboto"
                       }}>{toCode} - {fromCode}</Text>
                       <Text strong type="secondary">
-                        {filteredFlightsReturn.length === 1? 
-                        `${filteredFlightsReturn.length} Flight Available`:
-                        `${filteredFlightsReturn.length} Flights Available`}
+                        {filteredFlights.length === 0
+                          ? null
+                          : filteredFlightsReturn.length === 1
+                            ? "1 Flight Available"
+                            : `${filteredFlightsReturn.length} Flights Available`}
                         </Text>
                     </div>
                     <div style={{ width: "100%", }}>
-                          {filteredFlightsReturn.map((item, idx) =>{
+                      {filteredFlights.length === 0 ? (
+        <div style={{
+          display:"flex",justifyContent:"center",marginTop:20,flexDirection:"column",alignItems:"center"
+        }}>
+          <img src="https://edge.ixigo.com/st/vimaan/_next/static/media/noFlight.94c81339.svg"/>
+          <Text  style={{
+            fontSize:24,fontWeight:700,fontFamily:"Roboto",
+          }}>No flight available!</Text>
+          <Text style={{
+            fontSize:15,fontWeight:500
+          }}>Please modify the date or filters & try again.</Text>
+        </div>
+      ):(
+        <>
+        {filteredFlightsReturn.map((item, idx) =>{
                           
                             return(
                             <div key={item.id}>
@@ -4391,6 +5633,9 @@ useEffect(() => {
                             </div>
                            );
                            })}
+        </>
+      )}
+                          
                         </div>
               </div>
               
@@ -4405,7 +5650,9 @@ useEffect(() => {
                       }}>
                        <Text>d</Text>
                       </div> */}
-                      <div
+                     {filteredFlights.length === 0 ?null:(
+                      <>
+                       <div
             style={{
               position: "fixed",
               bottom: 0,
@@ -4636,6 +5883,8 @@ useEffect(() => {
               
                 
             </div>
+                      </>
+                     )}
             <div>
                   
             
@@ -4778,6 +6027,12 @@ useEffect(() => {
         </div>
         </>
     )
+      }
+        
+        </>
+      )}
+      </>
+    )
 }
 
-export default EconomyReturn;
+export default RoundTrip;

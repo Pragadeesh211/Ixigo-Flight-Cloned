@@ -126,3 +126,25 @@
   inset: 0;
   cursor: pointer;
 }
+
+.hidden-datepicker1 {
+  position: relative;
+  opacity: 0; 
+   inset: 0;
+  cursor: pointer;
+  height: 10;
+  width: 10;
+  z-index: 10;
+
+}
+
+@media (max-width: 767px) {
+  .search-card{
+    margin-top: 100px;
+  }
+  .search-bar {
+  margin-top: 500px;
+}
+
+}
+

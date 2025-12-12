@@ -4,7 +4,8 @@
 }
 
 .offer-swiper {
-  padding-bottom: 40px; /* space for pagination dots */
+  position: relative;
+  padding-bottom: 40px; 
 }
 
 .offer-card {
@@ -25,12 +26,21 @@
 }
 
 /* Swiper arrows */
-.swiper-button-prev,
-.swiper-button-next {
-  color: #fcfbfb;
-  height: 25px;
-  width: 35px;
+.offer-swiper .swiper-button-prev,
+.offer-swiper .swiper-button-next {
+  color: #001eff;
+  height: 30px;
+  width: 30px;
+  position: absolute;   
+  top: 50%;             
+  transform: translateY(-35%); 
+  z-index: 10;
+  background-color: white;
+  border-radius: 50%;
+  
 }
+
+
 
 .swiper-pagination-bullet {
   background-color: #aaa !important;

@@ -4,6 +4,8 @@ import Flight from "../Images/Flight.png"
 import Bus from "../Images/Bus.png"
 import Train from "../Images/Train.png"
 import Hotel from "../Images/Hotel.png"
+import "./responsiveStyle.css"
+import useScreenSize from "./UseScreenSize";
 
 const Tabs = () => {
   const menuItems = [
@@ -15,6 +17,7 @@ const Tabs = () => {
   const location = useLocation();
   const [underlineStyle, setUnderlineStyle] = useState({});
   const liRefs = useRef([]);
+  const { isMobile } = useScreenSize();
 
  
 
@@ -32,6 +35,9 @@ const Tabs = () => {
         left: li.offsetLeft,
       });
     }
+    else {
+    setUnderlineStyle(null); 
+  }
   }, [safeActiveIndex,location.pathname]);
 
   const handlepathchange =(item,index) =>{
@@ -43,7 +49,69 @@ const Tabs = () => {
     }
   }
   return (
-    <div style={{ padding: "50px",marginTop:20 }}>
+    <>
+    {isMobile ?(
+      <>
+      <div style={{
+        position:"fixed",
+        top:0,
+        zIndex:1000,
+        marginTop:60,
+        background:"white",
+        width:"100%",
+        // padding:20
+      }}>
+        <ul style={{
+          listStyle: "none",
+          display: "flex",
+          gap: 5,
+          marginTop: 80,
+          padding: 10,
+          position: "relative",
+          left:20,
+          height: 10 
+        }}
+        >
+          {menuItems.map((item, index) => (
+        <li
+          key={index}
+          ref={(el) => (liRefs.current[index] = el)}
+           className={safeActiveIndex === index ? "active" : ""}
+          style={{ cursor: "pointer", position: "relative", padding: "5px 0" }}
+        >
+          <Link to={handlepathchange(item,index)}
+          style={{ textDecoration: "none", color: "black" }}
+          >
+            <div style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: "8px"
+            }} className="tabs">
+              <img 
+              className="imgs"
+                src={item.image} 
+                alt={item.name} 
+                style={{ width: "45px", height: "50px" }} 
+  /><p style={{
+    margin:0,
+    color:safeActiveIndex === index ?"black":"#555555",
+    fontWeight: safeActiveIndex === index ? "650" : "550",
+    fontFamily:"Roboto",
+    fontSize:18
+
+  }}>{item.name}</p>
+  </div>
+  </Link>
+        </li>
+      ))}
+
+        </ul>
+      </div>
+      </>
+    ):(
+      <>
+      <div style={{ padding: "50px",marginTop:20 }} className="tabsall">
     <ul 
     style={{
           listStyle: "none",
@@ -69,8 +137,9 @@ const Tabs = () => {
                 flexDirection: "row",
                 alignItems: "center",
                 gap: "8px"
-            }}>
+            }} className="tabs">
               <img 
+              className="imgs"
                 src={item.image} 
                 alt={item.name} 
                 style={{ width: "45px", height: "50px" }} 
@@ -100,6 +169,9 @@ const Tabs = () => {
         ></span>
     </ul>
     </div>
+      </>
+    )}
+    </>
   );
 };
 
