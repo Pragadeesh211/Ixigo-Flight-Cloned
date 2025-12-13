@@ -9,7 +9,7 @@ import ContinueButton from "../../Component/ContinueButton";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCurrentState } from "../../Redux/Slices/FlightSearchSlice";
-
+import useScreenSize from "../../Component/UseScreenSize";
 
 const { Text } = Typography;
 
@@ -39,6 +39,7 @@ const buildSeats = () => {
   }
   return seats;
 }
+
 
 
 
@@ -163,11 +164,10 @@ const responsiveStyles = `
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: auto;
-    min-height: 80px;
+    height: 40px;
     z-index: 1000;
-    background: #fff;
-    padding: 15px 20px;
+    background-color: #fff;
+    padding: 0px 20px;
     left: 0;
     box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
     display: flex;
@@ -181,7 +181,9 @@ const responsiveStyles = `
 
   .bottom-bar-price {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
   }
     .continue-btn{
     background: rgb(255, 122, 0);
@@ -192,7 +194,7 @@ const responsiveStyles = `
     font-size: 17px;
     color: white;
     cursor: pointer;
-    margin-right: 40px;
+    // margin-right: 40px;
 }
 
   @media (min-width: 768px) {
@@ -232,9 +234,10 @@ const responsiveStyles = `
     .bottom-bar {
       width: 938px;
         left: 30.5%;
-       
+       padding: 0px 20px;
         flex-wrap: nowrap;
-        height: 90px;
+        height: 90px!important;
+        
     }
 
     
@@ -247,11 +250,12 @@ const responsiveStyles = `
      background: rgb(255, 122, 0);
     border: none;
     border-radius: 10px;
-    width: 145px;
+    width: 125px;
     height: 40px;
     font-size: 17px;
     color: white;
     cursor: pointer;
+    margin-right: 40px;
     
     }
   }
@@ -268,6 +272,7 @@ export default function AddOns() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+  const {isMobile} = useScreenSize();
 
   useEffect(() => {
     if (location.pathname === "/addOns") {
@@ -1179,7 +1184,10 @@ export default function AddOns() {
 
             </div>
 
-            <div className="bottom-bar">
+            <div className="bottom-bar" style={{
+              height: isMobile ? "100px" : null,
+              justifyContent: isMobile ? "space-around" : "space-between", padding: isMobile ? "0px 5px" : null 
+            }}>
               <div className="bottom-bar-price">
                 <Text style={{
                   fontSize: 24, fontWeight: 600
@@ -1188,7 +1196,7 @@ export default function AddOns() {
 
                 </Text>
                 <div style={{
-                  display: "flex", marginTop: 12, marginLeft: 5
+                  display: "flex", marginLeft: 5, alignItems: "center"
                 }}>
                   <s style={{
                     color: "#b22422"
@@ -1223,6 +1231,7 @@ export default function AddOns() {
                 {!returnTripUI ? (
                   <>
                     <ContinueButton
+                     
                       text="Continue"
                       className="continue-btn"
                       onClick={() => {

@@ -342,7 +342,7 @@ const Flights = () => {
       }}>
       <FlightTabs/>
       </div>
-
+      <LoginPage/>
      
     </div>
       </>
