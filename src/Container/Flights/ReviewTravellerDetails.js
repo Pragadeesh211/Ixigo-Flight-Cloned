@@ -26,7 +26,7 @@ import ReturnFlightDetails from "../../Component/ReturnFlightDetails";
 import "./EconomySwiper.css";
 import FloatingInput from "../../Component/FloatInput";
 import { addTraveller, editTraveller } from "../../Redux/Slices/TravellerSlice";
-import Link,{useNavigate,useLocation} from "react-router-dom";
+import Link, { useNavigate, useLocation } from "react-router-dom";
 import ContinueButton from "../../Component/ContinueButton";
 import useScreenSize from "../../Component/UseScreenSize";
 import MobileOneway from "../../Component/MobileOneway";
@@ -49,7 +49,7 @@ const ReviewTravellerDetails = () => {
     openDrawer,
     phoneNo
   } = useSelector((state) => state.profile);
-  const {isMobile} = useScreenSize();
+  const { isMobile } = useScreenSize();
   const location = useLocation();
   const {
     from,
@@ -156,7 +156,7 @@ const ReviewTravellerDetails = () => {
     };
   };
 
-  
+
 
   // // console.log("total", totalAmount)
 
@@ -181,14 +181,14 @@ const ReviewTravellerDetails = () => {
   }, [onewaySelectedFlight, returnSelectedFlight, travellerValue, travelClass, returnTripUI]);
 
   useEffect(() => {
-  if (location.pathname === "/ReviewTravellerDetails") {
-    dispatch(setCurrentState(1));
-    dispatch(setTravellerDetails([]));
-    if(refundValue.planType === "norefund"){
-    dispatch(setRefundPlan({ planType: null, price: 0 }));
+    if (location.pathname === "/ReviewTravellerDetails") {
+      dispatch(setCurrentState(1));
+      dispatch(setTravellerDetails([]));
+      if (refundValue.planType === "norefund") {
+        dispatch(setRefundPlan({ planType: null, price: 0 }));
+      }
     }
-  }
-}, [location, dispatch]);
+  }, [location, dispatch]);
 
 
 
@@ -323,7 +323,7 @@ const ReviewTravellerDetails = () => {
       setCancelPrice(getCancelFee(price));
       setReschedulePrice(getRescheduleFee(price));
     }
-  }, [onewaySelectedFlight, travelClass,returnSelectedFlight]);
+  }, [onewaySelectedFlight, travelClass, returnSelectedFlight]);
 
 
   const handleSelect = (option) => {
@@ -355,7 +355,7 @@ const ReviewTravellerDetails = () => {
 
 
   };
-console.log("endaa",refundValue)
+  console.log("endaa", refundValue)
   const getFinalAmount = () => {
     const promoAmount = promoOfferList?.[0]?.amount || 0;
 
@@ -466,38 +466,38 @@ console.log("endaa",refundValue)
   // const [editGender, setEditGender] = useState("");
   // const [editDOB, setEditDOB] = useState("");
 
-  const [existingModal,setExistingModal] = useState(false);
-  const [addNewModal,setAddNewModal] = useState(false);
-  const [addNewChildModal,setAddNewChildModal] = useState(false);
-  const [editNewModal,seteditNewModal] = useState(false);
-  const [editNewChildModal,seteditChildNewModal] = useState(false);
-  const [disabledAdults, setDisabledAdults] = useState([]); 
-  const [disabledChild, setDisabledChild] = useState([]); 
+  const [existingModal, setExistingModal] = useState(false);
+  const [addNewModal, setAddNewModal] = useState(false);
+  const [addNewChildModal, setAddNewChildModal] = useState(false);
+  const [editNewModal, seteditNewModal] = useState(false);
+  const [editNewChildModal, seteditChildNewModal] = useState(false);
+  const [disabledAdults, setDisabledAdults] = useState([]);
+  const [disabledChild, setDisabledChild] = useState([]);
   const [editingAdult, setEditingAdult] = useState(null);
   const [editingChild, setEditingChild] = useState(null);
 
 
-  
 
-  
+
+
   // useEffect(()=>{
   //   settempArray([])
   // },[])
 
 
-//  useEffect(() => {
-//   if (selectedAdults.length > 0) {
-//     const list = selectedAdults.map((a, idx) => ({
-//       key: tempArray.length,  
-//       firstName: a?.firstName,
-//       lastName: a?.lastName,
-//       DOBValue: a?.DOBValue,
-//       genderValue: a?.genderValue,
-//     }));
+  //  useEffect(() => {
+  //   if (selectedAdults.length > 0) {
+  //     const list = selectedAdults.map((a, idx) => ({
+  //       key: tempArray.length,  
+  //       firstName: a?.firstName,
+  //       lastName: a?.lastName,
+  //       DOBValue: a?.DOBValue,
+  //       genderValue: a?.genderValue,
+  //     }));
 
-//     settempArray(prev => [...prev, ...list]);  
-//   }
-// }, [selectedAdults]);
+  //     settempArray(prev => [...prev, ...list]);  
+  //   }
+  // }, [selectedAdults]);
 
 
 
@@ -513,79 +513,79 @@ console.log("endaa",refundValue)
     ? travellers?.Infants
     : null
 
-    const getselected = (person) =>{
-      selectedAdults.some(a => a.key === person.key) 
-    }
+  const getselected = (person) => {
+    selectedAdults.some(a => a.key === person.key)
+  }
   const handleSelectAdult = (person) => {
-  const onlyOneAllowed = travellers?.Adults === 1; 
-  const isAlreadySelected = Array.isArray(selectedAdults) && selectedAdults.some(a => a.key === person.key);
-
- 
-  if (isAlreadySelected) {
-    setSelectedAdults(prev => prev.filter(a => a.key !== person.key));
-    settempArray(prev => prev.filter(a => a.key !== person.key));
-    return;
-  }
-
-  
-  if (onlyOneAllowed && tempArray.length >= 1) {
-    messageApi.open({
-      type: "warning",
-      content: `Only ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} allowed. Remove existing adult to select a new one.`,
-      duration: 3,
-    });
-    return;
-  }
-  
-  
-  if (selectedAdults.length >= maxAllowed || tempArray.length >= maxAllowed) {
-    messageApi.open({
-      type: "warning",
-      content: `Only ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} allowed. Remove existing adult to select a new one.`,
-      duration: 3,
-    });
-    return;
-  }
-
-  
-  setSelectedAdults(prev => [...prev, person]);
-  
-};
-
-console.log("seeeee",selectedAdults)
-  const handleSelectChildren = (person) => {
-    const onlyOneAllowed = travellers?.Children === 1; 
-  const isAlreadySelected = Array.isArray(selectedChildren) && selectedChildren.some(a => a.key === person.key);
+    const onlyOneAllowed = travellers?.Adults === 1;
+    const isAlreadySelected = Array.isArray(selectedAdults) && selectedAdults.some(a => a.key === person.key);
 
 
     if (isAlreadySelected) {
-    setSelectedChildren(prev => prev.filter(a => a.key !== person.key));
-    setTempChildArray(prev => prev.filter(a => a.key !== person.key));
-    return;
-  }
+      setSelectedAdults(prev => prev.filter(a => a.key !== person.key));
+      settempArray(prev => prev.filter(a => a.key !== person.key));
+      return;
+    }
 
-  
-  if (onlyOneAllowed && tempChildArray.length >= 1) {
-    messageApi.open({
-      type: "warning",
-      content: `Only ${travellers?.Children} ${travellers?.Children === 1 ? "Child" : "Children"} allowed. Remove existing Child to select a new one.`,
-      duration: 3,
-    });
-    return;
-  }
 
-  
-  if (selectedChildren.length >= maxAllowedChildren || tempChildArray.length >= maxAllowedChildren) {
-    messageApi.open({
-      type: "warning",
-      content: `Only ${travellers?.Children} ${travellers?.Children === 1 ? "Child" : "Children"} allowed. Remove existing Child to select a new one.`,
-      duration: 3,
-    });
-    return;
-  }
+    if (onlyOneAllowed && tempArray.length >= 1) {
+      messageApi.open({
+        type: "warning",
+        content: `Only ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} allowed. Remove existing adult to select a new one.`,
+        duration: 3,
+      });
+      return;
+    }
 
-  
-  setSelectedChildren(prev => [...prev, person]);
+
+    if (selectedAdults.length >= maxAllowed || tempArray.length >= maxAllowed) {
+      messageApi.open({
+        type: "warning",
+        content: `Only ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} allowed. Remove existing adult to select a new one.`,
+        duration: 3,
+      });
+      return;
+    }
+
+
+    setSelectedAdults(prev => [...prev, person]);
+
+  };
+
+  console.log("seeeee", selectedAdults)
+  const handleSelectChildren = (person) => {
+    const onlyOneAllowed = travellers?.Children === 1;
+    const isAlreadySelected = Array.isArray(selectedChildren) && selectedChildren.some(a => a.key === person.key);
+
+
+    if (isAlreadySelected) {
+      setSelectedChildren(prev => prev.filter(a => a.key !== person.key));
+      setTempChildArray(prev => prev.filter(a => a.key !== person.key));
+      return;
+    }
+
+
+    if (onlyOneAllowed && tempChildArray.length >= 1) {
+      messageApi.open({
+        type: "warning",
+        content: `Only ${travellers?.Children} ${travellers?.Children === 1 ? "Child" : "Children"} allowed. Remove existing Child to select a new one.`,
+        duration: 3,
+      });
+      return;
+    }
+
+
+    if (selectedChildren.length >= maxAllowedChildren || tempChildArray.length >= maxAllowedChildren) {
+      messageApi.open({
+        type: "warning",
+        content: `Only ${travellers?.Children} ${travellers?.Children === 1 ? "Child" : "Children"} allowed. Remove existing Child to select a new one.`,
+        duration: 3,
+      });
+      return;
+    }
+
+
+    setSelectedChildren(prev => [...prev, person]);
   };
 
   const handleSelectInfants = (person) => {
@@ -654,7 +654,7 @@ console.log("seeeee",selectedAdults)
   const travellerInfantListMap = createTravellerInfantArray(travellers);
 
 
-  
+
 
 
   //   if (!selectedAdults[idx]) {
@@ -745,13 +745,13 @@ console.log("seeeee",selectedAdults)
     maskedValue = maskedValue.substring(0, 10);
 
     // Validate with Day.js
-    
-    
-      setDOBError(false);
-      setDOBAgeVerify(false)
 
 
-    setadultDOB(maskedValue); 
+    setDOBError(false);
+    setDOBAgeVerify(false)
+
+
+    setadultDOB(maskedValue);
   };
 
   const handleaddChildDOBChange = (e) => {
@@ -772,167 +772,167 @@ console.log("seeeee",selectedAdults)
     maskedValue = maskedValue.substring(0, 10);
 
     // Validate with Day.js
-    
-    
-      setDOBError(false);
-      setDOBAgeVerify(false);
 
 
-    setadultDOB(maskedValue);  
+    setDOBError(false);
+    setDOBAgeVerify(false);
+
+
+    setadultDOB(maskedValue);
   };
 
 
 
-  const handleAdd = () =>{
-   
+  const handleAdd = () => {
+
     const NAME_REGEX = /^[A-Za-z\s'-]{1,27}$/;
-  
 
-      const DOB_REGEX = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19|20)\d{2}$/;
-      const isValid = DOB_REGEX.test(adultDOB);
 
-      if (!adultFirstName || adultFirstName.length > 32 || !NAME_REGEX.test(adultFirstName)) {
-        setFirstNameError(true);
-        return;
-      }
-      if (!adultLastName || adultLastName.length > 32 || !NAME_REGEX.test(adultLastName)) {
-        setLastNameError(true);
-        return;
-      }
-      if (!adultDOB || !isValid) {
-        setDOBError(true);
-        return;
-      }
-      const age = getAge(adultDOB); 
+    const DOB_REGEX = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19|20)\d{2}$/;
+    const isValid = DOB_REGEX.test(adultDOB);
+
+    if (!adultFirstName || adultFirstName.length > 32 || !NAME_REGEX.test(adultFirstName)) {
+      setFirstNameError(true);
+      return;
+    }
+    if (!adultLastName || adultLastName.length > 32 || !NAME_REGEX.test(adultLastName)) {
+      setLastNameError(true);
+      return;
+    }
+    if (!adultDOB || !isValid) {
+      setDOBError(true);
+      return;
+    }
+    const age = getAge(adultDOB);
     if (age < 12) {
-      setDOBAgeVerify(true); 
+      setDOBAgeVerify(true);
       return;
     }
-      const newRecord = {
-        key: selectedAdults.length,
-        firstName: adultFirstName,
-        lastName: adultLastName,
-        genderValue: adultGender || "Male",
-        DOBValue: adultDOB,
-      };
-      settempArray(prev => [...prev, newRecord]);
+    const newRecord = {
+      key: selectedAdults.length,
+      firstName: adultFirstName,
+      lastName: adultLastName,
+      genderValue: adultGender || "Male",
+      DOBValue: adultDOB,
+    };
+    settempArray(prev => [...prev, newRecord]);
 
-      setadultFirstName("");
-      setadultLastName("");
-      setadultDOB("");
-      setadultGender("Male");
-      setAddNewModal(false)
+    setadultFirstName("");
+    setadultLastName("");
+    setadultDOB("");
+    setadultGender("Male");
+    setAddNewModal(false)
   }
 
-  const handleChildAdd = () =>{
-   
+  const handleChildAdd = () => {
+
     const NAME_REGEX = /^[A-Za-z\s'-]{1,27}$/;
-  
 
-      const DOB_REGEX = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19|20)\d{2}$/;
-      const isValid = DOB_REGEX.test(adultDOB);
 
-      if (!adultFirstName || adultFirstName.length > 32 || !NAME_REGEX.test(adultFirstName)) {
-        setFirstNameError(true);
-        return;
-      }
-      if (!adultLastName || adultLastName.length > 32 || !NAME_REGEX.test(adultLastName)) {
-        setLastNameError(true);
-        return;
-      }
-      if (!adultDOB || !isValid) {
-        setDOBError(true);
-        return;
-      }
-      const age = getAge(adultDOB); 
-  if (age > 12 || age<2) {
-    setDOBAgeVerify(true); 
-    return;
+    const DOB_REGEX = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19|20)\d{2}$/;
+    const isValid = DOB_REGEX.test(adultDOB);
+
+    if (!adultFirstName || adultFirstName.length > 32 || !NAME_REGEX.test(adultFirstName)) {
+      setFirstNameError(true);
+      return;
+    }
+    if (!adultLastName || adultLastName.length > 32 || !NAME_REGEX.test(adultLastName)) {
+      setLastNameError(true);
+      return;
+    }
+    if (!adultDOB || !isValid) {
+      setDOBError(true);
+      return;
+    }
+    const age = getAge(adultDOB);
+    if (age > 12 || age < 2) {
+      setDOBAgeVerify(true);
+      return;
+    }
+    const newRecord = {
+      key: selectedAdults.length,
+      firstName: adultFirstName,
+      lastName: adultLastName,
+      genderValue: adultGender || "Male",
+      DOBValue: adultDOB,
+    };
+    setTempChildArray(prev => [...prev, newRecord]);
+
+    setadultFirstName("");
+    setadultLastName("");
+    setadultDOB("");
+    setadultGender("Male");
+    setAddNewChildModal(false)
   }
-      const newRecord = {
-        key: selectedAdults.length,
-        firstName: adultFirstName,
-        lastName: adultLastName,
-        genderValue: adultGender || "Male",
-        DOBValue: adultDOB,
-      };
-      setTempChildArray(prev => [...prev, newRecord]);
 
-      setadultFirstName("");
-      setadultLastName("");
-      setadultDOB("");
-      setadultGender("Male");
-      setAddNewChildModal(false)
-  }
+  const handleEdit = () => {
 
-  const handleEdit = () =>{
-   
     const NAME_REGEX = /^[A-Za-z\s'-]{1,27}$/;
-  
 
-      const DOB_REGEX = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19|20)\d{2}$/; 
-      const isValid = DOB_REGEX.test(editingAdult.DOBValue);
 
-      if (!editingAdult.firstName || editingAdult.firstName.length > 32 || !NAME_REGEX.test(editingAdult.firstName)) {
-        setFirstNameError(true);
-        return;
-      }
-      if (!editingAdult.lastName || editingAdult.lastName.length > 32 || !NAME_REGEX.test(editingAdult.lastName)) {
-        setLastNameError(true);
-        return;
-      }
-      if (!editingAdult.DOBValue || !isValid) { 
-        setDOBError(true);
-        return;
-      }
-      const age = getAge(editingAdult?.DOBValue); 
+    const DOB_REGEX = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19|20)\d{2}$/;
+    const isValid = DOB_REGEX.test(editingAdult.DOBValue);
+
+    if (!editingAdult.firstName || editingAdult.firstName.length > 32 || !NAME_REGEX.test(editingAdult.firstName)) {
+      setFirstNameError(true);
+      return;
+    }
+    if (!editingAdult.lastName || editingAdult.lastName.length > 32 || !NAME_REGEX.test(editingAdult.lastName)) {
+      setLastNameError(true);
+      return;
+    }
+    if (!editingAdult.DOBValue || !isValid) {
+      setDOBError(true);
+      return;
+    }
+    const age = getAge(editingAdult?.DOBValue);
     if (age < 12) {
-      setDOBAgeVerify(true); 
+      setDOBAgeVerify(true);
       return;
     }
-    
-      settempArray(prev =>
-    prev.map(a => a.key === editingAdult.key ? editingAdult : a)
-  ); 
-      seteditNewModal(false)
+
+    settempArray(prev =>
+      prev.map(a => a.key === editingAdult.key ? editingAdult : a)
+    );
+    seteditNewModal(false)
   }
 
-  const handleChildEdit = () =>{
-   
+  const handleChildEdit = () => {
+
     const NAME_REGEX = /^[A-Za-z\s'-]{1,27}$/;
-  
 
-      const DOB_REGEX = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19|20)\d{2}$/; 
-      const isValid = DOB_REGEX.test(editingChild?.DOBValue);
 
-      if (!editingChild.firstName || editingChild.firstName.length > 32 || !NAME_REGEX.test(editingChild.firstName)) {
-        setFirstNameError(true);
-        return;
-      }
-      if (!editingChild.lastName || editingChild.lastName.length > 32 || !NAME_REGEX.test(editingChild.lastName)) {
-        setLastNameError(true);
-        return;
-      }
-      if (!editingChild?.DOBValue || !isValid) {
-        setDOBError(true);
-        return;
-      }
-      const age = getAge(editingChild?.DOBValue); 
-    if (age > 12 || age<2) {
-      setDOBAgeVerify(true); 
+    const DOB_REGEX = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19|20)\d{2}$/;
+    const isValid = DOB_REGEX.test(editingChild?.DOBValue);
+
+    if (!editingChild.firstName || editingChild.firstName.length > 32 || !NAME_REGEX.test(editingChild.firstName)) {
+      setFirstNameError(true);
       return;
     }
-    
-      setTempChildArray(prev =>
-    prev.map(a => a.key === editingChild.key ? editingChild : a)
-  ); 
-      seteditChildNewModal(false)
+    if (!editingChild.lastName || editingChild.lastName.length > 32 || !NAME_REGEX.test(editingChild.lastName)) {
+      setLastNameError(true);
+      return;
+    }
+    if (!editingChild?.DOBValue || !isValid) {
+      setDOBError(true);
+      return;
+    }
+    const age = getAge(editingChild?.DOBValue);
+    if (age > 12 || age < 2) {
+      setDOBAgeVerify(true);
+      return;
+    }
+
+    setTempChildArray(prev =>
+      prev.map(a => a.key === editingChild.key ? editingChild : a)
+    );
+    seteditChildNewModal(false)
   }
 
 
   const handleEditDOBChange = (e) => {
     const rawValue = e.target.value;
-    const cleanValue = rawValue.replace(/[^\d]/g, ""); 
+    const cleanValue = rawValue.replace(/[^\d]/g, "");
 
     let maskedValue = "";
     if (cleanValue.length > 0) {
@@ -947,18 +947,18 @@ console.log("seeeee",selectedAdults)
 
     maskedValue = maskedValue.substring(0, 10);
 
-    
-    
-    
-      setDOBError(false);
-      setDOBAgeVerify(false);
+
+
+
+    setDOBError(false);
+    setDOBAgeVerify(false);
 
     setEditingAdult(prev => ({ ...prev, DOBValue: maskedValue }));
   };
 
-  const handleChildEditDOBChange = (e) => { 
+  const handleChildEditDOBChange = (e) => {
     const rawValue = e.target.value;
-    const cleanValue = rawValue.replace(/[^\d]/g, ""); 
+    const cleanValue = rawValue.replace(/[^\d]/g, "");
 
     let maskedValue = "";
     if (cleanValue.length > 0) {
@@ -973,17 +973,17 @@ console.log("seeeee",selectedAdults)
 
     maskedValue = maskedValue.substring(0, 10);
 
-    
-    
-    
-      setDOBError(false);
-      setDOBAgeVerify(false);
+
+
+
+    setDOBError(false);
+    setDOBAgeVerify(false);
 
 
     setEditingChild(prev => {
-  if (!prev) return { DOBValue: maskedValue };
-  return { ...prev, DOBValue: maskedValue };
-});
+      if (!prev) return { DOBValue: maskedValue };
+      return { ...prev, DOBValue: maskedValue };
+    });
 
   };
 
@@ -1062,106 +1062,108 @@ console.log("seeeee",selectedAdults)
   }
 
   const openExistingTraveller = (person) => {
-  setactiveAdultIndex(person.key);
+    setactiveAdultIndex(person.key);
 
-  if (!selectedAdults.some(a => a.key === person.key)) {
-    setSelectedAdults(prev => [...prev, person]);
-  }
-};
+    if (!selectedAdults.some(a => a.key === person.key)) {
+      setSelectedAdults(prev => [...prev, person]);
+    }
+  };
 
-const updateTraveller = (updated) => {
-  setSelectedAdults(prev => prev.map(a => 
-    a.key === updated.key ? updated : a
-  ));
-};
+  const updateTraveller = (updated) => {
+    setSelectedAdults(prev => prev.map(a =>
+      a.key === updated.key ? updated : a
+    ));
+  };
 
-const openAddNewTraveller = (key) => {
-  setactiveAdultIndex(key);
-};
+  const openAddNewTraveller = (key) => {
+    setactiveAdultIndex(key);
+  };
 
-const saveNewTraveller = (newTraveller) => {
-  newTraveller.key = activeAdultIndex;
-  setSelectedAdults(prev => [...prev, newTraveller]);
-};
+  const saveNewTraveller = (newTraveller) => {
+    newTraveller.key = activeAdultIndex;
+    setSelectedAdults(prev => [...prev, newTraveller]);
+  };
 
 
-const TravellerForm = ({ traveller, onChange }) => {
-  const [formData, setFormData] = useState(traveller);
+  const TravellerForm = ({ traveller, onChange }) => {
+    const [formData, setFormData] = useState(traveller);
 
-  const NAME_REGEX = /^[A-Za-z\s'-]{1,27}$/; // Allows 1 to 27 characters (letters, spaces, hyphens, apostrophes)
+    const NAME_REGEX = /^[A-Za-z\s'-]{1,27}$/; // Allows 1 to 27 characters (letters, spaces, hyphens, apostrophes)
 
-const handleFirstNameChange = (value, key) => {
-    
-    // 1. Validate the input value
-    const isValid = NAME_REGEX.test(value);
-    
-    // 2. Update the error state for the specific traveler index (key)
-    setFirstNameError(false);
+    const handleFirstNameChange = (value, key) => {
 
-    // 3. Update the primary traveler data array (Must be immutable)
-    setSelectedAdults((prev) => {
+      // 1. Validate the input value
+      const isValid = NAME_REGEX.test(value);
+
+      // 2. Update the error state for the specific traveler index (key)
+      setFirstNameError(false);
+
+      // 3. Update the primary traveler data array (Must be immutable)
+      setSelectedAdults((prev) => {
         const updated = [...prev];
         // Ensure you copy the existing object before updating the property
-        updated[key] = { ...updated[key], firstName: value }; 
+        updated[key] = { ...updated[key], firstName: value };
         return updated;
-    });
+      });
 
-    // 4. (If necessary) Update the separate state for the currently active input value
-    // This should only be used if you need to track the global state of the active input.
-    // If 'setadultFirstName' is meant to track the input being typed, ensure it's defined.
-    // setadultFirstName(value); 
-};
-
-
+      // 4. (If necessary) Update the separate state for the currently active input value
+      // This should only be used if you need to track the global state of the active input.
+      // If 'setadultFirstName' is meant to track the input being typed, ensure it's defined.
+      // setadultFirstName(value); 
+    };
 
 
-  
-};
- 
+
+
+
+  };
+
 
 
   const [pageLoading, setPageLoading] = useState(true);
-  
-  
-  
-  
+
+
+
+
   useEffect(() => {
     setPageLoading(true);
-  
+
     const timer = setTimeout(() => setPageLoading(false), 1500);
-  
+
     return () => clearTimeout(timer);
-  }, []); 
+  }, []);
 
   return (
     <>
-    {
-      isMobile?(
-        <>
-        <div  style={{
-          position: "fixed",
-          top: 0,             
-          zIndex: 1000,       
-          background: "white",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "100%",
-          paddingBottom:"20px",
-          
-        }}>
-          <Text style={{
-            fontSize:20,fontWeight:500,marginTop:18
-          }}>Review Flight</Text>
-          
-        </div>
-       
-        <div style={{
-          marginTop:100,
-          borderBottom:"1px solid grey",
-          paddingBottom:"50px"
-        }}>
-          {!returnTripUI ? (<MobileOneway />) : (
+      {
+        isMobile ? (
+          <>
+            {/* <div style={{
+              position: "fixed",
+              top: 0,
+              zIndex: 1000,
+              background: "white",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+              paddingBottom: "20px",
+
+            }}>
+              <Text style={{
+                fontSize: 20, fontWeight: 500, marginTop: 18
+              }}>Review Flight</Text>
+
+            </div> */}
+            <div style={{
+              width: "100%"
+            }}>
+              <div style={{
+                marginTop: 100,
+                borderBottom: "1px solid grey",
+                paddingBottom: "50px"
+              }}>
+                {!returnTripUI ? (<MobileOneway />) : (
                   <div>
                     <div style={{
                       // width: "980px",
@@ -1176,377 +1178,385 @@ const handleFirstNameChange = (value, key) => {
                       marginTop: 20,
                       marginBottom: returnFlight?.stops === "1 stop" ? -200 : 0,
                     }}>
-                      <MobileReturn /> 
+                      <MobileReturn />
                     </div>
                   </div>
                 )}
-        </div>
-              {/* Add cancel */}
-        <div style={{
-          display:"flex",justifyContent:"center",
-          marginTop:20
-        }}>
-                <div style={{
-                      border: ".5px solid #cccccc",
-                      borderRadius: "20px",
-                      width: "90%",
-                      position: "relative",
-                      // right:10
-                    }}>
-
-                      <div style={{
-                        maxheight: "80px",
-                        background: "rgb(242, 249, 255)",
-                        borderTopLeftRadius: "20px",
-                        borderTopRightRadius: "20px",
-                        padding: 10,
-                        display: "flex",
-                        justifyContent: "space-between",
-                        cursor: "pointer",
-                        maxHeight: 80,
-
-                      }}
-                        onClick={() => handleSelect("Free Cancellation")}
-                      >
-                        <div >
-                          <img src="https://images.ixigo.com/image/upload/icon/8378c73f79f77491eccf58ba345ee5bc-gbjnr.png"
-                            style={{
-                              height: 25,
-                              position: "absolute",
-                              zIndex: 10
-                            }} />
-                          <div style={{
-                            background: "linear-gradient(90deg, #c7a2e8, transparent)",
-                            paddingBottom: ".5px",
-                            paddingTop: ".5px",
-                            zIndex: 1,
-                            position: "relative",
-                            top: 4,
-                            left: 73,
-                            width: 90,
-                            height: 13,
-                            color: "#6e18b9",
-                            fontSize: "12px",
-                            textAlign: "center",
-                            fontWeight: 500,
-
-                          }}>
-
-
-
-                            Most Popular
-
-                          </div>
-                          <br />
-                          <Text style={{
-                            fontWeight: 500,
-                            fontSize: "17px",
-                            bottom: 5,
-                            position: "relative"
-                          }}>Free Cancellation</Text>
-                          <br />
-                          <span style={{
-                            bottom: 6,
-                            position: "relative",
-                            color: "#505050ff",
-                            fontSize: "12px"
-                          }}>@</span> <Text style={{
-                            fontSize: "15px", fontWeight: 700, bottom: 5,
-                            position: "relative",
-                          }}>
-                            ₹{cancelPrice.toLocaleString("en-IN")}
-                            <Text style={{
-                              fontSize: "11px",
-                              fontWeight: 500,
-                              color: "#00000073"
-                            }}>/traveller</Text>
-                          </Text>
-                        </div>
-                        <div>
-                          <input
-                            type="radio"
-                            name="refundOption"
-                            value="Free Cancellation"
-                            checked={selectedRefundOption === "Free Cancellation"}
-
-                            style={{
-                              height: "20px", width: "20px", marginTop: 30, cursor: "pointer"
-                            }}
-                          />
-
-                        </div>
-                      </div>
-                      <div style={{
-                        padding: 15,
-                        background: "white",
-                        borderBottomLeftRadius: 20,
-                        borderBottomRightRadius: 20
-                      }}>
-                        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
-                          <CheckOutlined style={{ color: "#2B9950" }} />
-                          <span>
-                            Instant refund of approx.{" "}
-                            <span style={{ fontWeight: "600", color: "#2B9950" }}>
-                              ₹{totalAmount.toLocaleString("en-IN")}
-                            </span>
-
-                          </span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
-                          <CheckOutlined style={{ color: "#2B9950" }} />
-                          <span>
-                            Cancel up to{" "}
-                            <span style={{ fontWeight: "600", color: "#2B9950" }}>8hrs</span> before
-                            departure
-                          </span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
-                          <CheckOutlined style={{ color: "#2B9950" }} />
-                          <span>No-questions-asked refund</span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                          <CheckOutlined style={{ color: "#2B9950" }} />
-                          <span>
-                            <span style={{ fontWeight: "600", color: "#2B9950" }}>24x7</span> priority
-                            customer service
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-        </div>
-
-        <div style={{
-          display:"flex",justifyContent:"center",
-          marginTop:20
-        }}>
-          <div style={{
-                      border: ".5px solid #cccccc",
-                      borderRadius: "20px",
-                      width: "90%",
-
-                    }}
-                    >
-                      <div style={{
-                        height: "80px",
-                        background: "rgb(249, 242, 255)",
-                        borderTopLeftRadius: "20px",
-                        borderTopRightRadius: "20px",
-                        padding: 10,
-                        display: "flex",
-                        justifyContent: "space-between",
-                        cursor: "pointer",
-                        maxHeight: 80,
-
-                      }}
-
-                        onClick={() => handleSelect("Rescheduling")}
-                      >
-                        <div >
-                          <img src="https://images.ixigo.com/image/upload/icon/8934cfa8cec76c87ada8b3ecda4f0da1-awjph.png"
-                            style={{
-                              height: 25,
-                              position: "absolute",
-                              zIndex: 10
-                            }} />
-
-                          <br />
-                          <Text style={{
-                            fontWeight: 500,
-                            fontSize: "17px",
-                            top: 8,
-                            position: "relative"
-                          }}>Free Cancellation + Rescheduling</Text>
-                          <br />
-                          <span style={{
-                            top: 6,
-                            position: "relative",
-                            color: "#505050ff",
-                            fontSize: "12px"
-                          }}>@</span> <Text style={{
-                            fontSize: "15px", fontWeight: 700,
-                            position: "relative", top: 8
-                          }}>
-                            ₹{reschedulePrice.toLocaleString("en-IN")}
-                            <Text style={{
-                              fontSize: "11px",
-                              fontWeight: 500,
-                              color: "#00000073"
-                            }}>/traveller</Text>
-                          </Text>
-                        </div>
-                        <div>
-                          <input
-                            type="radio"
-                            name="refundOption"
-                            value="Rescheduling"
-                            checked={selectedRefundOption === "Rescheduling"}
-
-                            style={{
-                              height: "20px", width: "20px", marginTop: 30, cursor: "pointer"
-                            }}
-                          />
-
-                        </div>
-                      </div>
-                      <div style={{
-                        padding: 15,
-                        background: "white",
-                        borderBottomLeftRadius: 20,
-                        borderBottomRightRadius: 20
-
-                      }}>
-                        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
-                          <CheckOutlined style={{ color: "#2B9950" }} />
-                          <span>
-                            Instant refund of approx.{" "}
-                            <span style={{ fontWeight: "600", color: "#2B9950" }}>
-                              ₹{totalAmount.toLocaleString("en-IN")}
-                            </span>
-
-                          </span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
-                          <CheckOutlined style={{ color: "#2B9950" }} />
-                          <span>
-                            Cancel up to{" "}
-                            <span style={{ fontWeight: "600", color: "#2B9950" }}>8hrs</span> before
-                            departure
-                          </span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
-                          <CheckOutlined style={{ color: "#2B9950" }} />
-                          <span>No-questions-asked refund</span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                          <CheckOutlined style={{ color: "#2B9950" }} />
-                          <span>
-                            <span style={{ fontWeight: "600", color: "#2B9950" }}>24x7</span> priority
-                            customer service
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-        </div>
-        <div style={{
-          display:"flex",justifyContent:"center",
-
-        }}>
-        <div style={{
-                display: "flex", flexDirection: "row", marginTop: 20, gap: 5, alignItems: "center",width:"90%"
-              }}>
-                <input
-                  type="radio"
-                  name="refundOption"
-                  value="noRefund"
-                  checked={selectedRefundOption === "noRefund"}
-
-                  style={{
-                    height: "20px", width: "20px", cursor: "pointer"
-                  }}
-                  onClick={() => handleSelect("noRefund")}
-                /><Text style={{
-                  fontWeight: 500
-                }}>I don't want Free Cancellation.</Text>
               </div>
-        </div>
-        <div >
-          <div style={{
-                display: "flex",
-                background: "#fff",
-                // width:"28%",
-                padding: 20, borderRadius: 20,
-                paddingBottom: "60px",
-                maxHeight: "auto",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-                marginTop:15
+              {/* Add cancel */}
+              <div style={{
+                display: "flex", justifyContent: "center",
+                marginTop: 20
               }}>
-                <div
+                <div style={{
+                  border: ".5px solid #cccccc",
+                  borderRadius: "20px",
+                  width: "90%",
+                  position: "relative",
+                  // right:10
+                }}>
 
-                >
-                  <Text style={{
-                    fontSize: "24px",
-                    fontWeight: 700
-                  }}>Offers For You</Text>
+                  <div style={{
+                    maxheight: "80px",
+                    background: "rgb(242, 249, 255)",
+                    borderTopLeftRadius: "20px",
+                    borderTopRightRadius: "20px",
+                    padding: 10,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    cursor: "pointer",
+                    maxHeight: 80,
 
-                  <div
-                    style={{
-                      height: "45px",
-                      border: "1px solid #8a8a8a",
-                      marginTop: 10,
-                      borderRadius: 10,
-                      display: "flex",
-                      alignItems: "center",
-                      flexDirection: "row",
-                      paddingLeft: "10px",
-                      paddingRight: "10px",
-                      background: "#fff",
-                    }}
+                  }}
+                    onClick={() => handleSelect("Free Cancellation")}
                   >
-                    <Input
-                      placeholder="Have a promocode? Redeem here"
-                      variant="borderless"
-                      style={{
-                        fontSize: "16px",
-                        fontWeight: 500,
-                        width: 300,
-                      }}
-                      value={promoCodeValue}
-                      onChange={(e) => {
-                        const text = e.target.value || "";
-                        setPromoCodeValue(text.toLocaleUpperCase());
-                      }}
-                    />
-
-                    {promoCodeValue ? (
-                      <button
+                    <div >
+                      <img src="https://images.ixigo.com/image/upload/icon/8378c73f79f77491eccf58ba345ee5bc-gbjnr.png"
                         style={{
-                          color: "#0770e4",
-                          border: "none",
-                          background: "none",
-                          fontSize: "16px",
+                          height: 25,
+                          position: "absolute",
+                          zIndex: 10
+                        }} />
+                      <div style={{
+                        background: "linear-gradient(90deg, #c7a2e8, transparent)",
+                        paddingBottom: ".5px",
+                        paddingTop: ".5px",
+                        zIndex: 1,
+                        position: "relative",
+                        top: 4,
+                        margin: "0 auto",
+                        width: 90,
+                        height: 13,
+                        color: "#6e18b9",
+                        fontSize: "12px",
+                        textAlign: "center",
+                        fontWeight: 500,
+
+                      }}>
+
+
+
+                        Most Popular
+
+                      </div>
+                      <br />
+                      <Text style={{
+                        fontWeight: 500,
+                        fontSize: "17px",
+                        bottom: 5,
+                        position: "relative"
+                      }}>Free Cancellation</Text>
+                      <br />
+                      <span style={{
+                        bottom: 6,
+                        position: "relative",
+                        color: "#505050ff",
+                        fontSize: "12px"
+                      }}>@</span> <Text style={{
+                        fontSize: "15px", fontWeight: 700, bottom: 5,
+                        position: "relative",
+                      }}>
+                        ₹{cancelPrice.toLocaleString("en-IN")}
+                        <Text style={{
+                          fontSize: "11px",
                           fontWeight: 500,
-                          cursor: "pointer",
+                          color: "#00000073"
+                        }}>/traveller</Text>
+                      </Text>
+                    </div>
+                    <div>
+                      <input
+                        type="radio"
+                        name="refundOption"
+                        value="Free Cancellation"
+                        checked={selectedRefundOption === "Free Cancellation"}
+
+                        style={{
+                          height: "20px", width: "20px", marginTop: 30, cursor: "pointer"
                         }}
-                      >
-                        Apply
-                      </button>
-                    ) : null}
+                      />
+
+                    </div>
                   </div>
                   <div style={{
-                    marginTop: 15,
-                    borderBottom: "1px solid #b8b8bcff"
+                    padding: 15,
+                    background: "white",
+                    borderBottomLeftRadius: 20,
+                    borderBottomRightRadius: 20
                   }}>
-                    <Radio.Group
-                      value={radioValue}
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
+                      <CheckOutlined style={{ color: "#2B9950" }} />
+                      <span>
+                        Instant refund of approx.{" "}
+                        <span style={{ fontWeight: "600", color: "#2B9950" }}>
+                          ₹{totalAmount.toLocaleString("en-IN")}
+                        </span>
 
-                      style={{ color: "black" }}
+                      </span>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
+                      <CheckOutlined style={{ color: "#2B9950" }} />
+                      <span>
+                        Cancel up to{" "}
+                        <span style={{ fontWeight: "600", color: "#2B9950" }}>8hrs</span> before
+                        departure
+                      </span>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
+                      <CheckOutlined style={{ color: "#2B9950" }} />
+                      <span>No-questions-asked refund</span>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                      <CheckOutlined style={{ color: "#2B9950" }} />
+                      <span>
+                        <span style={{ fontWeight: "600", color: "#2B9950" }}>24x7</span> priority
+                        customer service
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{
+                display: "flex", justifyContent: "center",
+                marginTop: 20,
+                width: "100%",
+                alignItems: "center"
+              }}>
+                <div style={{
+                  border: ".5px solid #cccccc",
+                  borderRadius: "20px",
+                  width: "90%",
+                  margin: 0,
+
+                }}
+                >
+                  <div style={{
+                    background: "rgb(249, 242, 255)",
+                    borderTopLeftRadius: "20px",
+                    borderTopRightRadius: "20px",
+                    padding: 10,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    cursor: "pointer",
+                    height: "80px"
+
+                  }}
+
+                    onClick={() => handleSelect("Rescheduling")}
+                  >
+                    <div >
+                      <img src="https://images.ixigo.com/image/upload/icon/8934cfa8cec76c87ada8b3ecda4f0da1-awjph.png"
+                        style={{
+                          height: 25,
+                          position: "absolute",
+                          zIndex: 10
+                        }} />
+
+                      <br />
+                      <Text style={{
+                        fontWeight: 500,
+                        fontSize: "17px",
+                        top: 8,
+                        position: "relative"
+                      }}>Free Cancellation + Rescheduling</Text>
+                      <br />
+                      <span style={{
+                        top: 6,
+                        position: "relative",
+                        color: "#505050ff",
+                        fontSize: "12px"
+                      }}>@</span> <Text style={{
+                        fontSize: "15px", fontWeight: 700,
+                        position: "relative", top: 8
+                      }}>
+                        ₹{reschedulePrice.toLocaleString("en-IN")}
+                        <Text style={{
+                          fontSize: "11px",
+                          fontWeight: 500,
+                          color: "#00000073"
+                        }}>/traveller</Text>
+                      </Text>
+                    </div>
+                    <div>
+                      <input
+                        type="radio"
+                        name="refundOption"
+                        value="Rescheduling"
+                        checked={selectedRefundOption === "Rescheduling"}
+
+                        style={{
+                          height: "20px", width: "20px", marginTop: 30, cursor: "pointer"
+                        }}
+                      />
+
+                    </div>
+                  </div>
+                  <div style={{
+                    padding: 15,
+                    background: "white",
+                    borderBottomLeftRadius: 20,
+                    borderBottomRightRadius: 20
+
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
+                      <CheckOutlined style={{ color: "#2B9950" }} />
+                      <span>
+                        Instant refund of approx.{" "}
+                        <span style={{ fontWeight: "600", color: "#2B9950" }}>
+                          ₹{totalAmount.toLocaleString("en-IN")}
+                        </span>
+
+                      </span>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
+                      <CheckOutlined style={{ color: "#2B9950" }} />
+                      <span>
+                        Cancel up to{" "}
+                        <span style={{ fontWeight: "600", color: "#2B9950" }}>8hrs</span> before
+                        departure
+                      </span>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
+                      <CheckOutlined style={{ color: "#2B9950" }} />
+                      <span>No-questions-asked refund</span>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                      <CheckOutlined style={{ color: "#2B9950" }} />
+                      <span>
+                        <span style={{ fontWeight: "600", color: "#2B9950" }}>24x7</span> priority
+                        customer service
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style={{
+                display: "flex", justifyContent: "center",
+
+              }}>
+                <div style={{
+                  display: "flex", flexDirection: "row", marginTop: 20, gap: 5, alignItems: "center", width: "90%"
+                }}>
+                  <input
+                    type="radio"
+                    name="refundOption"
+                    value="noRefund"
+                    checked={selectedRefundOption === "noRefund"}
+
+                    style={{
+                      height: "20px", width: "20px", cursor: "pointer"
+                    }}
+                    onClick={() => handleSelect("noRefund")}
+                  /><Text style={{
+                    fontWeight: 500
+                  }}>I don't want Free Cancellation.</Text>
+                </div>
+              </div>
+              <div style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%"
+              }}>
+                <div style={{
+                  display: "flex",
+                  background: "#fff",
+                  width: "90%",
+                  padding: 20, borderRadius: 20,
+                  paddingBottom: "60px",
+                  maxHeight: "auto",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                  marginTop: 15
+                }}>
+                  <div
+
+                  >
+                    <Text style={{
+                      fontSize: "24px",
+                      fontWeight: 700
+                    }}>Offers For You</Text>
+
+                    <div
+                      style={{
+                        height: "45px",
+                        border: "1px solid #8a8a8a",
+                        marginTop: 10,
+                        borderRadius: 10,
+                        display: "flex",
+                        alignItems: "center",
+                        flexDirection: "row",
+                        paddingLeft: "10px",
+                        paddingRight: "10px",
+                        background: "#fff",
+                        width: "75%"
+                      }}
                     >
-                      <Space direction="vertical">
-                        {promoOfferList.map((item, idx) => (
+                      <Input
+                        placeholder="Have a promocode? Redeem here"
+                        variant="borderless"
+                        style={{
+                          fontSize: "16px",
+                          fontWeight: 500,
+                          maxWidth: "250px",
+                        }}
+                        value={promoCodeValue}
+                        onChange={(e) => {
+                          const text = e.target.value || "";
+                          setPromoCodeValue(text.toLocaleUpperCase());
+                        }}
+                      />
 
-                          idx <= 2 && (
-                            <div key={idx} style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              width: "100%",
+                      {promoCodeValue ? (
+                        <button
+                          style={{
+                            color: "#0770e4",
+                            border: "none",
+                            background: "none",
+                            fontSize: "16px",
+                            fontWeight: 500,
+                            cursor: "pointer",
+                          }}
+                        >
+                          Apply
+                        </button>
+                      ) : null}
+                    </div>
+                    <div style={{
+                      marginTop: 15,
+                      width: "82%",
+                      borderBottom: "1px solid #b8b8bcff"
+                    }}>
+                      <Radio.Group
+                        value={radioValue}
 
-                            }}>
-                              <div style={{
+                        style={{ color: "black" }}
+                      >
+                        <Space direction="vertical">
+                          {promoOfferList.map((item, idx) => (
+
+                            idx <= 2 && (
+                              <div key={idx} style={{
                                 display: "flex",
-                                flexDirection: "row",
-                                padding: "5px 0",
-                                justifyContent: "space-between",
-                                width: 395
+                                flexDirection: "column",
+                                width: "100%",
+
                               }}>
-                                <>
-                                  <style>
-                                    {`
+                                <div style={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  padding: "5px 0",
+                                  justifyContent: "space-between",
+                                  width: 395
+                                }}>
+                                  <>
+                                    <style>
+                                      {`
                             .custom-radio .ant-radio-inner {
                                 border: 1px solid #848794 !important;
                             }
@@ -1555,191 +1565,195 @@ const handleFirstNameChange = (value, key) => {
                                 border: 1px solid #0770e4 !important; /* selected border (blue) */
                             }
                             `}
-                                  </style>
+                                    </style>
 
-                                  <ConfigProvider>
-                                    <Radio value={idx} className="custom-radio" style={{
-                                      fontSize: "16px",
-                                      fontWeight: 600, textTransform: "uppercase", fontFamily: "Roboto"
-                                    }}
-                                      onChange={() => handleRadioValue(idx)}>
-                                      {item.name}
-                                    </Radio>
-                                  </ConfigProvider>
-                                </>
+                                    <ConfigProvider>
+                                      <Radio value={idx} className="custom-radio" style={{
+                                        fontSize: "16px",
+                                        fontWeight: 600, textTransform: "uppercase", fontFamily: "Roboto"
+                                      }}
+                                        onChange={() => handleRadioValue(idx)}>
+                                        {item.name}
+                                      </Radio>
+                                    </ConfigProvider>
+                                  </>
 
-                                <div style={{
-                                  flex: 1, textAlign: "end"
-                                }}>{item.amount >= 0 ? (<Text style={{
-                                  fontSize: "14px", fontWeight: 700
-                                }}>{item?.amount > 0 && `₹${item.amount} Off`}  </Text>) : null}
+                                  <div style={{
+                                    flex: 1, textAlign: "end", position: "relative", right: 80
+                                  }}>{item.amount >= 0 ? (<Text style={{
+                                    fontSize: "14px", fontWeight: 700
+                                  }}>{item?.amount > 0 && `₹${item.amount} Off`}  </Text>) : null}
+                                  </div>
+
                                 </div>
+                                <Text style={{
+                                  position: "relative",
+                                  left: 25,
+                                  width: "300px",
+                                  color: radioValue === idx ? "green" : "black",
+                                  fontFamily: "Roboto",
+                                  fontSize: 14.5,
+                                  bottom: 10
+                                }}>
+                                  {item.descriptions}
+                                </Text>
+                              </div>)
+                          )
+                          )}
 
-                              </div>
-                              <Text style={{
-                                position: "relative",
-                                left: 25,
-                                width: 360,
-                                color: radioValue === idx ? "green" : "black",
-                                fontFamily: "Roboto",
-                                fontSize: 14.5,
-                                bottom: 10
-                              }}>
-                                {item.descriptions}
-                              </Text>
-                            </div>)
-                        )
-                        )}
-
-                      </Space>
-                    </Radio.Group>
+                        </Space>
+                      </Radio.Group>
 
 
 
 
 
+                    </div>
+                    <button
+                      style={{
+                        color: "#fc790d",
+                        border: "none",
+                        background: "none",
+                        fontSize: "15px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        position: "relative",
+                        top: 20,
+                        textAlign: "start"
+
+                      }}
+                      onClick={() =>
+                        setViewOffers(true)
+                      }
+                    >
+                      View All Offer <RightOutlined style={{
+                        fontSize: "13px", position: "relative", top: 1
+                      }} />
+                    </button>
                   </div>
-                  <button
-                    style={{
-                      color: "#fc790d",
-                      border: "none",
-                      background: "none",
-                      fontSize: "15px",
-                      fontWeight: 500,
-                      cursor: "pointer",
-                      position: "relative",
-                      top: 20,
-                      textAlign: "start"
-
-                    }}
-                    onClick={() =>
-                      setViewOffers(true)
-                    }
-                  >
-                    View All Offer <RightOutlined style={{
-                      fontSize: "13px", position: "relative", top: 1
-                    }} />
-                  </button>
                 </div>
               </div>
-        </div>
-        <div>
-            {phoneNo !== null ? (
+
               <div style={{
-                display: "flex",
-                background: "#fff",
-                width: "90%",
-                padding: 20, borderRadius: 20,
-                boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-                marginTop: 25, flexDirection: "column"
+                display: "flex", justifyContent: "center", width: "100%"
               }}>
-                <Text style={{
-                  fontSize: 24, fontWeight: 700
-                }}>
-                  Traveller Details
-                </Text>
+                {phoneNo !== null ? (
+                  <div style={{
+                    display: "flex",
+                    background: "#fff",
+                    width: "90%",
+                    padding: 20, borderRadius: 20,
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                    marginTop: 25, flexDirection: "column"
+                  }}>
+                    <Text style={{
+                      fontSize: 24, fontWeight: 700
+                    }}>
+                      Traveller Details
+                    </Text>
 
-                <Text type="secondary" style={{
-                  position: "relative", bottom: 5, fontSize: 16, fontWeight: 500
-                }}>
-                  Choose from the saved list or add a new passenger
-                </Text>
-                <div style={{
-                  background: "#ffe9a0ff",
-                  height: "30px",
-                  display: "flex",
-                  alignItems: "center",
-                  padding: 5, gap: 5, borderRadius: 10
-                }}>
-                  <svg width="20" height="20" viewBox="0 0 18 14" version="1.1" xmlns="http://www.w3.org/2000/svg"><title>Group 4</title><desc>Created with Sketch.</desc><g id="Search/Flight/ixibook" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Group-4"><path d="M15.3042727,1 L2.70790909,1 C1.765,1 1,1.78281818 1,2.74354545 L1,11.4613636 C1,12.4220909 1.765,13.2049091 2.70790909,13.2049091 L15.2864545,13.2049091 C16.2294545,13.2049091 16.9944545,12.4220909 16.9944545,11.4613636 L16.9944545,2.74354545 C17.0122727,1.78281818 16.2472727,1 15.3042727,1" id="Fill-1" fill="#AA75CC"></path><path d="M15.3042727,0.925885057 L2.70790909,0.925885057 C1.72433588,0.925885057 0.925885057,1.74159524 0.925885057,2.74354545 L0.925885057,11.4613636 C0.925885057,12.4633138 1.72433588,13.279024 2.70790909,13.279024 L15.2864545,13.279024 C16.270104,13.279024 17.0685695,12.4633288 17.0685695,11.4613636 L17.0685695,2.74354545 C17.0871012,1.74503564 16.2910306,0.925885057 15.3042727,0.925885057 Z M2.70790909,1.07411494 L15.3042727,1.07411494 C16.207753,1.07411494 16.9373649,1.82488013 16.9203523,2.74217111 L16.9203396,11.4613636 C16.9203396,12.3821636 16.1875222,13.1307941 15.2864545,13.1307941 L2.70790909,13.1307941 C1.80691889,13.1307941 1.07411494,12.3821499 1.07411494,11.4613636 L1.07411494,2.74354545 C1.07411494,1.82275922 1.80691889,1.07411494 2.70790909,1.07411494 Z" id="Stroke-3" fill="#8537B7" fill-rule="nonzero"></path><path d="M5.85704545,3.3307 C6.81777273,3.3307 7.58277273,4.11351818 7.58277273,5.09206364 C7.58277273,6.05279091 6.81777273,6.85342727 5.85704545,6.85342727 C4.89631818,6.85342727 4.13122727,6.07060909 4.13122727,5.09206364 C4.13122727,4.11351818 4.91404545,3.3307 5.85704545,3.3307" id="Fill-5" fill="#FFFFFF"></path><path d="M8.61468182,11.7460545 L3.09940909,11.7460545 C2.77913636,11.7460545 2.51222727,11.5147818 2.42331818,11.2123273 C2.61895455,9.14850909 4.07786364,7.52950909 5.85704545,7.52950909 C7.63613636,7.52950909 9.09504545,9.13069091 9.29077273,11.2123273 C9.21959091,11.5147818 8.95277273,11.7460545 8.61468182,11.7460545" id="Fill-7" fill="#FFFFFF"></path><path d="M14.7171364,6.81782727 L9.57540909,6.81782727 C9.25513636,6.81782727 9.00613636,6.55091818 9.00613636,6.23073636 C9.00613636,5.91046364 9.25513636,5.64355455 9.57540909,5.64355455 L14.7171364,5.64355455 C15.0374091,5.64355455 15.2865,5.91046364 15.2865,6.23073636 C15.3042273,6.55091818 15.0374091,6.81782727 14.7171364,6.81782727" id="Fill-9" fill="#FFFFFF"></path><path d="M14.7171364,4.48712727 L9.57540909,4.48712727 C9.25513636,4.48712727 9.00613636,4.22021818 9.00613636,3.90003636 C9.00613636,3.57976364 9.25513636,3.31285455 9.57540909,3.31285455 L14.7171364,3.31285455 C15.0374091,3.31285455 15.2865,3.57976364 15.2865,3.90003636 C15.3042273,4.22021818 15.0374091,4.48712727 14.7171364,4.48712727" id="Fill-11" fill="#FFFFFF"></path></g></g></svg>
-                  <Text style={{
-                    padding: 2, fontSize: 12, fontWeight: 500
-                  }}>Please ensure that your name matches your govt. ID such as Aadhaar, Passport or Driver's License</Text>
-                </div>
+                    <Text type="secondary" style={{
+                      position: "relative", bottom: 5, fontSize: 16, fontWeight: 500
+                    }}>
+                      Choose from the saved list or add a new passenger
+                    </Text>
+                    <div style={{
+                      background: "#ffe9a0ff",
+                      height: "30px",
+                      display: "flex",
+                      alignItems: "center",
+                      padding: 5, gap: 5, borderRadius: 10
+                    }}>
+                      <svg width="20" height="20" viewBox="0 0 18 14" version="1.1" xmlns="http://www.w3.org/2000/svg"><title>Group 4</title><desc>Created with Sketch.</desc><g id="Search/Flight/ixibook" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Group-4"><path d="M15.3042727,1 L2.70790909,1 C1.765,1 1,1.78281818 1,2.74354545 L1,11.4613636 C1,12.4220909 1.765,13.2049091 2.70790909,13.2049091 L15.2864545,13.2049091 C16.2294545,13.2049091 16.9944545,12.4220909 16.9944545,11.4613636 L16.9944545,2.74354545 C17.0122727,1.78281818 16.2472727,1 15.3042727,1" id="Fill-1" fill="#AA75CC"></path><path d="M15.3042727,0.925885057 L2.70790909,0.925885057 C1.72433588,0.925885057 0.925885057,1.74159524 0.925885057,2.74354545 L0.925885057,11.4613636 C0.925885057,12.4633138 1.72433588,13.279024 2.70790909,13.279024 L15.2864545,13.279024 C16.270104,13.279024 17.0685695,12.4633288 17.0685695,11.4613636 L17.0685695,2.74354545 C17.0871012,1.74503564 16.2910306,0.925885057 15.3042727,0.925885057 Z M2.70790909,1.07411494 L15.3042727,1.07411494 C16.207753,1.07411494 16.9373649,1.82488013 16.9203523,2.74217111 L16.9203396,11.4613636 C16.9203396,12.3821636 16.1875222,13.1307941 15.2864545,13.1307941 L2.70790909,13.1307941 C1.80691889,13.1307941 1.07411494,12.3821499 1.07411494,11.4613636 L1.07411494,2.74354545 C1.07411494,1.82275922 1.80691889,1.07411494 2.70790909,1.07411494 Z" id="Stroke-3" fill="#8537B7" fill-rule="nonzero"></path><path d="M5.85704545,3.3307 C6.81777273,3.3307 7.58277273,4.11351818 7.58277273,5.09206364 C7.58277273,6.05279091 6.81777273,6.85342727 5.85704545,6.85342727 C4.89631818,6.85342727 4.13122727,6.07060909 4.13122727,5.09206364 C4.13122727,4.11351818 4.91404545,3.3307 5.85704545,3.3307" id="Fill-5" fill="#FFFFFF"></path><path d="M8.61468182,11.7460545 L3.09940909,11.7460545 C2.77913636,11.7460545 2.51222727,11.5147818 2.42331818,11.2123273 C2.61895455,9.14850909 4.07786364,7.52950909 5.85704545,7.52950909 C7.63613636,7.52950909 9.09504545,9.13069091 9.29077273,11.2123273 C9.21959091,11.5147818 8.95277273,11.7460545 8.61468182,11.7460545" id="Fill-7" fill="#FFFFFF"></path><path d="M14.7171364,6.81782727 L9.57540909,6.81782727 C9.25513636,6.81782727 9.00613636,6.55091818 9.00613636,6.23073636 C9.00613636,5.91046364 9.25513636,5.64355455 9.57540909,5.64355455 L14.7171364,5.64355455 C15.0374091,5.64355455 15.2865,5.91046364 15.2865,6.23073636 C15.3042273,6.55091818 15.0374091,6.81782727 14.7171364,6.81782727" id="Fill-9" fill="#FFFFFF"></path><path d="M14.7171364,4.48712727 L9.57540909,4.48712727 C9.25513636,4.48712727 9.00613636,4.22021818 9.00613636,3.90003636 C9.00613636,3.57976364 9.25513636,3.31285455 9.57540909,3.31285455 L14.7171364,3.31285455 C15.0374091,3.31285455 15.2865,3.57976364 15.2865,3.90003636 C15.3042273,4.22021818 15.0374091,4.48712727 14.7171364,4.48712727" id="Fill-11" fill="#FFFFFF"></path></g></g></svg>
+                      <Text style={{
+                        padding: 2, fontSize: 12, fontWeight: 500
+                      }}>Please ensure that your name matches your govt. ID such as Aadhaar, Passport or Driver's License</Text>
+                    </div>
 
-                
-                <br/>
-                <Text style={{
-                    fontSize: 18, fontWeight: 500
-                  }}>Passengers</Text>
-                  <br />
-                  <button style={{
-                  border:"none",background:"transparent",color:"#008cff",fontSize:13,fontWeight:700,display:"flex",position:"relative",right:5
-                }} onClick={()=>{
-                  // if(tempArray.length>=maxAllowed){
-                  //   messageApi.open({
-                  //   content: `Only ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} allowed. Remove existing adult to select a new one.` ,
-                  //   duration: 3,
-                  // });
-                  // }
-                  // else{
-                    setExistingModal(true)
-                  // }
-                  }}>ADD EXISTING TRAVELLERS +</button>
-                  
-                <div style={{
-                  display:"flex",justifyContent:"space-between",marginTop:10
-                }}>
-                <Text style={{
-                    fontWeight: 500
-                  }}>ADULTS</Text>
-                <button style={{
-                  border:"none",background:"transparent",color:"#008cff",fontSize:13,fontWeight:700
-                }} onClick={()=>{
-                  if(tempArray.length>=maxAllowed){
-                    messageApi.open({
-                    content: `Only ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} allowed. Remove existing adult to add a new one.`,
-                    duration: 3,
-                  });
-                  }
-                  else{
-                    setAddNewModal(true)
-                  }
-                 }}>ADD NEW ADULT +</button>
-                 <ConfigProvider
-                                           theme={{
-                                             token: {
-                                               colorBgElevated: "black",
-                                               colorText: "white",
-                                             },
-                                           }}
-                                         >
-                                           {contextHolder}
-                 
-                                         </ConfigProvider>
 
-                
+                    <br />
+                    <Text style={{
+                      fontSize: 18, fontWeight: 500
+                    }}>Passengers</Text>
+                    <br />
+                    <button style={{
+                      border: "none", background: "transparent", color: "#008cff", fontSize: 13, fontWeight: 700, display: "flex", position: "relative", right: 5
+                    }} onClick={() => {
+                      // if(tempArray.length>=maxAllowed){
+                      //   messageApi.open({
+                      //   content: `Only ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} allowed. Remove existing adult to select a new one.` ,
+                      //   duration: 3,
+                      // });
+                      // }
+                      // else{
+                      setExistingModal(true)
+                      // }
+                    }}>ADD EXISTING TRAVELLERS +</button>
 
-                 <Modal 
-                footer={null}
-                                        open={addNewModal}
-                                        closable
-                                        width={"100%"}
-                                        onCancel={() => {setAddNewModal(false)
-                                          setadultFirstName("");
-                                            setadultLastName("");
-                                            setadultDOB("");
-                                            setadultGender("Male");
-                                          setFirstNameError(false);
-                                            setLastNameError(false);
-                                            setDOBError(false);
-                                            setDOBAgeVerify(false)
-                                        }}
-                                        style={{
-                                            marginTop:50  
-                                        }}>
-                                          <Text>
-                                            Add New Adult
-                                          </Text>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",
-                                          width:"95%",alignItems:"center",justifyContent:"center",flexDirection:"column",marginTop:10
-                                          }}>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                          <Form>
+                    <div style={{
+                      display: "flex", justifyContent: "space-between", marginTop: 10
+                    }}>
+                      <Text style={{
+                        fontWeight: 500
+                      }}>ADULTS</Text>
+                      <button style={{
+                        border: "none", background: "transparent", color: "#008cff", fontSize: 13, fontWeight: 700
+                      }} onClick={() => {
+                        if (tempArray.length >= maxAllowed) {
+                          messageApi.open({
+                            content: `Only ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} allowed. Remove existing adult to add a new one.`,
+                            duration: 3,
+                          });
+                        }
+                        else {
+                          setAddNewModal(true)
+                        }
+                      }}>ADD NEW ADULT +</button>
+                      <ConfigProvider
+                        theme={{
+                          token: {
+                            colorBgElevated: "black",
+                            colorText: "white",
+                          },
+                        }}
+                      >
+                        {contextHolder}
+
+                      </ConfigProvider>
+
+
+
+                      <Modal
+                        footer={null}
+                        open={addNewModal}
+                        closable
+                        width={"100%"}
+                        onCancel={() => {
+                          setAddNewModal(false)
+                          setadultFirstName("");
+                          setadultLastName("");
+                          setadultDOB("");
+                          setadultGender("Male");
+                          setFirstNameError(false);
+                          setLastNameError(false);
+                          setDOBError(false);
+                          setDOBAgeVerify(false)
+                        }}
+                        style={{
+                          marginTop: 50
+                        }}>
+                        <Text>
+                          Add New Adult
+                        </Text>
+                        <br />
+                        <div style={{
+                          display: "flex",
+                          width: "95%", alignItems: "center", justifyContent: "center", flexDirection: "column", marginTop: 10
+                        }}>
+                          <div style={{
+                            display: "flex", justifyContent: "space-between", width: "95%"
+                          }}>
+                            <Form>
                               <Form.Item
                                 rules={[{ required: true }]}
                                 validateTrigger="onBlur"
@@ -1749,13 +1763,13 @@ const handleFirstNameChange = (value, key) => {
                                 <FloatingInput
                                   label="First Name"
                                   value={adultFirstName}
-                                  onChange={(e)=>{
+                                  onChange={(e) => {
                                     const newValue = e.target.value
-                                            if(adultFirstName !== newValue){ 
-                                              setFirstNameError(false)
-                                            }
-                                            setadultFirstName(newValue);
-                                        
+                                    if (adultFirstName !== newValue) {
+                                      setFirstNameError(false)
+                                    }
+                                    setadultFirstName(newValue);
+
                                   }}
                                   error={
                                     firstNameError && "Your first name should have 1–27 characters"
@@ -1770,473 +1784,38 @@ const handleFirstNameChange = (value, key) => {
                                 <FloatingInput
                                   label="Last Name"
                                   value={adultLastName}
-                                  onChange={(e)=>{
+                                  onChange={(e) => {
                                     const newValue = e.target.value
-                                            if(adultLastName !== newValue){ 
-                                              setLastNameError(false)
-                                            }
-                                            setadultLastName(newValue); 
-                                        
+                                    if (adultLastName !== newValue) {
+                                      setLastNameError(false)
+                                    }
+                                    setadultLastName(newValue);
+
                                   }}
                                   error={lastNameError && "Your last name should have 1–27 characters "}
                                 />
                               </Form.Item>
                             </Form>
-                                          </div>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                            <Form>
+                          </div>
+                          <br />
+                          <div style={{
+                            display: "flex", justifyContent: "space-between", width: "95%"
+                          }}>
+                            <Form>
                               <Form.Item>
                                 <FloatingInput
                                   label="DOB (DD/MM/YYYY)"
                                   type={dayjs("DD/MM/YYYY")}
                                   value={adultDOB}
-                                  onChange={handleaddDOBChange}  
-                                  
-                                  error={
-                                      DOBError
-                                        ? "Enter Valid Age"
-                                        : DOBAgeVerify 
-                                        ? "Age should be above 12 years"
-                                        : undefined
-                                    }
+                                  onChange={handleaddDOBChange}
 
-
-
-                                />
-
-                              </Form.Item>
-                            </Form>
-
-                            <ConfigProvider
-                              theme={{
-                                components: {
-                                  Segmented: {
-                                    itemSelectedBg: "#fc790d",
-                                    itemSelectedColor: "white"
-                                  },
-                                }
-                              }}
-                            >
-
-
-
-                              <Segmented
-                                value={adultGender || "Male"}
-                                options={["Male", "Female"]} 
-                                style={{
-                                  background: "#f1f1f1",
-                                  borderRadius: "10px",
-                                  boxShadow: "0 0 5px rgba(0,0,0,0.1)",
-                                  fontWeight: 500,
-                                  border: "1.5px solid #c9c9c9", 
-                                  height: 50,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "flex-end",
-                                  paddingLeft: 12,
-                                  paddingRight: 12,
-                                  fontSize: 15,
-                                  backgroundColor: "white", transition: "0.2s ease",
-                                  position:"relative",left:25 
-                                }}
-                                onChange={(val) => {
-                                  setadultGender(val);
-                                }} />
-                            </ConfigProvider>
-                                          </div>
-                                        
-                                          </div>
-                                          <div style={{
-                                           display:"flex",justifyContent:"flex-end",width:"97%",gap:10,flexDirection:"row"
-                                          }}>
-                                            <button style={{
-                                              borderRadius: 10,
-                                              width:"100px",
-                                              height:"35px",
-                                              fontSize:"16px",
-                                              color:"black",background:"white",border: "1px solid #b8b8bcff"
-                                            }} onClick={(e) => {
-                                            setAddNewModal(false)
-                                            setadultFirstName("");
-                                            setadultLastName("");
-                                            setadultDOB("");
-                                            setadultGender("Male");
-                                            setFirstNameError(false);
-                                            setLastNameError(false);
-                                            setDOBError(false);
-                                            setDOBAgeVerify(false);
-
-                                              }}>
-                                              CANCEL
-                                            </button>
-                                            <button
-                                              type="primary"
-                                              style={{
-                                                background: "#ff7a00",
-                                                border: "none",
-                                                borderRadius: 10,
-                                                width:"100px",
-                                                height:"35px",
-                                                fontSize:"16px",
-                                                color:"white",
-                                                position:"relative",
-                                                
-                                              }}
-                                              onClick={handleAdd}
-                                            >
-                                              ADD
-                                            </button>
-                                          </div>
-                                        </Modal>
-                </div>
-                
-
-                <div >
-                  
-                  
-                    <div style={{
-                      marginTop: 10
-                    }}>
-                      {tempArray.map((item, idx) => (
-                        <div key={idx} style={{
-                          display: "flex", justifyContent: "space-between",border: "1px solid #c0c0c0ff",alignItems:"center",padding:12,borderRadius:8,marginTop:10,
-                          transition:"all 0.3 ease"
-                        }}>
-                          <Text style={{
-                            fontSize:15,fontWeight:500,textTransform:"uppercase"
-                          }}>
-                         Adult {idx + 1} -  {item.firstName} {item.lastName}
-                         </Text>
-                          <div style={{
-                            display:"flex",flexDirection:"row",gap:15
-                          }}>
-                            <EditOutlined style={{
-                              cursor:"pointer",fontSize:20,color:"#008cff"
-                            }} 
-                            onClick={()=>{seteditNewModal(true)
-                              setEditingAdult(item);
-                            }}/>
-                            <DeleteOutlined style={{
-                              cursor:"pointer",fontSize:20,color:"red"
-                            }} 
-                            onClick={() => {
-                                                  settempArray(prev =>
-                                                  prev.filter(
-                                                    a => !(a.firstName === item.firstName && a.lastName === item.lastName)
-                                                  )
-                                                );
-
-                                                  setSelectedAdults(prev =>
-                              prev.filter(a => !(a.firstName === item.firstName && a.lastName === item.lastName))
-                            );
-
-                            setDisabledAdults(prev =>
-                              prev.filter(key =>
-                                // find the adult object for this key
-                                !selectedAdults.some(
-                                  a => a.key === key &&
-                                      a.firstName === item.firstName &&
-                                      a.lastName === item.lastName
-                                )
-                              )
-                            );
-
-                          }}/>
-                          </div>
-                          <Modal 
-                footer={null}
-                                        open={editNewModal}
-                                        closable 
-                                        width={"100%"}
-                                        onCancel={() => {seteditNewModal(false)
-                                          setFirstNameError(false);
-                                            setLastNameError(false);
-                                            setDOBError(false);
-                                            setDOBAgeVerify(false);
-                                        }}
-                                        style={{
-                                            marginTop:50  
-                                        }}>
-                                          <Text style={{
-                                            fontWeight:500,fontSize:16
-                                          }}>
-                                            Edit Adult
-                                          </Text>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",
-                                          width:"95%",alignItems:"center",justifyContent:"center",flexDirection:"column",marginTop:10
-                                          }}>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                          <Form>
-                              <Form.Item
-                                rules={[{ required: true }]}
-                                validateTrigger="onBlur"
-                              // validateStatus={firstNameError ? "error" : ""}
-                              // help={firstNameError ? "" : ""}
-                              >
-                                <FloatingInput
-                                  label="First Name"
-                                  value={editingAdult?.firstName || ""} 
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value;
-                                    setEditingAdult(prev => ({ ...prev, firstName: newValue }));
-                                    setFirstNameError(false);
-                                        
-                                  }}
-                                  error={
-                                    firstNameError && "Your first name should have 1–27 characters"
-                                  }
-                                />
-                              </Form.Item>
-                            </Form>
-
-
-                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="Last Name"
-                                  value={editingAdult?.lastName || ""}
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value
-                                    setEditingAdult(prev => ({ ...prev, lastName: newValue }));
-                                    setLastNameError(false);
-                                  }}
-                                  error={lastNameError && "Your last name should have 1–27 characters "}
-                                />
-                              </Form.Item>
-                            </Form>
-                                          </div>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="DOB (DD/MM/YYYY)"
-                                  type={dayjs("DD/MM/YYYY")}
-                                  value={editingAdult?.DOBValue || ""}
-                                  onChange={handleEditDOBChange}  
-                                  
                                   error={
                                     DOBError
                                       ? "Enter Valid Age"
                                       : DOBAgeVerify
-                                      ? "Age should be above 12 years"
-                                      : undefined
+                                        ? "Age should be above 12 years"
+                                        : undefined
                                   }
-
-
-
-                                />
-
-                              </Form.Item>
-                            </Form>
-
-                            <ConfigProvider
-                              theme={{
-                                components: {
-                                  Segmented: {
-                                    itemSelectedBg: "#fc790d",
-                                    itemSelectedColor: "white"
-                                  },
-                                }
-                              }}
-                            >
-
-
-
-                              <Segmented
-                                value={editingAdult?.genderValue || "Male"}
-                                options={["Male", "Female"]}
-                                style={{
-                                  background: "#e7e7e7ff",
-                                  borderRadius: "10px",
-                                  boxShadow: "0 0 5px rgba(0,0,0,0.1)",
-                                  fontWeight: 500,
-                                  border: "1.5px solid #c9c9c9", 
-                                  height: 50,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "flex-end",
-                                  paddingLeft: 12,
-                                  paddingRight: 12,
-                                  fontSize: 15,
-                                  backgroundColor: "white", transition: "0.2s ease",
-                                  position:"relative",left:25 
-                                }}
-                                onChange={(val) => {
-    
-                                  setEditingAdult(prev => ({ ...prev, genderValue: val }));
-                                }}/>
-                            </ConfigProvider>
-                                          </div>
-                                        
-                                          </div>
-                                          <div style={{
-                                           display:"flex",justifyContent:"flex-end",width:"97%",gap:10,flexDirection:"row"
-                                          }}>
-                                            <button style={{
-                                              borderRadius: 10,
-                                              width:"100px",
-                                              height:"35px",
-                                              fontSize:"16px",
-                                              color:"black",background:"white",border: "1px solid #b8b8bcff"
-                                            }} onClick={(e) => {
-                                            seteditNewModal(false)
-                                            setFirstNameError(false);
-                                            setLastNameError(false);
-                                            setDOBError(false);
-                                            setDOBAgeVerify(false);
-                                              }}>
-                                              CANCEL
-                                            </button>
-                                            <button
-                                              type="primary"
-                                              style={{
-                                                background: "#ff7a00",
-                                                border: "none",
-                                                borderRadius: 10,
-                                                width:"100px",
-                                                height:"35px",
-                                                fontSize:"16px",
-                                                color:"white",
-                                                position:"relative",
-                                                
-                                              }}
-                                              onClick={handleEdit}
-                                            >
-                                              UPDATE
-                                            </button>
-                                          </div>
-                                        </Modal>
-                        </div>
-                      ))}
-                    </div>
-                 
-                  <br />
-                  {!travellers.Children === 0 && (
-                        <div>
-                      
-                      <div style={{
-                  display:"flex",justifyContent:"space-between",marginTop:10
-                }}>
-                  <Text style={{
-                    fontWeight: 500
-                  }}>CHILDREN</Text>
-
-                  <button style={{
-                  border:"none",background:"transparent",color:"#008cff",fontSize:13,fontWeight:700
-                }} onClick={()=>{
-                  if(tempChildArray.length>=maxAllowedChildren){
-                    messageApi.open({
-                    content: `Only ${travellers?.Children} ${travellers?.Children === 1 ? "Child" : "Children"} allowed. Remove existing Child to add a new one.`,
-                    duration: 3,
-                  });
-                  }
-                  else{
-                    setAddNewChildModal(true)
-                  }
-                 }}>ADD NEW CHILD +</button>
-                </div>
-                <Modal 
-                footer={null}
-                                        open={addNewChildModal}
-                                        closable
-                                        width={"100%"}
-                                        onCancel={() => {setAddNewChildModal(false)
-                                          setadultFirstName("");
-                                            setadultLastName("");
-                                            setadultDOB("");
-                                            setadultGender("Male");
-                                          setFirstNameError(false);
-                                            setLastNameError(false);
-                                            setDOBError(false);
-                                            setDOBAgeVerify(false);
-                                        }}
-                                        style={{
-                                            marginTop:50  
-                                        }}>
-                                          <Text>
-                                            Add New Child
-                                          </Text>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",
-                                          width:"95%",alignItems:"center",justifyContent:"center",flexDirection:"column"
-                                          }}>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                          <Form>
-                              <Form.Item
-                                rules={[{ required: true }]}
-                                validateTrigger="onBlur"
-                              // validateStatus={firstNameError ? "error" : ""}
-                              // help={firstNameError ? "" : ""}
-                              >
-                                <FloatingInput
-                                  label="First Name"
-                                  value={adultFirstName}
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value
-                                            if(adultFirstName !== newValue){ 
-                                              setFirstNameError(false)
-                                            }
-                                            setadultFirstName(newValue);
-                                        
-                                  }}
-                                  error={
-                                    firstNameError && "Your first name should have 1–27 characters"
-                                  }
-                                />
-                              </Form.Item>
-                            </Form>
-
-
-                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="Last Name"
-                                  value={adultLastName}
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value
-                                            if(adultLastName !== newValue){ 
-                                              setLastNameError(false)
-                                            }
-                                            setadultLastName(newValue); 
-                                        
-                                  }}
-                                  error={lastNameError && "Your last name should have 1–27 characters "}
-                                />
-                              </Form.Item>
-                            </Form>
-                                          </div>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="DOB (DD/MM/YYYY)"
-                                  type={dayjs("DD/MM/YYYY")}
-                                  value={adultDOB}
-                                  onChange={handleaddChildDOBChange}  
-                                  
-                                  error={
-                                  DOBError
-                                    ? "Enter Valid Age"
-                                    : DOBAgeVerify 
-                                    ? "Age should be  2-12 years"
-                                    : undefined
-                                }
 
 
 
@@ -2260,13 +1839,13 @@ const handleFirstNameChange = (value, key) => {
 
                               <Segmented
                                 value={adultGender || "Male"}
-                                options={["Male", "Female"]} 
+                                options={["Male", "Female"]}
                                 style={{
                                   background: "#f1f1f1",
                                   borderRadius: "10px",
                                   boxShadow: "0 0 5px rgba(0,0,0,0.1)",
                                   fontWeight: 500,
-                                  border: "1.5px solid #c9c9c9", 
+                                  border: "1.5px solid #c9c9c9",
                                   height: 50,
                                   display: "flex",
                                   alignItems: "center",
@@ -2275,369 +1854,771 @@ const handleFirstNameChange = (value, key) => {
                                   paddingRight: 12,
                                   fontSize: 15,
                                   backgroundColor: "white", transition: "0.2s ease",
-                                  position:"relative",left:25 
+                                  position: "relative", left: 25
                                 }}
                                 onChange={(val) => {
                                   setadultGender(val);
                                 }} />
                             </ConfigProvider>
-                                          </div>
-                                        
-                                          </div>
-                                          <div style={{
-                                           display:"flex",justifyContent:"flex-end",width:"97%",gap:10,flexDirection:"row"
-                                          }}>
-                                            <button style={{
-                                              borderRadius: 10,
-                                              width:"100px",
-                                              height:"35px",
-                                              fontSize:"16px",
-                                              color:"black",background:"white",border: "1px solid #b8b8bcff"
-                                            }} onClick={(e) => {
-                                            setAddNewChildModal(false)
-                                            setadultFirstName("");
-                                            setadultLastName("");
-                                            setadultDOB("");
-                                            setadultGender("Male");
-                                            setFirstNameError(false);
-                                            setLastNameError(false);
-                                            setDOBError(false);
-                                            setDOBAgeVerify(false);
-
-                                              }}>
-                                              CANCEL
-                                            </button>
-                                            <button
-                                              type="primary"
-                                              style={{
-                                                background: "#ff7a00",
-                                                border: "none",
-                                                borderRadius: 10,
-                                                width:"100px",
-                                                height:"35px",
-                                                fontSize:"16px",
-                                                color:"white",
-                                                position:"relative",
-                                                
-                                              }}
-                                              onClick={handleChildAdd}
-                                            >
-                                              ADD
-                                            </button>
-                                          </div>
-                                        </Modal>
-                <div>
-                  {tempChildArray.map((item, idx) => (
-                        <div key={idx} style={{
-                          display: "flex", justifyContent: "space-between",border: "1px solid #c0c0c0ff",alignItems:"center",padding:12,borderRadius:8,marginTop:10,
-                          transition:"all 0.3 ease"
-                        }}>
-                          <Text style={{
-                            fontSize:15,fontWeight:500,textTransform:"uppercase"
-                          }}>
-                         Child {idx + 1} -  {item.firstName} {item.lastName}
-                         </Text>
-                          <div style={{
-                            display:"flex",flexDirection:"row",gap:15
-                          }}>
-                            <EditOutlined style={{
-                              cursor:"pointer",fontSize:20,color: "#008cff"
-                            }} 
-                            onClick={()=>{seteditChildNewModal(true)
-                              setEditingChild(item);
-                            }}/>
-                            <DeleteOutlined style={{
-                              cursor:"pointer",fontSize:20,color:"red"
-                            }} 
-                            onClick={() => {
-                                                  setTempChildArray(prev =>
-                                                  prev.filter(
-                                                    a => !(a.firstName === item.firstName && a.lastName === item.lastName)
-                                                  )
-                                                );
-
-                                                  setSelectedChildren(prev =>
-                              prev.filter(a => !(a.firstName === item.firstName && a.lastName === item.lastName))
-                            );
-
-                            setDisabledChild(prev =>
-                              prev.filter(key =>
-                                // find the adult object for this key
-                                !selectedChildren.some(
-                                  a => a.key === key &&
-                                      a.firstName === item.firstName &&
-                                      a.lastName === item.lastName
-                                )
-                              )
-                            );
-
-                          }}/>
                           </div>
-                          <Modal 
-                footer={null}
-                                        open={editNewChildModal}
-                                        closable 
-                                        width={"100%"}
-                                        onCancel={() => {seteditChildNewModal(false)
-                                          setFirstNameError(false);
-                                            setLastNameError(false);
-                                            setDOBError(false);
-                                        }}
-                                        style={{
-                                            marginTop:50  
-                                        }}>
-                                          <Text style={{
-                                            fontWeight:500,fontSize:16
-                                          }}>
-                                            Edit Child
-                                          </Text>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",
-                                          width:"100%",alignItems:"center",justifyContent:"center",flexDirection:"column",marginTop:10
-                                          }}>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"100%"
-                                          }}>
-                                          <Form>
-                              <Form.Item
-                                rules={[{ required: true }]}
-                                validateTrigger="onBlur"
-                              // validateStatus={firstNameError ? "error" : ""}
-                              // help={firstNameError ? "" : ""}
-                              >
-                                <FloatingInput
-                                  label="First Name"
-                                  value={editingChild?.firstName || ""} 
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value;
-                                    setEditingChild(prev => ({ ...prev, firstName: newValue }));
-                                    setFirstNameError(false);
-                                        
-                                  }}
-                                  error={
-                                    firstNameError && "Your first name should have 1–27 characters"
-                                  }
-                                />
-                              </Form.Item>
-                            </Form>
 
-
-                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="Last Name"
-                                  value={editingChild?.lastName || ""}
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value
-                                    setEditingChild(prev => ({ ...prev, lastName: newValue }));
-                                    setLastNameError(false);
-                                  }}
-                                  error={lastNameError && "Your last name should have 1–27 characters "}
-                                />
-                              </Form.Item>
-                            </Form>
-                                          </div>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="DOB (DD/MM/YYYY)"
-                                  type={dayjs("DD/MM/YYYY")}
-                                  value={editingChild?.DOBValue || ""} 
-                                  onChange={handleChildEditDOBChange}  
-                                  
-                                  error={
-                                  DOBError
-                                    ? "Enter Valid Age"
-                                    : DOBAgeVerify 
-                                    ? "Age should be  2-12 years"
-                                    : undefined
-                                }
-
-
-
-                                />
-
-                              </Form.Item>
-                            </Form>
-
-                            <ConfigProvider
-                              theme={{
-                                components: {
-                                  Segmented: {
-                                    itemSelectedBg: "#fc790d",
-                                    itemSelectedColor: "white"
-                                  },
-                                }
-                              }}
-                            >
-
-
-
-                              <Segmented
-                                value={editingChild?.genderValue || "Male"}
-                                options={["Male", "Female"]}
-                                style={{
-                                  background: "#e7e7e7ff",
-                                  borderRadius: "10px",
-                                  boxShadow: "0 0 5px rgba(0,0,0,0.1)",
-                                  fontWeight: 500,
-                                  border: "1.5px solid #c9c9c9", 
-                                  height: 50,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "flex-end",
-                                  paddingLeft: 12,
-                                  paddingRight: 12,
-                                  fontSize: 15,
-                                  backgroundColor: "white", transition: "0.2s ease",
-                                  position:"relative",left:25 
-                                }}
-                                onChange={(val) => {
-    
-                                  setEditingChild(prev => ({ ...prev, genderValue: val }));
-                                }}/>
-                            </ConfigProvider>
-                                          </div>
-                                        
-                                          </div>
-                                          <div style={{
-                                           display:"flex",justifyContent:"flex-end",width:"97%",gap:10,flexDirection:"row"
-                                          }}>
-                                            <button style={{
-                                              borderRadius: 10,
-                                              width:"100px",
-                                              height:"35px",
-                                              fontSize:"16px",
-                                              color:"black",background:"white",border: "1px solid #b8b8bcff"
-                                            }} onClick={(e) => {
-                                            seteditChildNewModal(false)
-                                            setFirstNameError(false);
-                                            setLastNameError(false);
-                                            setDOBError(false);
-                                            setDOBAgeVerify(false);
-                                              }}>
-                                              CANCEL
-                                            </button>
-                                            <button
-                                              type="primary"
-                                              style={{
-                                                background: "#ff7a00",
-                                                border: "none",
-                                                borderRadius: 10,
-                                                width:"100px",
-                                                height:"35px",
-                                                fontSize:"16px",
-                                                color:"white",
-                                                position:"relative",
-                                                
-                                              }}
-                                              onClick={handleChildEdit}
-                                            >
-                                              UPDATE
-                                            </button>
-                                          </div>
-                                        </Modal>
                         </div>
-                      ))}
-                </div>
+                        <div style={{
+                          display: "flex", justifyContent: "flex-end", width: "97%", gap: 10, flexDirection: "row"
+                        }}>
+                          <button style={{
+                            borderRadius: 10,
+                            width: "100px",
+                            height: "35px",
+                            fontSize: "16px",
+                            color: "black", background: "white", border: "1px solid #b8b8bcff"
+                          }} onClick={(e) => {
+                            setAddNewModal(false)
+                            setadultFirstName("");
+                            setadultLastName("");
+                            setadultDOB("");
+                            setadultGender("Male");
+                            setFirstNameError(false);
+                            setLastNameError(false);
+                            setDOBError(false);
+                            setDOBAgeVerify(false);
+
+                          }}>
+                            CANCEL
+                          </button>
+                          <button
+                            type="primary"
+                            style={{
+                              background: "#ff7a00",
+                              border: "none",
+                              borderRadius: 10,
+                              width: "100px",
+                              height: "35px",
+                              fontSize: "16px",
+                              color: "white",
+                              position: "relative",
+
+                            }}
+                            onClick={handleAdd}
+                          >
+                            ADD
+                          </button>
+                        </div>
+                      </Modal>
                     </div>
+
+
+                    <div >
+
+
+                      <div style={{
+                        marginTop: 10
+                      }}>
+                        {tempArray.map((item, idx) => (
+                          <div key={idx} style={{
+                            display: "flex", justifyContent: "space-between", border: "1px solid #c0c0c0ff", alignItems: "center", padding: 12, borderRadius: 8, marginTop: 10,
+                            transition: "all 0.3 ease"
+                          }}>
+                            <Text style={{
+                              fontSize: 15, fontWeight: 500, textTransform: "uppercase"
+                            }}>
+                              Adult {idx + 1} -  {item.firstName} {item.lastName}
+                            </Text>
+                            <div style={{
+                              display: "flex", flexDirection: "row", gap: 15
+                            }}>
+                              <EditOutlined style={{
+                                cursor: "pointer", fontSize: 20, color: "#008cff"
+                              }}
+                                onClick={() => {
+                                  seteditNewModal(true)
+                                  setEditingAdult(item);
+                                }} />
+                              <DeleteOutlined style={{
+                                cursor: "pointer", fontSize: 20, color: "red"
+                              }}
+                                onClick={() => {
+                                  settempArray(prev =>
+                                    prev.filter(
+                                      a => !(a.firstName === item.firstName && a.lastName === item.lastName)
+                                    )
+                                  );
+
+                                  setSelectedAdults(prev =>
+                                    prev.filter(a => !(a.firstName === item.firstName && a.lastName === item.lastName))
+                                  );
+
+                                  setDisabledAdults(prev =>
+                                    prev.filter(key =>
+                                      // find the adult object for this key
+                                      !selectedAdults.some(
+                                        a => a.key === key &&
+                                          a.firstName === item.firstName &&
+                                          a.lastName === item.lastName
+                                      )
+                                    )
+                                  );
+
+                                }} />
+                            </div>
+                            <Modal
+                              footer={null}
+                              open={editNewModal}
+                              closable
+                              width={"100%"}
+                              onCancel={() => {
+                                seteditNewModal(false)
+                                setFirstNameError(false);
+                                setLastNameError(false);
+                                setDOBError(false);
+                                setDOBAgeVerify(false);
+                              }}
+                              style={{
+                                marginTop: 50
+                              }}>
+                              <Text style={{
+                                fontWeight: 500, fontSize: 16
+                              }}>
+                                Edit Adult
+                              </Text>
+                              <br />
+                              <div style={{
+                                display: "flex",
+                                width: "95%", alignItems: "center", justifyContent: "center", flexDirection: "column", marginTop: 10
+                              }}>
+                                <div style={{
+                                  display: "flex", justifyContent: "space-between", width: "95%"
+                                }}>
+                                  <Form>
+                                    <Form.Item
+                                      rules={[{ required: true }]}
+                                      validateTrigger="onBlur"
+                                    // validateStatus={firstNameError ? "error" : ""}
+                                    // help={firstNameError ? "" : ""}
+                                    >
+                                      <FloatingInput
+                                        label="First Name"
+                                        value={editingAdult?.firstName || ""}
+                                        onChange={(e) => {
+                                          const newValue = e.target.value;
+                                          setEditingAdult(prev => ({ ...prev, firstName: newValue }));
+                                          setFirstNameError(false);
+
+                                        }}
+                                        error={
+                                          firstNameError && "Your first name should have 1–27 characters"
+                                        }
+                                      />
+                                    </Form.Item>
+                                  </Form>
+
+
+                                  <Form>
+                                    <Form.Item>
+                                      <FloatingInput
+                                        label="Last Name"
+                                        value={editingAdult?.lastName || ""}
+                                        onChange={(e) => {
+                                          const newValue = e.target.value
+                                          setEditingAdult(prev => ({ ...prev, lastName: newValue }));
+                                          setLastNameError(false);
+                                        }}
+                                        error={lastNameError && "Your last name should have 1–27 characters "}
+                                      />
+                                    </Form.Item>
+                                  </Form>
+                                </div>
+                                <br />
+                                <div style={{
+                                  display: "flex", justifyContent: "space-between", width: "95%"
+                                }}>
+                                  <Form>
+                                    <Form.Item>
+                                      <FloatingInput
+                                        label="DOB (DD/MM/YYYY)"
+                                        type={dayjs("DD/MM/YYYY")}
+                                        value={editingAdult?.DOBValue || ""}
+                                        onChange={handleEditDOBChange}
+
+                                        error={
+                                          DOBError
+                                            ? "Enter Valid Age"
+                                            : DOBAgeVerify
+                                              ? "Age should be above 12 years"
+                                              : undefined
+                                        }
+
+
+
+                                      />
+
+                                    </Form.Item>
+                                  </Form>
+
+                                  <ConfigProvider
+                                    theme={{
+                                      components: {
+                                        Segmented: {
+                                          itemSelectedBg: "#fc790d",
+                                          itemSelectedColor: "white"
+                                        },
+                                      }
+                                    }}
+                                  >
+
+
+
+                                    <Segmented
+                                      value={editingAdult?.genderValue || "Male"}
+                                      options={["Male", "Female"]}
+                                      style={{
+                                        background: "#e7e7e7ff",
+                                        borderRadius: "10px",
+                                        boxShadow: "0 0 5px rgba(0,0,0,0.1)",
+                                        fontWeight: 500,
+                                        border: "1.5px solid #c9c9c9",
+                                        height: 50,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "flex-end",
+                                        paddingLeft: 12,
+                                        paddingRight: 12,
+                                        fontSize: 15,
+                                        backgroundColor: "white", transition: "0.2s ease",
+                                        position: "relative", left: 25
+                                      }}
+                                      onChange={(val) => {
+
+                                        setEditingAdult(prev => ({ ...prev, genderValue: val }));
+                                      }} />
+                                  </ConfigProvider>
+                                </div>
+
+                              </div>
+                              <div style={{
+                                display: "flex", justifyContent: "flex-end", width: "97%", gap: 10, flexDirection: "row"
+                              }}>
+                                <button style={{
+                                  borderRadius: 10,
+                                  width: "100px",
+                                  height: "35px",
+                                  fontSize: "16px",
+                                  color: "black", background: "white", border: "1px solid #b8b8bcff"
+                                }} onClick={(e) => {
+                                  seteditNewModal(false)
+                                  setFirstNameError(false);
+                                  setLastNameError(false);
+                                  setDOBError(false);
+                                  setDOBAgeVerify(false);
+                                }}>
+                                  CANCEL
+                                </button>
+                                <button
+                                  type="primary"
+                                  style={{
+                                    background: "#ff7a00",
+                                    border: "none",
+                                    borderRadius: 10,
+                                    width: "100px",
+                                    height: "35px",
+                                    fontSize: "16px",
+                                    color: "white",
+                                    position: "relative",
+
+                                  }}
+                                  onClick={handleEdit}
+                                >
+                                  UPDATE
+                                </button>
+                              </div>
+                            </Modal>
+                          </div>
+                        ))}
+                      </div>
+
+                      <br />
+                      {!travellers.Children === 0 && (
+                        <div>
+
+                          <div style={{
+                            display: "flex", justifyContent: "space-between", marginTop: 10
+                          }}>
+                            <Text style={{
+                              fontWeight: 500
+                            }}>CHILDREN</Text>
+
+                            <button style={{
+                              border: "none", background: "transparent", color: "#008cff", fontSize: 13, fontWeight: 700
+                            }} onClick={() => {
+                              if (tempChildArray.length >= maxAllowedChildren) {
+                                messageApi.open({
+                                  content: `Only ${travellers?.Children} ${travellers?.Children === 1 ? "Child" : "Children"} allowed. Remove existing Child to add a new one.`,
+                                  duration: 3,
+                                });
+                              }
+                              else {
+                                setAddNewChildModal(true)
+                              }
+                            }}>ADD NEW CHILD +</button>
+                          </div>
+                          <Modal
+                            footer={null}
+                            open={addNewChildModal}
+                            closable
+                            width={"100%"}
+                            onCancel={() => {
+                              setAddNewChildModal(false)
+                              setadultFirstName("");
+                              setadultLastName("");
+                              setadultDOB("");
+                              setadultGender("Male");
+                              setFirstNameError(false);
+                              setLastNameError(false);
+                              setDOBError(false);
+                              setDOBAgeVerify(false);
+                            }}
+                            style={{
+                              marginTop: 50
+                            }}>
+                            <Text>
+                              Add New Child
+                            </Text>
+                            <br />
+                            <div style={{
+                              display: "flex",
+                              width: "95%", alignItems: "center", justifyContent: "center", flexDirection: "column"
+                            }}>
+                              <div style={{
+                                display: "flex", justifyContent: "space-between", width: "95%"
+                              }}>
+                                <Form>
+                                  <Form.Item
+                                    rules={[{ required: true }]}
+                                    validateTrigger="onBlur"
+                                  // validateStatus={firstNameError ? "error" : ""}
+                                  // help={firstNameError ? "" : ""}
+                                  >
+                                    <FloatingInput
+                                      label="First Name"
+                                      value={adultFirstName}
+                                      onChange={(e) => {
+                                        const newValue = e.target.value
+                                        if (adultFirstName !== newValue) {
+                                          setFirstNameError(false)
+                                        }
+                                        setadultFirstName(newValue);
+
+                                      }}
+                                      error={
+                                        firstNameError && "Your first name should have 1–27 characters"
+                                      }
+                                    />
+                                  </Form.Item>
+                                </Form>
+
+
+                                <Form>
+                                  <Form.Item>
+                                    <FloatingInput
+                                      label="Last Name"
+                                      value={adultLastName}
+                                      onChange={(e) => {
+                                        const newValue = e.target.value
+                                        if (adultLastName !== newValue) {
+                                          setLastNameError(false)
+                                        }
+                                        setadultLastName(newValue);
+
+                                      }}
+                                      error={lastNameError && "Your last name should have 1–27 characters "}
+                                    />
+                                  </Form.Item>
+                                </Form>
+                              </div>
+                              <br />
+                              <div style={{
+                                display: "flex", justifyContent: "space-between", width: "95%"
+                              }}>
+                                <Form>
+                                  <Form.Item>
+                                    <FloatingInput
+                                      label="DOB (DD/MM/YYYY)"
+                                      type={dayjs("DD/MM/YYYY")}
+                                      value={adultDOB}
+                                      onChange={handleaddChildDOBChange}
+
+                                      error={
+                                        DOBError
+                                          ? "Enter Valid Age"
+                                          : DOBAgeVerify
+                                            ? "Age should be  2-12 years"
+                                            : undefined
+                                      }
+
+
+
+                                    />
+
+                                  </Form.Item>
+                                </Form>
+
+                                <ConfigProvider
+                                  theme={{
+                                    components: {
+                                      Segmented: {
+                                        itemSelectedBg: "#fc790d",
+                                        itemSelectedColor: "white"
+                                      },
+                                    }
+                                  }}
+                                >
+
+
+
+                                  <Segmented
+                                    value={adultGender || "Male"}
+                                    options={["Male", "Female"]}
+                                    style={{
+                                      background: "#f1f1f1",
+                                      borderRadius: "10px",
+                                      boxShadow: "0 0 5px rgba(0,0,0,0.1)",
+                                      fontWeight: 500,
+                                      border: "1.5px solid #c9c9c9",
+                                      height: 50,
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "flex-end",
+                                      paddingLeft: 12,
+                                      paddingRight: 12,
+                                      fontSize: 15,
+                                      backgroundColor: "white", transition: "0.2s ease",
+                                      position: "relative", left: 25
+                                    }}
+                                    onChange={(val) => {
+                                      setadultGender(val);
+                                    }} />
+                                </ConfigProvider>
+                              </div>
+
+                            </div>
+                            <div style={{
+                              display: "flex", justifyContent: "flex-end", width: "97%", gap: 10, flexDirection: "row"
+                            }}>
+                              <button style={{
+                                borderRadius: 10,
+                                width: "100px",
+                                height: "35px",
+                                fontSize: "16px",
+                                color: "black", background: "white", border: "1px solid #b8b8bcff"
+                              }} onClick={(e) => {
+                                setAddNewChildModal(false)
+                                setadultFirstName("");
+                                setadultLastName("");
+                                setadultDOB("");
+                                setadultGender("Male");
+                                setFirstNameError(false);
+                                setLastNameError(false);
+                                setDOBError(false);
+                                setDOBAgeVerify(false);
+
+                              }}>
+                                CANCEL
+                              </button>
+                              <button
+                                type="primary"
+                                style={{
+                                  background: "#ff7a00",
+                                  border: "none",
+                                  borderRadius: 10,
+                                  width: "100px",
+                                  height: "35px",
+                                  fontSize: "16px",
+                                  color: "white",
+                                  position: "relative",
+
+                                }}
+                                onClick={handleChildAdd}
+                              >
+                                ADD
+                              </button>
+                            </div>
+                          </Modal>
+                          <div>
+                            {tempChildArray.map((item, idx) => (
+                              <div key={idx} style={{
+                                display: "flex", justifyContent: "space-between", border: "1px solid #c0c0c0ff", alignItems: "center", padding: 12, borderRadius: 8, marginTop: 10,
+                                transition: "all 0.3 ease"
+                              }}>
+                                <Text style={{
+                                  fontSize: 15, fontWeight: 500, textTransform: "uppercase"
+                                }}>
+                                  Child {idx + 1} -  {item.firstName} {item.lastName}
+                                </Text>
+                                <div style={{
+                                  display: "flex", flexDirection: "row", gap: 15
+                                }}>
+                                  <EditOutlined style={{
+                                    cursor: "pointer", fontSize: 20, color: "#008cff"
+                                  }}
+                                    onClick={() => {
+                                      seteditChildNewModal(true)
+                                      setEditingChild(item);
+                                    }} />
+                                  <DeleteOutlined style={{
+                                    cursor: "pointer", fontSize: 20, color: "red"
+                                  }}
+                                    onClick={() => {
+                                      setTempChildArray(prev =>
+                                        prev.filter(
+                                          a => !(a.firstName === item.firstName && a.lastName === item.lastName)
+                                        )
+                                      );
+
+                                      setSelectedChildren(prev =>
+                                        prev.filter(a => !(a.firstName === item.firstName && a.lastName === item.lastName))
+                                      );
+
+                                      setDisabledChild(prev =>
+                                        prev.filter(key =>
+                                          // find the adult object for this key
+                                          !selectedChildren.some(
+                                            a => a.key === key &&
+                                              a.firstName === item.firstName &&
+                                              a.lastName === item.lastName
+                                          )
+                                        )
+                                      );
+
+                                    }} />
+                                </div>
+                                <Modal
+                                  footer={null}
+                                  open={editNewChildModal}
+                                  closable
+                                  width={"100%"}
+                                  onCancel={() => {
+                                    seteditChildNewModal(false)
+                                    setFirstNameError(false);
+                                    setLastNameError(false);
+                                    setDOBError(false);
+                                  }}
+                                  style={{
+                                    marginTop: 50
+                                  }}>
+                                  <Text style={{
+                                    fontWeight: 500, fontSize: 16
+                                  }}>
+                                    Edit Child
+                                  </Text>
+                                  <br />
+                                  <div style={{
+                                    display: "flex",
+                                    width: "100%", alignItems: "center", justifyContent: "center", flexDirection: "column", marginTop: 10
+                                  }}>
+                                    <div style={{
+                                      display: "flex", justifyContent: "space-between", width: "100%"
+                                    }}>
+                                      <Form>
+                                        <Form.Item
+                                          rules={[{ required: true }]}
+                                          validateTrigger="onBlur"
+                                        // validateStatus={firstNameError ? "error" : ""}
+                                        // help={firstNameError ? "" : ""}
+                                        >
+                                          <FloatingInput
+                                            label="First Name"
+                                            value={editingChild?.firstName || ""}
+                                            onChange={(e) => {
+                                              const newValue = e.target.value;
+                                              setEditingChild(prev => ({ ...prev, firstName: newValue }));
+                                              setFirstNameError(false);
+
+                                            }}
+                                            error={
+                                              firstNameError && "Your first name should have 1–27 characters"
+                                            }
+                                          />
+                                        </Form.Item>
+                                      </Form>
+
+
+                                      <Form>
+                                        <Form.Item>
+                                          <FloatingInput
+                                            label="Last Name"
+                                            value={editingChild?.lastName || ""}
+                                            onChange={(e) => {
+                                              const newValue = e.target.value
+                                              setEditingChild(prev => ({ ...prev, lastName: newValue }));
+                                              setLastNameError(false);
+                                            }}
+                                            error={lastNameError && "Your last name should have 1–27 characters "}
+                                          />
+                                        </Form.Item>
+                                      </Form>
+                                    </div>
+                                    <br />
+                                    <div style={{
+                                      display: "flex", justifyContent: "space-between", width: "95%"
+                                    }}>
+                                      <Form>
+                                        <Form.Item>
+                                          <FloatingInput
+                                            label="DOB (DD/MM/YYYY)"
+                                            type={dayjs("DD/MM/YYYY")}
+                                            value={editingChild?.DOBValue || ""}
+                                            onChange={handleChildEditDOBChange}
+
+                                            error={
+                                              DOBError
+                                                ? "Enter Valid Age"
+                                                : DOBAgeVerify
+                                                  ? "Age should be  2-12 years"
+                                                  : undefined
+                                            }
+
+
+
+                                          />
+
+                                        </Form.Item>
+                                      </Form>
+
+                                      <ConfigProvider
+                                        theme={{
+                                          components: {
+                                            Segmented: {
+                                              itemSelectedBg: "#fc790d",
+                                              itemSelectedColor: "white"
+                                            },
+                                          }
+                                        }}
+                                      >
+
+
+
+                                        <Segmented
+                                          value={editingChild?.genderValue || "Male"}
+                                          options={["Male", "Female"]}
+                                          style={{
+                                            background: "#e7e7e7ff",
+                                            borderRadius: "10px",
+                                            boxShadow: "0 0 5px rgba(0,0,0,0.1)",
+                                            fontWeight: 500,
+                                            border: "1.5px solid #c9c9c9",
+                                            height: 50,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "flex-end",
+                                            paddingLeft: 12,
+                                            paddingRight: 12,
+                                            fontSize: 15,
+                                            backgroundColor: "white", transition: "0.2s ease",
+                                            position: "relative", left: 25
+                                          }}
+                                          onChange={(val) => {
+
+                                            setEditingChild(prev => ({ ...prev, genderValue: val }));
+                                          }} />
+                                      </ConfigProvider>
+                                    </div>
+
+                                  </div>
+                                  <div style={{
+                                    display: "flex", justifyContent: "flex-end", width: "97%", gap: 10, flexDirection: "row"
+                                  }}>
+                                    <button style={{
+                                      borderRadius: 10,
+                                      width: "100px",
+                                      height: "35px",
+                                      fontSize: "16px",
+                                      color: "black", background: "white", border: "1px solid #b8b8bcff"
+                                    }} onClick={(e) => {
+                                      seteditChildNewModal(false)
+                                      setFirstNameError(false);
+                                      setLastNameError(false);
+                                      setDOBError(false);
+                                      setDOBAgeVerify(false);
+                                    }}>
+                                      CANCEL
+                                    </button>
+                                    <button
+                                      type="primary"
+                                      style={{
+                                        background: "#ff7a00",
+                                        border: "none",
+                                        borderRadius: 10,
+                                        width: "100px",
+                                        height: "35px",
+                                        fontSize: "16px",
+                                        color: "white",
+                                        position: "relative",
+
+                                      }}
+                                      onClick={handleChildEdit}
+                                    >
+                                      UPDATE
+                                    </button>
+                                  </div>
+                                </Modal>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       )}
-                    
-                </div>
+
+                    </div>
 
 
 
 
 
-                <div>
-                  
-
-
-                  
+                    <div>
 
 
 
-                </div>
 
 
+
+
+                    </div>
+
+
+                  </div>
+                ) : null}
               </div>
-            ) : null}
-        </div>
-        <div style={{
-          marginTop:25,
-          paddingBottom:"100px" 
-        }}>
-          <div style={{
-                background: "#fff",
-                marginTop: 30,
-                padding: 20,
-                borderRadius: 20,
-                paddingBottom: "30px",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+              <div style={{
+                marginTop: 25,
+                paddingBottom: "100px"
               }}>
-
-                <Row style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%",
+                <div style={{
+                  background: "#fff",
+                  marginTop: 30,
+                  padding: 20,
+                  borderRadius: 20,
+                  paddingBottom: "30px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
                 }}>
 
-                  <Text style={{
-                    fontSize: 24, fontWeight: 700
-                  }}>Fare Summary</Text>
-
-
-                  <Text style={{
-                    fontSize: 14, fontWeight: 500, marginTop: 5, color: "#5e616e"
+                  <Row style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
                   }}>
-                    {travellerValue === 1
-                      ? `${travellerValue} Traveller`
-                      : `${travellerValue} Travellers`}
-                  </Text>
-                </Row>
-                <Row style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%", marginTop: 8
-                }}>
 
-                  <Text style={{
-                    fontSize: 16, fontWeight: 500
-                  }}>Fare Type</Text>
+                    <Text style={{
+                      fontSize: 24, fontWeight: 700
+                    }}>Fare Summary</Text>
 
 
-                  <Text type="secondary" style={{
-                    fontSize: 16, fontWeight: 600, color: "#238c46"
-                  }}>
-                    Partially Refundable
-                  </Text>
-                </Row>
-                <Row style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%", marginTop: 8
-                }}>
-
-                  <Text style={{
-                    fontSize: 16, fontWeight: 500
-                  }}>Base Fare</Text>
-
-
-                  <Text style={{
-                    fontSize: 16, fontWeight: 600
-                  }}>
-                    ₹{baseFare.toLocaleString("en-IN")}
-                  </Text>
-                </Row>
-
-                {/* Assured fee */}
-
-                {refundValue.planType === "Free Cancellation" && (
+                    <Text style={{
+                      fontSize: 14, fontWeight: 500, marginTop: 5, color: "#5e616e"
+                    }}>
+                      {travellerValue === 1
+                        ? `${travellerValue} Traveller`
+                        : `${travellerValue} Travellers`}
+                    </Text>
+                  </Row>
                   <Row style={{
                     display: "flex",
                     justifyContent: "space-between",
@@ -2646,20 +2627,15 @@ const handleFirstNameChange = (value, key) => {
 
                     <Text style={{
                       fontSize: 16, fontWeight: 500
-                    }}>Assured Fee*</Text>
+                    }}>Fare Type</Text>
 
 
-                    <Text style={{
-                      fontSize: 16, fontWeight: 600
+                    <Text type="secondary" style={{
+                      fontSize: 16, fontWeight: 600, color: "#238c46"
                     }}>
-
-                      <>₹{(cancelPrice * travellerValue).toLocaleString("en-IN")}</>
-
-
-
+                      Partially Refundable
                     </Text>
-                  </Row>)}
-                {refundValue.planType === "Rescheduling" && (
+                  </Row>
                   <Row style={{
                     display: "flex",
                     justifyContent: "space-between",
@@ -2668,92 +2644,135 @@ const handleFirstNameChange = (value, key) => {
 
                     <Text style={{
                       fontSize: 16, fontWeight: 500
-                    }}>Assured Fee*</Text>
+                    }}>Base Fare</Text>
 
 
                     <Text style={{
                       fontSize: 16, fontWeight: 600
                     }}>
-
-                      <>₹{(reschedulePrice * travellerValue).toLocaleString("en-IN")}</>
-
-
-
+                      ₹{baseFare.toLocaleString("en-IN")}
                     </Text>
-                  </Row>)}
+                  </Row>
+
+                  {/* Assured fee */}
+
+                  {refundValue.planType === "Free Cancellation" && (
+                    <Row style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      width: "100%", marginTop: 8
+                    }}>
+
+                      <Text style={{
+                        fontSize: 16, fontWeight: 500
+                      }}>Assured Fee*</Text>
 
 
-                <Row style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%", marginTop: 8, borderBottom: "1px solid #dcd3d3ff", paddingBottom: "10px"
-                }}>
+                      <Text style={{
+                        fontSize: 16, fontWeight: 600
+                      }}>
 
-                  <Text style={{
-                    fontSize: 16, fontWeight: 500
-                  }}>Taxes & Fees</Text>
+                        <>₹{(cancelPrice * travellerValue).toLocaleString("en-IN")}</>
 
 
-                  <Text style={{
-                    fontSize: 16, fontWeight: 600
+
+                      </Text>
+                    </Row>)}
+                  {refundValue.planType === "Rescheduling" && (
+                    <Row style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      width: "100%", marginTop: 8
+                    }}>
+
+                      <Text style={{
+                        fontSize: 16, fontWeight: 500
+                      }}>Assured Fee*</Text>
+
+
+                      <Text style={{
+                        fontSize: 16, fontWeight: 600
+                      }}>
+
+                        <>₹{(reschedulePrice * travellerValue).toLocaleString("en-IN")}</>
+
+
+
+                      </Text>
+                    </Row>)}
+
+
+                  <Row style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%", marginTop: 8, borderBottom: "1px solid #dcd3d3ff", paddingBottom: "10px"
                   }}>
-                    ₹{tax.toLocaleString("en-IN")}
-                  </Text>
-                </Row>
-                {promoOfferList[0].amount !== 0 ? (<Row style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%", marginTop: 8, borderBottom: "1px solid #dcd3d3ff", paddingBottom: "10px"
-                }}>
 
-                  <Text style={{
-                    fontSize: 16, fontWeight: 500
-                  }}>Instant Off</Text>
+                    <Text style={{
+                      fontSize: 16, fontWeight: 500
+                    }}>Taxes & Fees</Text>
 
 
-                  <Text style={{
-                    fontSize: 16, fontWeight: 600, color: "#238c46"
+                    <Text style={{
+                      fontSize: 16, fontWeight: 600
+                    }}>
+                      ₹{tax.toLocaleString("en-IN")}
+                    </Text>
+                  </Row>
+                  {promoOfferList[0].amount !== 0 ? (<Row style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%", marginTop: 8, borderBottom: "1px solid #dcd3d3ff", paddingBottom: "10px"
                   }}>
-                    -₹{promoOfferList[0].amount.toLocaleString("en-IN")}
-                  </Text>
-                </Row>) : null}
-                <Row style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%", marginTop: 8
-                }}>
 
-                  <Text style={{
-                    fontSize: 17, fontWeight: 700
-                  }}>Total Amount</Text>
+                    <Text style={{
+                      fontSize: 16, fontWeight: 500
+                    }}>Instant Off</Text>
 
 
-                  <Text style={{
-                    fontSize: 17, fontWeight: 700
+                    <Text style={{
+                      fontSize: 16, fontWeight: 600, color: "#238c46"
+                    }}>
+                      -₹{promoOfferList[0].amount.toLocaleString("en-IN")}
+                    </Text>
+                  </Row>) : null}
+                  <Row style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%", marginTop: 8
                   }}>
-                    ₹{finalAmount.toLocaleString("en-IN")}
-                  </Text>
-                </Row>
+
+                    <Text style={{
+                      fontSize: 17, fontWeight: 700
+                    }}>Total Amount</Text>
+
+
+                    <Text style={{
+                      fontSize: 17, fontWeight: 700
+                    }}>
+                      ₹{finalAmount.toLocaleString("en-IN")}
+                    </Text>
+                  </Row>
+                </div>
               </div>
-        </div>
+            </div>
+            {/* Down Card1 */}
+            <div
+              style={{
+                position: "fixed",
+                bottom: 0,
+                width: "100%",
+                height: "7%",
+                background: "white",
+                zIndex: 1000,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "10px 20px",
 
-        {/* Down Card1 */}
-        <div
-          style={{
-            position: "fixed",  
-            bottom: 0,            
-            width: "100%",       
-            height: "7%",        
-            background: "white", 
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding:10 
-
-          }} 
-          >
-          <div style={{
+              }}
+            >
+              <div style={{
                 display: "flex",
                 flexDirection: "row",
               }}>
@@ -2766,18 +2785,17 @@ const handleFirstNameChange = (value, key) => {
                 <div style={{
                   display: "flex", marginTop: 12, marginLeft: 5
                 }}>
-            <s style={{ color: "#b22422" }}>
-            {promoOfferList[0].amount
-              ? `₹ ${
-                  (
-                    slashAmount +
-                    (refundValue?.planType === "Free Cancellation" || refundValue?.planType === "Rescheduling"
-                      ? refundValue.price * travellerValue 
-                      : 0)
-                  ).toLocaleString("en-IN")
-                }`
-              : null}
-          </s>
+                  <s style={{ color: "#b22422" }}>
+                    {promoOfferList[0].amount
+                      ? `₹ ${(
+                        slashAmount +
+                        (refundValue?.planType === "Free Cancellation" || refundValue?.planType === "Rescheduling"
+                          ? refundValue.price * travellerValue
+                          : 0)
+                      ).toLocaleString("en-IN")
+                      }`
+                      : null}
+                  </s>
 
                   <Text style={{
                     color: "#5e616e", marginTop: -2, fontWeight: 500,
@@ -2788,40 +2806,40 @@ const handleFirstNameChange = (value, key) => {
 
               </div>
               <div style={{
-                position:"relative",
-                right:"5%" 
+                position: "relative",
+                right: "20%"
               }}>
-                    <ContinueButton
-                  
+                <ContinueButton
+
                   onClick={() => {
-                    
+
 
                     if (!phoneNo) {
                       dispatch(setOpenDrawer(true));
                       return;
                     }
 
-                    
-                    if(tempArray.length !== travellers?.Adults){
+
+                    if (tempArray.length !== travellers?.Adults) {
                       messageApi.destroy("adults-check");
                       messageApi.open({
-                      key: "adults-check",
-                      type: "error",
-                      content: `Please add ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} to Continue`,
-                      duration: 3,
-                    });
-                    return;
+                        key: "adults-check",
+                        type: "error",
+                        content: `Please add ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} to Continue`,
+                        duration: 3,
+                      });
+                      return;
                     }
 
-                    if(tempChildArray.length !== travellers?.Children){
+                    if (tempChildArray.length !== travellers?.Children) {
                       messageApi.destroy("child-check");
                       messageApi.open({
-                      key: "child-check",
-                      type: "error",
-                      content: `Please add ${travellers?.Children} ${travellers?.Children === 1 ? "Child" : "Children"} to Continue`,
-                      duration: 3,
-                    });
-                    return;
+                        key: "child-check",
+                        type: "error",
+                        content: `Please add ${travellers?.Children} ${travellers?.Children === 1 ? "Child" : "Children"} to Continue`,
+                        duration: 3,
+                      });
+                      return;
                     }
                     // if (refundValue.planType === null ) {
                     //   startShake();
@@ -2839,136 +2857,137 @@ const handleFirstNameChange = (value, key) => {
                       ...tempChildArray.map(c => ({ ...c, type: "child" }))
                     ];
                     dispatch(setTravellerDetails(combinedArray))
-                     
-                    
+
+
 
                   }}
                   text="Continue"
                 >
-                   
+
                 </ContinueButton>
               </div>
-          
-    </div>
-        <Drawer
-          title={null}
-          closable={false}
-          destroyOnHidden
-          placement="right" //rightuu
-          trigger={["click"]}
-          arrow
-          open={viewOffers}
-          onClose={() => setViewOffers(false)}
 
-          overlayStyle={{
-            marginBottom: "10px"
-          }}
-          maskClosable={true}
-          width={"90%"}
-          style={{
-            // padding: "24px",
-            background: "#fff",
-            // borderRadius: "8px 0 0 8px",
-            overflow: "auto",
-          }}>
-          <div style={{
-            // padding:12
-          }}>
-            <div style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between"
-            }}>
-              <Text style={{
-                fontSize: "24px",
-                fontWeight: 700
-              }}>Offers For You</Text>
-              <CloseOutlined
-                onClick={() => setViewOffers(false)}
-                style={{
-                  fontSize: 14,
-                  cursor: "pointer",
-                  // marginLeft: 8,
-
-                }}
-              />
             </div>
+            <Drawer
+              title={null}
+              closable={false}
+              destroyOnHidden
+              placement="bottom" //rightuu
+              trigger={["click"]}
+              arrow
+              open={viewOffers}
+              onClose={() => setViewOffers(false)}
 
-            <div
-              style={{
-                height: "45px",
-                border: "1px solid #8a8a8a",
-                marginTop: 10,
-                borderRadius: 10,
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "row",
-                paddingLeft: "10px",
-                paddingRight: "10px",
-                background: "#fff",
+              overlayStyle={{
+                marginBottom: "10px"
               }}
-            >
-              <Input
-                placeholder="Have a promocode? Redeem here"
-                variant="borderless"
-                style={{
-                  fontSize: "16px",
-                  fontWeight: 500,
-                  width: 300,
+              maskClosable={true}
+              width={"100%"}
+              height={"100%"}
+              style={{
+                // padding: "24px",
+                background: "#fff",
+                // borderRadius: "8px 0 0 8px",
+                overflow: "auto",
+              }}>
+              <div style={{
+                // padding:12
+              }}>
+                <div style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between"
+                }}>
+                  <Text style={{
+                    fontSize: "24px",
+                    fontWeight: 700
+                  }}>Offers For You</Text>
+                  <CloseOutlined
+                    onClick={() => setViewOffers(false)}
+                    style={{
+                      fontSize: 14,
+                      cursor: "pointer",
+                      // marginLeft: 8,
 
-                }}
-                value={promoCodeValue2}
-                onChange={(e) => {
-                  const text = e.target.value || "";
-                  setPromoCodeValue2(text.toLocaleUpperCase());
-                }}
-              />
+                    }}
+                  />
+                </div>
 
-              {promoCodeValue2 ? (
-                <button
+                <div
                   style={{
-                    color: "#0770e4",
-                    border: "none",
-                    background: "none",
-                    fontSize: "16px",
-                    fontWeight: 500,
-                    cursor: "pointer",
+                    height: "45px",
+                    border: "1px solid #8a8a8a",
+                    marginTop: 10,
+                    borderRadius: 10,
+                    display: "flex",
+                    alignItems: "center",
+                    flexDirection: "row",
+                    paddingLeft: "10px",
+                    paddingRight: "10px",
+                    background: "#fff",
                   }}
                 >
-                  Apply
-                </button>
-              ) : null}
+                  <Input
+                    placeholder="Have a promocode? Redeem here"
+                    variant="borderless"
+                    style={{
+                      fontSize: "16px",
+                      fontWeight: 500,
+                      width: 300,
+
+                    }}
+                    value={promoCodeValue2}
+                    onChange={(e) => {
+                      const text = e.target.value || "";
+                      setPromoCodeValue2(text.toLocaleUpperCase());
+                    }}
+                  />
+
+                  {promoCodeValue2 ? (
+                    <button
+                      style={{
+                        color: "#0770e4",
+                        border: "none",
+                        background: "none",
+                        fontSize: "16px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Apply
+                    </button>
+                  ) : null}
 
 
-            </div>
-            <div style={{
-              marginTop: 20
-            }}>
-              <Radio.Group
-                value={radioValue}
+                </div>
+                <div style={{
+                  marginTop: 20
+                }}>
+                  <Radio.Group
+                    value={radioValue}
 
-                style={{ color: "black" }}
-              >
-                <Space direction="vertical">
-                  {promoOfferList.map((item, idx) => (
+                    style={{ color: "black" }}
+                  >
+                    <Space direction="vertical">
+                      {promoOfferList.map((item, idx) => (
 
 
-                    <div key={idx} style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      // width: "100%",
+                        <div key={idx} style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          // width: "100%",
 
-                    }}>
-                      <div style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        padding: "5px 0",
-                        justifyContent: "space-between",
+                        }}>
+                          <div style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            padding: "5px 0",
+                            justifyContent: "space-between",
 
-                      }}>
-                        <>
-                          <style>
-                            {`
+                          }}>
+                            <>
+                              <style>
+                                {`
                 .custom-radio .ant-radio-inner {
                     border: 1px solid #848794 !important;
                 }
@@ -2977,442 +2996,432 @@ const handleFirstNameChange = (value, key) => {
                     border: 1px solid #0770e4 !important; /* selected border (blue) */
                 }
                 `}
-                          </style>
+                              </style>
 
-                          <ConfigProvider>
-                            <Radio value={idx} className="custom-radio" style={{
-                              fontSize: "16px",
-                              fontWeight: 600, textTransform: "uppercase", fontFamily: "Roboto"
-                            }}
-                              onChange={() => {
-                                handleRadioValue(idx)
-                                setViewOffers(false)
-                              }
-                              }>
-                              {item.name}
-                            </Radio>
-                          </ConfigProvider>
-                        </>
+                              <ConfigProvider>
+                                <Radio value={idx} className="custom-radio" style={{
+                                  fontSize: "16px",
+                                  fontWeight: 600, textTransform: "uppercase", fontFamily: "Roboto"
+                                }}
+                                  onChange={() => {
+                                    handleRadioValue(idx)
+                                    setViewOffers(false)
+                                  }
+                                  }>
+                                  {item.name}
+                                </Radio>
+                              </ConfigProvider>
+                            </>
 
-                        <div style={{
-                          flex: 1, textAlign: "end"
-                        }}>{item.amount >= 0 ? (<Text style={{
-                          fontSize: "14px", fontWeight: 700
-                        }}>{item?.amount > 0 && `₹${item.amount} Off`}  </Text>) : null}
+                            <div style={{
+                              flex: 1, textAlign: "end"
+                            }}>{item.amount >= 0 ? (<Text style={{
+                              fontSize: "14px", fontWeight: 700
+                            }}>{item?.amount > 0 && `₹${item.amount} Off`}  </Text>) : null}
+                            </div>
+
+                          </div>
+                          <Text style={{
+                            position: "relative",
+                            color: radioValue === idx ? "green" : "black",
+                            fontFamily: "Roboto",
+                            fontSize: 14.5,
+                            bottom: 10, left: 25, paddingRight: 15
+                          }}>
+                            {item.descriptions}
+                          </Text>
                         </div>
+                      )
+                      )}
 
-                      </div>
-                      <Text style={{
-                        position: "relative",
-                        color: radioValue === idx ? "green" : "black",
-                        fontFamily: "Roboto",
-                        fontSize: 14.5,
-                        bottom: 10, left: 25, paddingRight: 15
-                      }}>
-                        {item.descriptions}
-                      </Text>
-                    </div>
-                  )
-                  )}
+                    </Space>
+                  </Radio.Group>
+                </div>
+              </div>
 
-                </Space>
-              </Radio.Group>
-            </div>
-          </div>
-
-        </Drawer>
-        <Drawer
-          title={null}
-          closable={false}
-          destroyOnHidden
-          placement="right"
-          trigger={["click"]}
-          arrow
-          open={existingModal}
-          onClose={() => {setExistingModal(false)
-            if(travellers.Children>0 && selectedChildren.length>0){
-                                               setSelectedChildren(prev =>
-                                                  prev.filter(a => disabledChild.includes(a.key))
-                                                );
-                                               }
-                                                setSelectedAdults(prev =>
-                                                  prev.filter(a => disabledAdults.includes(a.key))
-                                                );
-          }}
-
-          overlayStyle={{
-            marginBottom: "10px"
-          }}
-          maskClosable={true}
-          width={"90%"}
-          style={{
-            // padding: "24px",
-            background: "#fff",
-            // borderRadius: "8px 0 0 8px",
-            overflow: "auto",
-          }}>
-            <Text style={{
-              fontWeight:700,fontSize:17,color:"#008cff"
-            }}>
-              ADD EXISTING TRAVELLERS
-            </Text>
-            <div style={{
-              marginTop:20
-            }}>
-              <div style={{
-                                                display:"flex",justifyContent:"center",border:"1px solid #b8b8bcff",borderRadius:10,marginTop:20,padding:10,flexDirection:"column"
-                                              }}>
-                                                 <Text  style={{
-                                                fontWeight:700,fontSize:16
-                                              }}>Adults(12 years or above)</Text>
-            {adults.map((person,idx)=>{
-                                            const isSelected = Array.isArray(selectedAdults) && Array.isArray(tempArray) && selectedAdults.some(a => a.key === person.key);
-                                            const isDisabled = disabledAdults.includes(person.key);
-                                            return(
-                                              <>
-                                              
-                                             
-                                              <div key={person.key} style={{ display: "flex", flexDirection: "column",marginTop:10 }}>
-                                
-                                {/* CHECKBOX FOR EXISTING PERSON */}
-                                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                  <input
-                                    type="checkbox"
-                                    checked={isSelected}
-                                     disabled={isDisabled}
-                                    onChange={() => {
-                                      handleSelectAdult(person);
-                                         
-                                    }}
-                                    style={{ height: 20, width: 20 }}
-                                  />
-                                  
-                                  <span style={{
-                                    fontSize:15,fontWeight:500
-                                  }}>{person.firstName} {person.lastName}</span>
-                                </div>
-
-                               
-
-                              </div>
-                              
-                                              </>
-                                            )
-                                          })}
-                                          </div>
-                                          {travellers.Children>0 && children.length>0 && (
-                                            <div style={{
-                                                display:"flex",justifyContent:"center",border:"1px solid #b8b8bcff",borderRadius:10,marginTop:20,padding:10,flexDirection:"column"
-                                              }}>
-                                                 <Text  style={{
-                                                fontWeight:700,fontSize:16
-                                              }}>Children(2 to 12 years)</Text>
-                                              {children.map((person,idx)=>{
-                                            const isSelected = Array.isArray(selectedChildren) && Array.isArray(tempChildArray) && selectedChildren.some(a => a.key === person.key);
-                                            const isDisabled = disabledChild.includes(person.key);
-                                            return(
-                                              <>
-                                              
-                                             
-                                              <div key={person.key} style={{ display: "flex", flexDirection: "column",marginTop:10 }}>
-                                
-                                {/* CHECKBOX FOR EXISTING PERSON */}
-                                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                  <input
-                                    type="checkbox"
-                                    checked={isSelected}
-                                     disabled={isDisabled}
-                                    onChange={() => {
-                                      handleSelectChildren(person);
-                                         
-                                    }}
-                                    style={{ height: 20, width: 20 }}
-                                  />
-                                  
-                                  <span style={{
-                                    fontSize:15,fontWeight:500
-                                  }}>{person.firstName} {person.lastName}</span>
-                                </div>
-
-                               
-
-                              </div>
-                              
-                                              </>
-                                            )
-                                          })}
-                                              </div>
-                                          )}
-                                           <div style={{
-                                            position:"fixed",
-                                            bottom: 0,
-                                            width: "81%",
-                                            height:"7%",
-                                            zIndex: 1000,
-                                            background: "#fff",
-                                            padding: "10px 20px",
-                                            right:"2px",
-                                            boxShadow: "0 5px 25px rgba(0, 0, 0, 0.3)",
-                                            display:"flex",
-                                            justifyContent:"space-between",
-                                            alignItems:"center"
-                                            }}>
-                                           <button
-                                                style={{
-                                                  borderRadius: 10,
-                                                  width: "100px",
-                                                  height: "35px",
-                                                  fontSize: "16px",
-                                                  color: "black",
-                                                  background: "white",
-                                                  border: "1px solid #b8b8bcff",
-                                                }}
-                                               onClick={() => {
-                                               if(travellers.Children>0 && selectedChildren.length>0){
-                                               setSelectedChildren(prev =>
-                                                  prev.filter(a => disabledChild.includes(a.key))
-                                                );
-                                               }
-                                                setSelectedAdults(prev =>
-                                                  prev.filter(a => disabledAdults.includes(a.key))
-                                                );
-
-                                                setExistingModal(false); 
-                                              }}
-
-                                              >
-                                                SKIP
-                                              </button>
-                                      <button
-                                        style={{
-                                          background: "#ff7a00",
-                                          border: "none",
-                                          borderRadius: 10,
-                                          width: "100px",
-                                          height: "35px",
-                                          fontSize: "16px",
-                                          color: "white",
-                                        }}
-                                        onClick={() => {
-                                        if(travellers.Children>0 && selectedChildren.length>0){
-                                        setDisabledChild(prev => [
-                                      ...prev,
-                                      ...selectedChildren.map(a => a.key)
-                                    ]);
-
-                                    
-                                    
-
-                                    
-                                    setTempChildArray(prev => [
-                                ...prev,
-                                ...selectedChildren
-                                  .filter(a => a && !disabledChild.includes(a.key)) 
-                                  .map((a, idx) => ({
-                                    key: prev.length + idx,
-                                    firstName: a.firstName || "",
-                                    lastName: a.lastName || "",
-                                    DOBValue: a?.DOBValue || "", 
-                                    genderValue: a?.genderValue || "Male",
-                                  }))
-                              ]);
-
-                                        }
-
-                                        //Adult
-                                        setDisabledAdults(prev => [
-                                      ...prev,
-                                      ...selectedAdults.map(a => a.key)
-                                    ]);
-
-                                    
-                                    setExistingModal(false);
-
-                                    
-                                    settempArray(prev => [
-                                ...prev,
-                                ...selectedAdults
-                                  .filter(a => a && !disabledAdults.includes(a.key)) 
-                                  .map((a, idx) => ({
-                                    key: prev.length + idx,
-                                    firstName: a.firstName || "",
-                                    lastName: a.lastName || "",
-                                    DOBValue: a.DOBValue || "", 
-                                    genderValue: a?.genderValue || "Male",
-                                  }))
-                              ]);
-
-                                    
-                                    
-
-                                  }}
-
-                                      >
-                                        SELECT
-                                      </button>
-                                    </div> 
-
-                                          </div>
-        </Drawer>
-        <LoginPage />
-        </>
-      ):
-      (
-        <>
-    {pageLoading?(
-      <>
-      <div style={{ display: "flex", gap: "20px", padding: "20px",marginTop:70 }}>
-          
-         
-          <div
-            style={{
+            </Drawer>
+            <Drawer
+              footer={<div style={{
+                padding: "10px 20px",
                 display: "flex",
-                background: "#fff",
-                width:"28%",
-                padding: 20, borderRadius: 20,
-                paddingBottom: "60px",
-                maxHeight: "auto",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-              }}
-          >
-            <Skeleton active paragraph={{ rows: 16 }} />
-          </div>
-      
-         <div
-            style={{
-              width: 975,
-              background: "#fff",
-              padding: "16px",
-              borderRadius: "10px",
-              boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-              height: "600px"
-            }}
-          >
-            <Skeleton active paragraph={{ rows: 16 }} />
-          </div>
-      
-      
-          
-      
-        </div>
-      </>
-    ):(
-      <>
-        <div
-        style={{
-          backgroundColor: "#4f4f4f14",
-          paddingTop: "70px",
-          paddingBottom: "180px"
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            padding: 20,
-            gap: 30,
-            alignItems: "flex-start",
-            justifyContent: "space-between"
-          }}
-        >
-          {/* Left Card */}
-          <div style={{
-            position: "sticky",
-            top: 0,
-            height: "100vh",
-            paddingBottom: "100px"
-          }}>
-            <Col>
-              <div style={{
-                display: "flex",
-                background: "#fff",
-                // width:"28%",
-                padding: 20, borderRadius: 20,
-                paddingBottom: "60px",
-                maxHeight: "auto",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                justifyContent: "space-between",
+                alignItems: "center"
               }}>
-                <div
+                <button
+                  style={{
+                    borderRadius: 10,
+                    width: "100px",
+                    height: "35px",
+                    fontSize: "16px",
+                    color: "black",
+                    background: "white",
+                    border: "1px solid #b8b8bcff",
+                  }}
+                  onClick={() => {
+                    if (travellers.Children > 0 && selectedChildren.length > 0) {
+                      setSelectedChildren(prev =>
+                        prev.filter(a => disabledChild.includes(a.key))
+                      );
+                    }
+                    setSelectedAdults(prev =>
+                      prev.filter(a => disabledAdults.includes(a.key))
+                    );
+
+                    setExistingModal(false);
+                  }}
 
                 >
-                  <Text style={{
-                    fontSize: "24px",
-                    fontWeight: 700
-                  }}>Offers For You</Text>
+                  SKIP
+                </button>
+                <button
+                  style={{
+                    background: "#ff7a00",
+                    border: "none",
+                    borderRadius: 10,
+                    width: "100px",
+                    height: "35px",
+                    fontSize: "16px",
+                    color: "white",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    if (travellers.Children > 0 && selectedChildren.length > 0) {
+                      setDisabledChild(prev => [
+                        ...prev,
+                        ...selectedChildren.map(a => a.key)
+                      ]);
 
+
+
+
+
+                      setTempChildArray(prev => [
+                        ...prev,
+                        ...selectedChildren
+                          .filter(a => a && !disabledChild.includes(a.key))
+                          .map((a, idx) => ({
+                            key: prev.length + idx,
+                            firstName: a.firstName || "",
+                            lastName: a.lastName || "",
+                            DOBValue: a?.DOBValue || "",
+                            genderValue: a?.genderValue || "Male",
+                          }))
+                      ]);
+
+                    }
+                    if (selectedAdults.length > 0) {
+                      setDisabledAdults(prev => [
+                        ...prev,
+                        ...selectedAdults.map(a => a.key)
+                      ]);
+
+                      settempArray(prev => [
+                        ...prev,
+                        ...selectedAdults
+                          .filter(a => a && !disabledAdults.includes(a.key))
+                          .map((a, idx) => ({
+                            key: prev.length + idx,
+                            firstName: a.firstName || "",
+                            lastName: a.lastName || "",
+                            DOBValue: a?.DOBValue || "",
+                            genderValue: a?.genderValue || "Male",
+                          }))
+                      ]);
+
+                    }
+
+                    setExistingModal(false);
+                  }}
+
+                >
+                  DONE
+                </button>
+              </div>}
+              closable={false}
+              destroyOnHidden
+              placement="bottom"
+              height={"100%"}
+              trigger={["click"]}
+              arrow
+              open={existingModal}
+              onClose={() => {
+                setExistingModal(false)
+                if (travellers.Children > 0 && selectedChildren.length > 0) {
+                  setSelectedChildren(prev =>
+                    prev.filter(a => disabledChild.includes(a.key))
+                  );
+                }
+                setSelectedAdults(prev =>
+                  prev.filter(a => disabledAdults.includes(a.key))
+                );
+              }}
+
+              overlayStyle={{
+                marginBottom: "10px"
+              }}
+              maskClosable={true}
+              width={"90%"}
+              style={{
+                // padding: "24px",
+                background: "#fff",
+                // borderRadius: "8px 0 0 8px",
+                overflow: "auto",
+              }}>
+              <Text style={{
+                fontWeight: 700, fontSize: 17, color: "#008cff"
+              }}>
+                ADD EXISTING TRAVELLERS
+              </Text>
+              <div style={{
+                marginTop: 20
+              }}>
+                <div style={{
+                  display: "flex", justifyContent: "center", border: "1px solid #b8b8bcff", borderRadius: 10, marginTop: 20, padding: 10, flexDirection: "column"
+                }}>
+                  <Text style={{
+                    fontWeight: 700, fontSize: 16
+                  }}>Adults(12 years or above)</Text>
+                  {adults.map((person, idx) => {
+                    const isSelected = Array.isArray(selectedAdults) && Array.isArray(tempArray) && selectedAdults.some(a => a.key === person.key);
+                    const isDisabled = disabledAdults.includes(person.key);
+                    return (
+                      <>
+
+
+                        <div key={person.key} style={{ display: "flex", flexDirection: "column", marginTop: 10 }}>
+
+                          {/* CHECKBOX FOR EXISTING PERSON */}
+                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              disabled={isDisabled}
+                              onChange={() => {
+                                handleSelectAdult(person);
+
+                              }}
+                              style={{ height: 20, width: 20 }}
+                            />
+
+                            <span style={{
+                              fontSize: 15, fontWeight: 500
+                            }}>{person.firstName} {person.lastName}</span>
+                          </div>
+
+
+
+                        </div>
+
+                      </>
+                    )
+                  })}
+                </div>
+                {travellers.Children > 0 && children.length > 0 && (
+                  <div style={{
+                    display: "flex", justifyContent: "center", border: "1px solid #b8b8bcff", borderRadius: 10, marginTop: 20, padding: 10, flexDirection: "column"
+                  }}>
+                    <Text style={{
+                      fontWeight: 700, fontSize: 16
+                    }}>Children(2 to 12 years)</Text>
+                    {children.map((person, idx) => {
+                      const isSelected = Array.isArray(selectedChildren) && Array.isArray(tempChildArray) && selectedChildren.some(a => a.key === person.key);
+                      const isDisabled = disabledChild.includes(person.key);
+                      return (
+                        <>
+
+
+                          <div key={person.key} style={{ display: "flex", flexDirection: "column", marginTop: 10 }}>
+
+                            {/* CHECKBOX FOR EXISTING PERSON */}
+                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                disabled={isDisabled}
+                                onChange={() => {
+                                  handleSelectChildren(person);
+
+                                }}
+                                style={{ height: 20, width: 20 }}
+                              />
+
+                              <span style={{
+                                fontSize: 15, fontWeight: 500
+                              }}>{person.firstName} {person.lastName}</span>
+                            </div>
+
+
+
+                          </div>
+
+                        </>
+                      )
+                    })}
+                  </div>
+                )}
+
+
+              </div>
+            </Drawer>
+            <LoginPage />
+          </>
+        ) :
+          (
+            <>
+              {pageLoading ? (
+                <>
+                  <div style={{ display: "flex", gap: "20px", padding: "20px", marginTop: 70 }}>
+
+
+                    <div
+                      style={{
+                        display: "flex",
+                        background: "#fff",
+                        width: "28%",
+                        padding: 20, borderRadius: 20,
+                        paddingBottom: "60px",
+                        maxHeight: "auto",
+                        boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                      }}
+                    >
+                      <Skeleton active paragraph={{ rows: 16 }} />
+                    </div>
+
+                    <div
+                      style={{
+                        width: 975,
+                        background: "#fff",
+                        padding: "16px",
+                        borderRadius: "10px",
+                        boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+                        height: "600px"
+                      }}
+                    >
+                      <Skeleton active paragraph={{ rows: 16 }} />
+                    </div>
+
+
+
+
+                  </div>
+                </>
+              ) : (
+                <>
                   <div
                     style={{
-                      height: "45px",
-                      border: "1px solid #8a8a8a",
-                      marginTop: 10,
-                      borderRadius: 10,
-                      display: "flex",
-                      alignItems: "center",
-                      flexDirection: "row",
-                      paddingLeft: "10px",
-                      paddingRight: "10px",
-                      background: "#fff",
+                      backgroundColor: "#4f4f4f14",
+                      paddingTop: "70px",
+                      paddingBottom: "180px"
                     }}
                   >
-                    <Input
-                      placeholder="Have a promocode? Redeem here"
-                      variant="borderless"
+                    <div
                       style={{
-                        fontSize: "16px",
-                        fontWeight: 500,
-                        width: 300,
+                        display: "flex",
+                        flexDirection: "row",
+                        padding: 20,
+                        gap: 30,
+                        alignItems: "flex-start",
+                        justifyContent: "space-between"
                       }}
-                      value={promoCodeValue}
-                      onChange={(e) => {
-                        const text = e.target.value || "";
-                        setPromoCodeValue(text.toLocaleUpperCase());
-                      }}
-                    />
-
-                    {promoCodeValue ? (
-                      <button
-                        style={{
-                          color: "#0770e4",
-                          border: "none",
-                          background: "none",
-                          fontSize: "16px",
-                          fontWeight: 500,
-                          cursor: "pointer",
-                        }}
-                      >
-                        Apply
-                      </button>
-                    ) : null}
-                  </div>
-                  <div style={{
-                    marginTop: 15,
-                    borderBottom: "1px solid #b8b8bcff"
-                  }}>
-                    <Radio.Group
-                      value={radioValue}
-
-                      style={{ color: "black" }}
                     >
-                      <Space direction="vertical">
-                        {promoOfferList.map((item, idx) => (
+                      {/* Left Card */}
+                      <div style={{
+                        position: "sticky",
+                        top: 0,
+                        height: "100vh",
+                        paddingBottom: "100px"
+                      }}>
+                        <Col>
+                          <div style={{
+                            display: "flex",
+                            background: "#fff",
+                            // width:"28%",
+                            padding: 20, borderRadius: 20,
+                            paddingBottom: "60px",
+                            maxHeight: "auto",
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                          }}>
+                            <div
 
-                          idx <= 2 && (
-                            <div key={idx} style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              width: "100%",
+                            >
+                              <Text style={{
+                                fontSize: "24px",
+                                fontWeight: 700
+                              }}>Offers For You</Text>
 
-                            }}>
+                              <div
+                                style={{
+                                  height: "45px",
+                                  border: "1px solid #8a8a8a",
+                                  marginTop: 10,
+                                  borderRadius: 10,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  flexDirection: "row",
+                                  paddingLeft: "10px",
+                                  paddingRight: "10px",
+                                  background: "#fff",
+                                }}
+                              >
+                                <Input
+                                  placeholder="Have a promocode? Redeem here"
+                                  variant="borderless"
+                                  style={{
+                                    fontSize: "16px",
+                                    fontWeight: 500,
+                                    width: 300,
+                                  }}
+                                  value={promoCodeValue}
+                                  onChange={(e) => {
+                                    const text = e.target.value || "";
+                                    setPromoCodeValue(text.toLocaleUpperCase());
+                                  }}
+                                />
+
+                                {promoCodeValue ? (
+                                  <button
+                                    style={{
+                                      color: "#0770e4",
+                                      border: "none",
+                                      background: "none",
+                                      fontSize: "16px",
+                                      fontWeight: 500,
+                                      cursor: "pointer",
+                                    }}
+                                  >
+                                    Apply
+                                  </button>
+                                ) : null}
+                              </div>
                               <div style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                padding: "5px 0",
-                                justifyContent: "space-between",
-                                width: 395
+                                marginTop: 15,
+                                borderBottom: "1px solid #b8b8bcff"
                               }}>
-                                <>
-                                  <style>
-                                    {`
+                                <Radio.Group
+                                  value={radioValue}
+
+                                  style={{ color: "black" }}
+                                >
+                                  <Space direction="vertical">
+                                    {promoOfferList.map((item, idx) => (
+
+                                      idx <= 2 && (
+                                        <div key={idx} style={{
+                                          display: "flex",
+                                          flexDirection: "column",
+                                          width: "100%",
+
+                                        }}>
+                                          <div style={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            padding: "5px 0",
+                                            justifyContent: "space-between",
+                                            width: 395
+                                          }}>
+                                            <>
+                                              <style>
+                                                {`
                             .custom-radio .ant-radio-inner {
                                 border: 1px solid #848794 !important;
                             }
@@ -3421,2602 +3430,1899 @@ const handleFirstNameChange = (value, key) => {
                                 border: 1px solid #0770e4 !important; /* selected border (blue) */
                             }
                             `}
-                                  </style>
+                                              </style>
 
-                                  <ConfigProvider>
-                                    <Radio value={idx} className="custom-radio" style={{
-                                      fontSize: "16px",
-                                      fontWeight: 600, textTransform: "uppercase", fontFamily: "Roboto"
-                                    }}
-                                      onChange={() => handleRadioValue(idx)}>
-                                      {item.name}
-                                    </Radio>
-                                  </ConfigProvider>
-                                </>
+                                              <ConfigProvider>
+                                                <Radio value={idx} className="custom-radio" style={{
+                                                  fontSize: "16px",
+                                                  fontWeight: 600, textTransform: "uppercase", fontFamily: "Roboto"
+                                                }}
+                                                  onChange={() => handleRadioValue(idx)}>
+                                                  {item.name}
+                                                </Radio>
+                                              </ConfigProvider>
+                                            </>
+
+                                            <div style={{
+                                              flex: 1, textAlign: "end"
+                                            }}>{item.amount >= 0 ? (<Text style={{
+                                              fontSize: "14px", fontWeight: 700
+                                            }}>{item?.amount > 0 && `₹${item.amount} Off`}  </Text>) : null}
+                                            </div>
+
+                                          </div>
+                                          <Text style={{
+                                            position: "relative",
+                                            left: 25,
+                                            width: 360,
+                                            color: radioValue === idx ? "green" : "black",
+                                            fontFamily: "Roboto",
+                                            fontSize: 14.5,
+                                            bottom: 10
+                                          }}>
+                                            {item.descriptions}
+                                          </Text>
+                                        </div>)
+                                    )
+                                    )}
+
+                                  </Space>
+                                </Radio.Group>
+
+
+
+
+
+                              </div>
+                              <button
+                                style={{
+                                  color: "#fc790d",
+                                  border: "none",
+                                  background: "none",
+                                  fontSize: "15px",
+                                  fontWeight: 500,
+                                  cursor: "pointer",
+                                  position: "relative",
+                                  top: 20,
+                                  textAlign: "start"
+
+                                }}
+                                onClick={() =>
+                                  setViewOffers(true)
+                                }
+                              >
+                                View All Offer <RightOutlined style={{
+                                  fontSize: "13px", position: "relative", top: 1
+                                }} />
+                              </button>
+                            </div>
+                          </div>
+                          <div style={{
+                            background: "#fff",
+                            marginTop: 30,
+                            padding: 20,
+                            borderRadius: 20,
+                            paddingBottom: "30px",
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                          }}>
+
+                            <Row style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              width: "100%",
+                            }}>
+
+                              <Text style={{
+                                fontSize: 24, fontWeight: 700
+                              }}>Fare Summary</Text>
+
+
+                              <Text style={{
+                                fontSize: 14, fontWeight: 500, marginTop: 5, color: "#5e616e"
+                              }}>
+                                {travellerValue === 1
+                                  ? `${travellerValue} Traveller`
+                                  : `${travellerValue} Travellers`}
+                              </Text>
+                            </Row>
+                            <Row style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              width: "100%", marginTop: 8
+                            }}>
+
+                              <Text style={{
+                                fontSize: 16, fontWeight: 500
+                              }}>Fare Type</Text>
+
+
+                              <Text type="secondary" style={{
+                                fontSize: 16, fontWeight: 600, color: "#238c46"
+                              }}>
+                                Partially Refundable
+                              </Text>
+                            </Row>
+                            <Row style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              width: "100%", marginTop: 8
+                            }}>
+
+                              <Text style={{
+                                fontSize: 16, fontWeight: 500
+                              }}>Base Fare</Text>
+
+
+                              <Text style={{
+                                fontSize: 16, fontWeight: 600
+                              }}>
+                                ₹{baseFare.toLocaleString("en-IN")}
+                              </Text>
+                            </Row>
+
+                            {/* Assured fee */}
+
+                            {refundValue.planType === "Free Cancellation" && (
+                              <Row style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                width: "100%", marginTop: 8
+                              }}>
+
+                                <Text style={{
+                                  fontSize: 16, fontWeight: 500
+                                }}>Assured Fee*</Text>
+
+
+                                <Text style={{
+                                  fontSize: 16, fontWeight: 600
+                                }}>
+
+                                  <>₹{(cancelPrice * travellerValue).toLocaleString("en-IN")}</>
+
+
+
+                                </Text>
+                              </Row>)}
+                            {refundValue.planType === "Rescheduling" && (
+                              <Row style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                width: "100%", marginTop: 8
+                              }}>
+
+                                <Text style={{
+                                  fontSize: 16, fontWeight: 500
+                                }}>Assured Fee*</Text>
+
+
+                                <Text style={{
+                                  fontSize: 16, fontWeight: 600
+                                }}>
+
+                                  <>₹{(reschedulePrice * travellerValue).toLocaleString("en-IN")}</>
+
+
+
+                                </Text>
+                              </Row>)}
+
+
+                            <Row style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              width: "100%", marginTop: 8, borderBottom: "1px solid #dcd3d3ff", paddingBottom: "10px"
+                            }}>
+
+                              <Text style={{
+                                fontSize: 16, fontWeight: 500
+                              }}>Taxes & Fees</Text>
+
+
+                              <Text style={{
+                                fontSize: 16, fontWeight: 600
+                              }}>
+                                ₹{tax.toLocaleString("en-IN")}
+                              </Text>
+                            </Row>
+                            {promoOfferList[0].amount !== 0 ? (<Row style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              width: "100%", marginTop: 8, borderBottom: "1px solid #dcd3d3ff", paddingBottom: "10px"
+                            }}>
+
+                              <Text style={{
+                                fontSize: 16, fontWeight: 500
+                              }}>Instant Off</Text>
+
+
+                              <Text style={{
+                                fontSize: 16, fontWeight: 600, color: "#238c46"
+                              }}>
+                                -₹{promoOfferList[0].amount.toLocaleString("en-IN")}
+                              </Text>
+                            </Row>) : null}
+                            <Row style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              width: "100%", marginTop: 8
+                            }}>
+
+                              <Text style={{
+                                fontSize: 17, fontWeight: 700
+                              }}>Total Amount</Text>
+
+
+                              <Text style={{
+                                fontSize: 17, fontWeight: 700
+                              }}>
+                                ₹{finalAmount.toLocaleString("en-IN")}
+                              </Text>
+                            </Row>
+                          </div>
+                          <div style={{
+                            marginTop: 10, padding: 25
+                          }}>
+                            <Text style={{
+                              fontSize: 16, fontWeight: 500, fontFamily: "Roboto"
+                            }}>
+                              By clicking on continue, I confirm that I have read, understood, and agree with the Fare Rules, Privacy Policy and Terms of Use.
+                            </Text>
+                          </div>
+                        </Col>
+                      </div>
+
+                      {/* Right Section */}
+                      <Col>
+                        <div style={{
+                          display: "flex",
+                          background: "#fff",
+                          width: "980px",
+                          padding: 15, borderRadius: 20,
+                          boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                          //  marginBottom: -150,
+                        }}>
+                          <div
+
+
+                          >
+                            {!returnTripUI ? (<OnewayFlightDetails />) : (
+                              <div>
+                                <div style={{
+                                  width: "980px",
+                                  borderBottom: "1px solid #ccccccff",
+                                  paddingBottom: 30
+                                }}>
+                                  <OnewayFlightDetails />
+                                </div>
 
                                 <div style={{
-                                  flex: 1, textAlign: "end"
-                                }}>{item.amount >= 0 ? (<Text style={{
-                                  fontSize: "14px", fontWeight: 700
-                                }}>{item?.amount > 0 && `₹${item.amount} Off`}  </Text>) : null}
+                                  marginTop: 20,
+                                  marginBottom: returnFlight?.stops === "1 stop" ? -200 : 0,
+                                }}>
+                                  <ReturnFlightDetails />
                                 </div>
-
                               </div>
-                              <Text style={{
+                            )}
+
+                          </div>
+
+                        </div>
+                        <div style={{
+                          display: "flex",
+                          background: "#fff",
+                          width: "980px",
+                          padding: 20, borderRadius: 20,
+                          boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                          marginTop: 25, flexDirection: "column"
+
+                        }}>
+
+                          <Text style={{
+                            fontSize: 24, fontWeight: 700
+                          }}>
+                            Refund on Cancellation
+                          </Text>
+                          <br />
+                          <Text style={{
+                            fontWeight: 600, fontSize: 16
+                          }}>
+                            {fromCode} - {toCode}
+                          </Text>
+                          {refundFeeAdd ? (
+                            <div>
+                              <div style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                width: "60%",
+                                alignItems: "center",
                                 position: "relative",
-                                left: 25,
-                                width: 360,
-                                color: radioValue === idx ? "green" : "black",
-                                fontFamily: "Roboto",
-                                fontSize: 14.5,
-                                bottom: 10
+                                top: 25,
+                                left: "20%"
                               }}>
-                                {item.descriptions}
+                                <div style={{
+                                  textAlign: "center"
+                                }}>
+                                  <Text style={{
+                                    fontWeight: 500,
+                                    fontSize: "15px",
+                                  }}>
+                                    Full refund of ₹{(onewaySelectedFlight[0]?.fareOptions?.[travelClass]?.price * travellerValue).toLocaleString("en-IN")}
+                                  </Text>
+
+
+                                </div>
+                                <div>
+                                  <Text style={{
+                                    fontWeight: 500,
+                                    fontSize: "15px",
+                                    textAlign: "center"
+                                  }}>Non Refundable</Text>
+                                </div>
+                              </div>
+                              <div style={{
+                                display: "flex",
+                                flexDirection: "column",
+
+                              }}>
+                                <div style={{
+
+                                  marginTop: "50px",
+                                  textAlign: "center",
+                                  height: "4px",
+                                  width: "60%",
+                                  backgroundImage: "linear-gradient(to right, rgb(43, 153, 80), rgb(238, 154, 153))"
+                                }}>
+                                </div>
+                                <div style={{
+                                  position: "relative",
+                                  // marginTop:"10px",
+                                  textAlign: "center",
+                                  height: "4px",
+                                  width: "50%",
+                                  backgroundImage: "linear-gradient(to right, rgb(238, 154, 153), rgb(220, 53, 50))",
+                                  left: "50%",
+                                  bottom: 4
+                                }}></div>
+                              </div>
+
+
+
+
+
+                              <div style={{
+                                display: "flex",
+                                justifyContent: "space-between"
+                              }}>
+                                <div>
+                                  <div style={{
+                                    background: "rgb(107, 184, 133)",
+                                    height: "30px",
+                                    width: "30px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    borderRadius: "50px",
+                                    position: "relative",
+                                    right: 7,
+                                    bottom: 21
+                                  }}>
+                                    <img src={FlightTicketFilledIcon} style={{
+
+                                      height: "20px"
+                                    }}>
+                                    </img>
+                                  </div>
+                                  <div style={{
+                                    background: "rgb(231, 114, 112)",
+                                    height: "15px",
+                                    width: "15px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    borderRadius: "50px",
+                                    position: "relative",
+                                    left: 485,
+                                    bottom: 44
+                                  }}></div>
+
+
+                                </div>
+
+                                <div>
+
+                                  <div style={{
+                                    background: "rgb(220, 53, 50)",
+                                    height: "30px",
+                                    width: "30px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    borderRadius: "50px",
+                                    position: "relative",
+                                    // left:50,
+                                    bottom: 21
+                                  }}>
+                                    <img src={FlightTakeoffFilledIcon} style={{
+
+                                      height: "20px"
+                                    }}>
+                                    </img>
+                                  </div>
+
+                                </div>
+
+                              </div>
+                              <div style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                position: "relative",
+                                bottom: 18
+                              }}>
+                                <div style={{
+                                  flex: 1,
+                                  textAlign: "left",
+                                  position: "relative",
+                                  right: 6,
+                                  bottom: 8
+                                }}>
+                                  <Text style={{
+                                    fontSize: "14px",
+                                    fontWeight: 500
+                                  }}>
+                                    Now
+                                  </Text>
+                                  <br />
+                                  <Text type="secondary" strong style={{
+                                    position: "relative",
+
+                                    fontSize: "12px",
+                                  }}>{currentTime}</Text>
+                                </div>
+                                <div style={{
+                                  flex: 1,
+                                  textAlign: "center",
+                                  position: "relative",
+                                  left: 5,
+                                  bottom: 8
+                                }}>
+                                  <Text style={{
+                                    fontSize: "14px",
+                                    fontWeight: 500
+                                  }}>
+                                    {lessdep.day} {lessdep.month}
+                                  </Text>
+                                  <br />
+                                  <Text type="secondary" strong style={{
+                                    position: "relative",
+                                    fontSize: "12px",
+                                    //before 8
+                                  }}>{cancelLess}</Text>
+                                </div>
+                                <div style={{
+                                  flex: 1,
+                                  textAlign: "right",
+                                  position: "relative",
+                                  bottom: 8
+                                }}>
+                                  <Text style={{
+                                    fontSize: "14px",
+                                    fontWeight: 500
+                                  }}>
+                                    Departure
+                                  </Text>
+                                  <br />
+                                  <Text type="secondary" strong style={{
+                                    position: "relative",
+
+                                    fontSize: "12px",
+                                  }}>{dep.day} {dep.month}, {onewaySelectedFlight[0]?.departureTime}</Text>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div>
+                              <div style={{
+                                flex: 1,
+                                marginTop: "50px",
+                                textAlign: "center",
+                                height: "4px",
+                                width: "98%",
+                                backgroundImage: "linear-gradient(to right, rgb(238, 154, 153), rgb(220, 53, 50))"
+                              }}>
+                                <Text style={{
+                                  fontWeight: 500,
+                                  fontSize: "15px",
+                                  position: "relative",
+                                  textAlign: "center",
+                                  bottom: 35
+                                }}>Non Refundable</Text>
+
+                              </div>
+                              <div style={{
+                                display: "flex",
+                                justifyContent: "space-between"
+                              }}>
+                                <div>
+                                  <div style={{
+                                    background: "rgb(231, 114, 112)",
+                                    height: "30px",
+                                    width: "30px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    borderRadius: "50px",
+                                    position: "relative",
+                                    right: 7,
+                                    bottom: 17
+                                  }}>
+                                    <img src={FlightTicketFilledIcon} style={{
+
+                                      height: "20px"
+                                    }}>
+                                    </img>
+                                  </div>
+                                  <div style={{
+                                    flex: 1,
+                                    textAlign: "left",
+                                    position: "relative",
+                                    right: 6,
+                                    bottom: 8
+                                  }}>
+                                    <Text style={{
+                                      fontSize: "14px",
+                                      fontWeight: 500
+                                    }}>
+                                      Now
+                                    </Text>
+                                    <br />
+                                    <Text type="secondary" strong style={{
+                                      position: "relative",
+
+                                      fontSize: "12px",
+                                    }}>{currentTime}</Text>
+                                  </div>
+                                </div>
+
+                                <div>
+
+                                  <div style={{
+                                    background: "rgb(220, 53, 50)",
+                                    height: "30px",
+                                    width: "30px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    borderRadius: "50px",
+                                    position: "relative",
+                                    left: 40,
+                                    bottom: 18
+                                  }}>
+                                    <img src={FlightTakeoffFilledIcon} style={{
+
+                                      height: "20px"
+                                    }}>
+                                    </img>
+                                  </div>
+                                  <div style={{
+                                    flex: 1,
+                                    textAlign: "right",
+                                    position: "relative",
+                                    bottom: 8
+                                  }}>
+                                    <Text style={{
+                                      fontSize: "14px",
+                                      fontWeight: 500
+                                    }}>
+                                      Departure
+                                    </Text>
+                                    <br />
+                                    <Text type="secondary" strong style={{
+                                      position: "relative",
+
+                                      fontSize: "12px",
+                                    }}>{dep.day} {dep.month}, {onewaySelectedFlight[0]?.departureTime}</Text>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {returnTripUI && (
+                            <div>
+                              <Text style={{
+                                fontWeight: 600, fontSize: 16
+                              }}>
+                                {toCode} - {fromCode}
                               </Text>
-                            </div>)
-                        )
-                        )}
-
-                      </Space>
-                    </Radio.Group>
-
-
-
-
-
-                  </div>
-                  <button
-                    style={{
-                      color: "#fc790d",
-                      border: "none",
-                      background: "none",
-                      fontSize: "15px",
-                      fontWeight: 500,
-                      cursor: "pointer",
-                      position: "relative",
-                      top: 20,
-                      textAlign: "start"
-
-                    }}
-                    onClick={() =>
-                      setViewOffers(true)
-                    }
-                  >
-                    View All Offer <RightOutlined style={{
-                      fontSize: "13px", position: "relative", top: 1
-                    }} />
-                  </button>
-                </div>
-              </div>
-              <div style={{
-                background: "#fff",
-                marginTop: 30,
-                padding: 20,
-                borderRadius: 20,
-                paddingBottom: "30px",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-              }}>
-
-                <Row style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%",
-                }}>
-
-                  <Text style={{
-                    fontSize: 24, fontWeight: 700
-                  }}>Fare Summary</Text>
-
-
-                  <Text style={{
-                    fontSize: 14, fontWeight: 500, marginTop: 5, color: "#5e616e"
-                  }}>
-                    {travellerValue === 1
-                      ? `${travellerValue} Traveller`
-                      : `${travellerValue} Travellers`}
-                  </Text>
-                </Row>
-                <Row style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%", marginTop: 8
-                }}>
-
-                  <Text style={{
-                    fontSize: 16, fontWeight: 500
-                  }}>Fare Type</Text>
-
-
-                  <Text type="secondary" style={{
-                    fontSize: 16, fontWeight: 600, color: "#238c46"
-                  }}>
-                    Partially Refundable
-                  </Text>
-                </Row>
-                <Row style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%", marginTop: 8
-                }}>
-
-                  <Text style={{
-                    fontSize: 16, fontWeight: 500
-                  }}>Base Fare</Text>
-
-
-                  <Text style={{
-                    fontSize: 16, fontWeight: 600
-                  }}>
-                    ₹{baseFare.toLocaleString("en-IN")}
-                  </Text>
-                </Row>
-
-                {/* Assured fee */}
-
-                {refundValue.planType === "Free Cancellation" && (
-                  <Row style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    width: "100%", marginTop: 8
-                  }}>
-
-                    <Text style={{
-                      fontSize: 16, fontWeight: 500
-                    }}>Assured Fee*</Text>
-
-
-                    <Text style={{
-                      fontSize: 16, fontWeight: 600
-                    }}>
-
-                      <>₹{(cancelPrice * travellerValue).toLocaleString("en-IN")}</>
-
-
-
-                    </Text>
-                  </Row>)}
-                {refundValue.planType === "Rescheduling" && (
-                  <Row style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    width: "100%", marginTop: 8
-                  }}>
-
-                    <Text style={{
-                      fontSize: 16, fontWeight: 500
-                    }}>Assured Fee*</Text>
-
-
-                    <Text style={{
-                      fontSize: 16, fontWeight: 600
-                    }}>
-
-                      <>₹{(reschedulePrice * travellerValue).toLocaleString("en-IN")}</>
-
-
-
-                    </Text>
-                  </Row>)}
-
-
-                <Row style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%", marginTop: 8, borderBottom: "1px solid #dcd3d3ff", paddingBottom: "10px"
-                }}>
-
-                  <Text style={{
-                    fontSize: 16, fontWeight: 500
-                  }}>Taxes & Fees</Text>
-
-
-                  <Text style={{
-                    fontSize: 16, fontWeight: 600
-                  }}>
-                    ₹{tax.toLocaleString("en-IN")}
-                  </Text>
-                </Row>
-                {promoOfferList[0].amount !== 0 ? (<Row style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%", marginTop: 8, borderBottom: "1px solid #dcd3d3ff", paddingBottom: "10px"
-                }}>
-
-                  <Text style={{
-                    fontSize: 16, fontWeight: 500
-                  }}>Instant Off</Text>
-
-
-                  <Text style={{
-                    fontSize: 16, fontWeight: 600, color: "#238c46"
-                  }}>
-                    -₹{promoOfferList[0].amount.toLocaleString("en-IN")}
-                  </Text>
-                </Row>) : null}
-                <Row style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%", marginTop: 8
-                }}>
-
-                  <Text style={{
-                    fontSize: 17, fontWeight: 700
-                  }}>Total Amount</Text>
-
-
-                  <Text style={{
-                    fontSize: 17, fontWeight: 700
-                  }}>
-                    ₹{finalAmount.toLocaleString("en-IN")}
-                  </Text>
-                </Row>
-              </div>
-              <div style={{
-                marginTop: 10, padding: 25
-              }}>
-                <Text style={{
-                  fontSize: 16, fontWeight: 500, fontFamily: "Roboto"
-                }}>
-                  By clicking on continue, I confirm that I have read, understood, and agree with the Fare Rules, Privacy Policy and Terms of Use.
-                </Text>
-              </div>
-            </Col>
-          </div>
-
-          {/* Right Section */}
-          <Col>
-            <div style={{
-              display: "flex",
-              background: "#fff",
-              width: "980px",
-              padding: 15, borderRadius: 20,
-              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-              //  marginBottom: -150,
-            }}>
-              <div
-
-
-              >
-                {!returnTripUI ? (<OnewayFlightDetails />) : (
-                  <div>
-                    <div style={{
-                      width: "980px",
-                      borderBottom: "1px solid #ccccccff",
-                      paddingBottom: 30
-                    }}>
-                      <OnewayFlightDetails />
-                    </div>
-
-                    <div style={{
-                      marginTop: 20,
-                      marginBottom: returnFlight?.stops === "1 stop" ? -200 : 0,
-                    }}>
-                      <ReturnFlightDetails />
-                    </div>
-                  </div>
-                )}
-
-              </div>
-
-            </div>
-            <div style={{
-              display: "flex",
-              background: "#fff",
-              width: "980px",
-              padding: 20, borderRadius: 20,
-              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-              marginTop: 25, flexDirection: "column"
-
-            }}>
-
-              <Text style={{
-                fontSize: 24, fontWeight: 700
-              }}>
-                Refund on Cancellation
-              </Text>
-              <br />
-              <Text style={{
-                fontWeight: 600, fontSize: 16
-              }}>
-                {fromCode} - {toCode}
-              </Text>
-              {refundFeeAdd ? (
-                <div>
-                  <div style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    width: "60%",
-                    alignItems: "center",
-                    position: "relative",
-                    top: 25,
-                    left: "20%"
-                  }}>
-                    <div style={{
-                      textAlign: "center"
-                    }}>
-                      <Text style={{
-                        fontWeight: 500,
-                        fontSize: "15px",
-                      }}>
-                        Full refund of ₹{(onewaySelectedFlight[0]?.fareOptions?.[travelClass]?.price * travellerValue).toLocaleString("en-IN")}
-                      </Text>
-
-
-                    </div>
-                    <div>
-                      <Text style={{
-                        fontWeight: 500,
-                        fontSize: "15px",
-                        textAlign: "center"
-                      }}>Non Refundable</Text>
-                    </div>
-                  </div>
-                  <div style={{
-                    display: "flex",
-                    flexDirection: "column",
-
-                  }}>
-                    <div style={{
-
-                      marginTop: "50px",
-                      textAlign: "center",
-                      height: "4px",
-                      width: "60%",
-                      backgroundImage: "linear-gradient(to right, rgb(43, 153, 80), rgb(238, 154, 153))"
-                    }}>
-                    </div>
-                    <div style={{
-                      position: "relative",
-                      // marginTop:"10px",
-                      textAlign: "center",
-                      height: "4px",
-                      width: "50%",
-                      backgroundImage: "linear-gradient(to right, rgb(238, 154, 153), rgb(220, 53, 50))",
-                      left: "50%",
-                      bottom: 4
-                    }}></div>
-                  </div>
-
-
-
-
-
-                  <div style={{
-                    display: "flex",
-                    justifyContent: "space-between"
-                  }}>
-                    <div>
-                      <div style={{
-                        background: "rgb(107, 184, 133)",
-                        height: "30px",
-                        width: "30px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: "50px",
-                        position: "relative",
-                        right: 7,
-                        bottom: 21
-                      }}>
-                        <img src={FlightTicketFilledIcon} style={{
-
-                          height: "20px"
-                        }}>
-                        </img>
-                      </div>
-                      <div style={{
-                        background: "rgb(231, 114, 112)",
-                        height: "15px",
-                        width: "15px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: "50px",
-                        position: "relative",
-                        left: 485,
-                        bottom: 44
-                      }}></div>
-
-
-                    </div>
-
-                    <div>
-
-                      <div style={{
-                        background: "rgb(220, 53, 50)",
-                        height: "30px",
-                        width: "30px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: "50px",
-                        position: "relative",
-                        // left:50,
-                        bottom: 21
-                      }}>
-                        <img src={FlightTakeoffFilledIcon} style={{
-
-                          height: "20px"
-                        }}>
-                        </img>
-                      </div>
-
-                    </div>
-
-                  </div>
-                  <div style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    position: "relative",
-                    bottom: 18
-                  }}>
-                    <div style={{
-                      flex: 1,
-                      textAlign: "left",
-                      position: "relative",
-                      right: 6,
-                      bottom: 8
-                    }}>
-                      <Text style={{
-                        fontSize: "14px",
-                        fontWeight: 500
-                      }}>
-                        Now
-                      </Text>
-                      <br />
-                      <Text type="secondary" strong style={{
-                        position: "relative",
-
-                        fontSize: "12px",
-                      }}>{currentTime}</Text>
-                    </div>
-                    <div style={{
-                      flex: 1,
-                      textAlign: "center",
-                      position: "relative",
-                      left: 5,
-                      bottom: 8
-                    }}>
-                      <Text style={{
-                        fontSize: "14px",
-                        fontWeight: 500
-                      }}>
-                        {lessdep.day} {lessdep.month}
-                      </Text>
-                      <br />
-                      <Text type="secondary" strong style={{
-                        position: "relative",
-                        fontSize: "12px",
-                        //before 8
-                      }}>{cancelLess}</Text>
-                    </div>
-                    <div style={{
-                      flex: 1,
-                      textAlign: "right",
-                      position: "relative",
-                      bottom: 8
-                    }}>
-                      <Text style={{
-                        fontSize: "14px",
-                        fontWeight: 500
-                      }}>
-                        Departure
-                      </Text>
-                      <br />
-                      <Text type="secondary" strong style={{
-                        position: "relative",
-
-                        fontSize: "12px",
-                      }}>{dep.day} {dep.month}, {onewaySelectedFlight[0]?.departureTime}</Text>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <div style={{
-                    flex: 1,
-                    marginTop: "50px",
-                    textAlign: "center",
-                    height: "4px",
-                    width: "98%",
-                    backgroundImage: "linear-gradient(to right, rgb(238, 154, 153), rgb(220, 53, 50))"
-                  }}>
-                    <Text style={{
-                      fontWeight: 500,
-                      fontSize: "15px",
-                      position: "relative",
-                      textAlign: "center",
-                      bottom: 35
-                    }}>Non Refundable</Text>
-
-                  </div>
-                  <div style={{
-                    display: "flex",
-                    justifyContent: "space-between"
-                  }}>
-                    <div>
-                      <div style={{
-                        background: "rgb(231, 114, 112)",
-                        height: "30px",
-                        width: "30px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: "50px",
-                        position: "relative",
-                        right: 7,
-                        bottom: 17
-                      }}>
-                        <img src={FlightTicketFilledIcon} style={{
-
-                          height: "20px"
-                        }}>
-                        </img>
-                      </div>
-                      <div style={{
-                        flex: 1,
-                        textAlign: "left",
-                        position: "relative",
-                        right: 6,
-                        bottom: 8
-                      }}>
-                        <Text style={{
-                          fontSize: "14px",
-                          fontWeight: 500
-                        }}>
-                          Now
-                        </Text>
-                        <br />
-                        <Text type="secondary" strong style={{
-                          position: "relative",
-
-                          fontSize: "12px",
-                        }}>{currentTime}</Text>
-                      </div>
-                    </div>
-
-                    <div>
-
-                      <div style={{
-                        background: "rgb(220, 53, 50)",
-                        height: "30px",
-                        width: "30px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: "50px",
-                        position: "relative",
-                        left: 40,
-                        bottom: 18
-                      }}>
-                        <img src={FlightTakeoffFilledIcon} style={{
-
-                          height: "20px"
-                        }}>
-                        </img>
-                      </div>
-                      <div style={{
-                        flex: 1,
-                        textAlign: "right",
-                        position: "relative",
-                        bottom: 8
-                      }}>
-                        <Text style={{
-                          fontSize: "14px",
-                          fontWeight: 500
-                        }}>
-                          Departure
-                        </Text>
-                        <br />
-                        <Text type="secondary" strong style={{
-                          position: "relative",
-
-                          fontSize: "12px",
-                        }}>{dep.day} {dep.month}, {onewaySelectedFlight[0]?.departureTime}</Text>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {returnTripUI && (
-                <div>
-                  <Text style={{
-                    fontWeight: 600, fontSize: 16
-                  }}>
-                    {toCode} - {fromCode}
-                  </Text>
-                  {refundFeeAdd ? (
-                    <div>
-                      <div style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        width: "60%",
-                        alignItems: "center",
-                        position: "relative",
-                        top: 25,
-                        left: "20%"
-                      }}>
-                        <div style={{
-                          textAlign: "center"
-                        }}>
-                          <Text style={{
-                            fontWeight: 500,
-                            fontSize: "15px",
-                          }}>
-                            Full refund of ₹{(returnSelectedFlight[0]?.fareOptions?.[travelClass]?.price * travellerValue).toLocaleString("en-IN")}
-                          </Text>
-
-
-                        </div>
-                        <div>
-                          <Text style={{
-                            fontWeight: 500,
-                            fontSize: "15px",
-                            textAlign: "center"
-                          }}>Non Refundable</Text>
-                        </div>
-                      </div>
-                      <div style={{
-                        display: "flex",
-                        flexDirection: "column",
-
-                      }}>
-                        <div style={{
-
-                          marginTop: "50px",
-                          textAlign: "center",
-                          height: "4px",
-                          width: "60%",
-                          backgroundImage: "linear-gradient(to right, rgb(43, 153, 80), rgb(238, 154, 153))"
-                        }}>
-                        </div>
-                        <div style={{
-                          position: "relative",
-                          // marginTop:"10px",
-                          textAlign: "center",
-                          height: "4px",
-                          width: "50%",
-                          backgroundImage: "linear-gradient(to right, rgb(238, 154, 153), rgb(220, 53, 50))",
-                          left: "50%",
-                          bottom: 4
-                        }}></div>
-                      </div>
-
-
-
-
-
-                      <div style={{
-                        display: "flex",
-                        justifyContent: "space-between"
-                      }}>
-                        <div>
-                          <div style={{
-                            background: "rgb(107, 184, 133)",
-                            height: "30px",
-                            width: "30px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            borderRadius: "50px",
-                            position: "relative",
-                            right: 7,
-                            bottom: 21
-                          }}>
-                            <img src={FlightTicketFilledIcon} style={{
-
-                              height: "20px"
-                            }}>
-                            </img>
-                          </div>
-                          <div style={{
-                            background: "rgb(231, 114, 112)",
-                            height: "15px",
-                            width: "15px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            borderRadius: "50px",
-                            position: "relative",
-                            left: 485,
-                            bottom: 44
-                          }}></div>
-
-
-                        </div>
-
-                        <div>
-
-                          <div style={{
-                            background: "rgb(220, 53, 50)",
-                            height: "30px",
-                            width: "30px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            borderRadius: "50px",
-                            position: "relative",
-                            // left:50,
-                            bottom: 21
-                          }}>
-                            <img src={FlightTakeoffFilledIcon} style={{
-
-                              height: "20px"
-                            }}>
-                            </img>
-                          </div>
-
-                        </div>
-
-                      </div>
-                      <div style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        position: "relative",
-                        bottom: 18
-                      }}>
-                        <div style={{
-                          flex: 1,
-                          textAlign: "left",
-                          position: "relative",
-                          right: 6,
-                          bottom: 8
-                        }}>
-                          <Text style={{
-                            fontSize: "14px",
-                            fontWeight: 500
-                          }}>
-                            Now
-                          </Text>
-                          <br />
-                          <Text type="secondary" strong style={{
-                            position: "relative",
-
-                            fontSize: "12px",
-                          }}>{currentTime}</Text>
-                        </div>
-                        <div style={{
-                          flex: 1,
-                          textAlign: "center",
-                          position: "relative",
-                          left: 5,
-                          bottom: 8
-                        }}>
-                          <Text style={{
-                            fontSize: "14px",
-                            fontWeight: 500
-                          }}>
-                            {lessret.day} {lessret.month}
-                          </Text>
-                          <br />
-                          <Text type="secondary" strong style={{
-                            position: "relative",
-                            fontSize: "12px",
-                            //before 8
-                          }}>{cancelLess}</Text>
-                        </div>
-                        <div style={{
-                          flex: 1,
-                          textAlign: "right",
-                          position: "relative",
-                          bottom: 8
-                        }}>
-                          <Text style={{
-                            fontSize: "14px",
-                            fontWeight: 500
-                          }}>
-                            Departure
-                          </Text>
-                          <br />
-                          <Text type="secondary" strong style={{
-                            position: "relative",
-
-                            fontSize: "12px",
-                          }}>{dep.day} {dep.month}, {onewaySelectedFlight[0]?.departureTime}</Text>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <div style={{
-                        flex: 1,
-                        marginTop: "50px",
-                        textAlign: "center",
-                        height: "4px",
-                        width: "98%",
-                        backgroundImage: "linear-gradient(to right, rgb(238, 154, 153), rgb(220, 53, 50))"
-                      }}>
-                        <Text style={{
-                          fontWeight: 500,
-                          fontSize: "15px",
-                          position: "relative",
-                          textAlign: "center",
-                          bottom: 35
-                        }}>Non Refundable</Text>
-
-                      </div>
-                      <div style={{
-                        display: "flex",
-                        justifyContent: "space-between"
-                      }}>
-                        <div>
-                          <div style={{
-                            background: "rgb(231, 114, 112)",
-                            height: "30px",
-                            width: "30px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            borderRadius: "50px",
-                            position: "relative",
-                            right: 7,
-                            bottom: 17
-                          }}>
-                            <img src={FlightTicketFilledIcon} style={{
-
-                              height: "20px"
-                            }}>
-                            </img>
-                          </div>
-                          <div style={{
-                            flex: 1,
-                            textAlign: "left",
-                            position: "relative",
-                            right: 6,
-                            bottom: 8
-                          }}>
-                            <Text style={{
-                              fontSize: "14px",
-                              fontWeight: 500
-                            }}>
-                              Now
-                            </Text>
-                            <br />
-                            <Text type="secondary" strong style={{
-                              position: "relative",
-
-                              fontSize: "12px",
-                            }}>{currentTime}</Text>
-                          </div>
-                        </div>
-
-                        <div>
-
-                          <div style={{
-                            background: "rgb(220, 53, 50)",
-                            height: "30px",
-                            width: "30px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            borderRadius: "50px",
-                            position: "relative",
-                            left: 40,
-                            bottom: 18
-                          }}>
-                            <img src={FlightTakeoffFilledIcon} style={{
-
-                              height: "20px"
-                            }}>
-                            </img>
-                          </div>
-                          <div style={{
-                            flex: 1,
-                            textAlign: "right",
-                            position: "relative",
-                            bottom: 8
-                          }}>
-                            <Text style={{
-                              fontSize: "14px",
-                              fontWeight: 500
-                            }}>
-                              Departure
-                            </Text>
-                            <br />
-                            <Text type="secondary" strong style={{
-                              position: "relative",
-
-                              fontSize: "12px",
-                            }}>{ret.day} {ret.month}, {returnSelectedFlight[0]?.departureTime}</Text>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-              <br />
-              <Text style={{
-                fontSize: 18, fontWeight: 600
-              }}>Add Free Cancellation to your trip</Text>
-              <br />
-              <div style={{
-                background: isShaking ? "rgb(250,225,225)" : "#daf2e2",
-                // height:10,
-                border: "0 solid #e5e7eb",
-                borderRadius: 20,
-              }}
-                ref={shakeref}
-                tabIndex={0}
-                className={`shaking-box ${isShaking ? "shake-effect" : ""}`}>
-                <div style={{
-                  flex: 1, textAlign: "center", position: "relative", top: 5
-                }}>{isShaking ? (<>
-                  <Text style={{
-                    color: "red", fontWeight: 700, fontSize: 13
-                  }}>Please select an option before proceeding</Text>
-                </>) : (<>
-                  <Text style={{
-                    color: "#238c46", fontWeight: 700, fontSize: 13
-                  }}>Trusted by most Indian travellers</Text> <span style={{
-                    color: "#238c46", fontWeight: 500, fontSize: 9
-                  }}>IN</span></>
-
-                )}
-
-                </div>
-                <div style={{
-                  display: "flex", flexDirection: "row", padding: 10, justifyContent: "space-between"
-                }}>
-                  <div >
-                    <div style={{
-                      border: ".5px solid #cccccc",
-                      borderRadius: "20px",
-                      width: "473px",
-                      position: "relative",
-                      // right:10
-                    }}>
-
-                      <div style={{
-                        maxheight: "80px",
-                        background: "rgb(242, 249, 255)",
-                        borderTopLeftRadius: "20px",
-                        borderTopRightRadius: "20px",
-                        padding: 10,
-                        display: "flex",
-                        justifyContent: "space-between",
-                        cursor: "pointer",
-                        maxHeight: 80,
-
-                      }}
-                        onClick={() => handleSelect("Free Cancellation")}
-                      >
-                        <div >
-                          <img src="https://images.ixigo.com/image/upload/icon/8378c73f79f77491eccf58ba345ee5bc-gbjnr.png"
-                            style={{
-                              height: 25,
-                              position: "absolute",
-                              zIndex: 10
-                            }} />
-                          <div style={{
-                            background: "linear-gradient(90deg, #c7a2e8, transparent)",
-                            paddingBottom: ".5px",
-                            paddingTop: ".5px",
-                            zIndex: 1,
-                            position: "relative",
-                            top: 4,
-                            left: 73,
-                            width: 90,
-                            height: 13,
-                            color: "#6e18b9",
-                            fontSize: "12px",
-                            textAlign: "center",
-                            fontWeight: 500,
-
-                          }}>
-
-
-
-                            Most Popular
-
-                          </div>
-                          <br />
-                          <Text style={{
-                            fontWeight: 500,
-                            fontSize: "17px",
-                            bottom: 5,
-                            position: "relative"
-                          }}>Free Cancellation</Text>
-                          <br />
-                          <span style={{
-                            bottom: 6,
-                            position: "relative",
-                            color: "#505050ff",
-                            fontSize: "12px"
-                          }}>@</span> <Text style={{
-                            fontSize: "15px", fontWeight: 700, bottom: 5,
-                            position: "relative",
-                          }}>
-                            ₹{cancelPrice.toLocaleString("en-IN")}
-                            <Text style={{
-                              fontSize: "11px",
-                              fontWeight: 500,
-                              color: "#00000073"
-                            }}>/traveller</Text>
-                          </Text>
-                        </div>
-                        <div>
-                          <input
-                            type="radio"
-                            name="refundOption"
-                            value="Free Cancellation"
-                            checked={selectedRefundOption === "Free Cancellation"}
-
-                            style={{
-                              height: "20px", width: "20px", marginTop: 30, cursor: "pointer"
-                            }}
-                          />
-
-                        </div>
-                      </div>
-                      <div style={{
-                        padding: 15,
-                        background: "white",
-                        borderBottomLeftRadius: 20,
-                        borderBottomRightRadius: 20
-                      }}>
-                        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
-                          <CheckOutlined style={{ color: "#2B9950" }} />
-                          <span>
-                            Instant refund of approx.{" "}
-                            <span style={{ fontWeight: "600", color: "#2B9950" }}>
-                              ₹{totalAmount.toLocaleString("en-IN")}
-                            </span>
-
-                          </span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
-                          <CheckOutlined style={{ color: "#2B9950" }} />
-                          <span>
-                            Cancel up to{" "}
-                            <span style={{ fontWeight: "600", color: "#2B9950" }}>8hrs</span> before
-                            departure
-                          </span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
-                          <CheckOutlined style={{ color: "#2B9950" }} />
-                          <span>No-questions-asked refund</span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                          <CheckOutlined style={{ color: "#2B9950" }} />
-                          <span>
-                            <span style={{ fontWeight: "600", color: "#2B9950" }}>24x7</span> priority
-                            customer service
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-                  <div>
-                    <div style={{
-                      border: ".5px solid #cccccc",
-                      borderRadius: "20px",
-                      width: "473px",
-
-                    }}
-                    >
-                      <div style={{
-                        height: "80px",
-                        background: "rgb(249, 242, 255)",
-                        borderTopLeftRadius: "20px",
-                        borderTopRightRadius: "20px",
-                        padding: 10,
-                        display: "flex",
-                        justifyContent: "space-between",
-                        cursor: "pointer",
-                        maxHeight: 80,
-
-                      }}
-
-                        onClick={() => handleSelect("Rescheduling")}
-                      >
-                        <div >
-                          <img src="https://images.ixigo.com/image/upload/icon/8934cfa8cec76c87ada8b3ecda4f0da1-awjph.png"
-                            style={{
-                              height: 25,
-                              position: "absolute",
-                              zIndex: 10
-                            }} />
-
-                          <br />
-                          <Text style={{
-                            fontWeight: 500,
-                            fontSize: "17px",
-                            top: 8,
-                            position: "relative"
-                          }}>Free Cancellation + Rescheduling</Text>
-                          <br />
-                          <span style={{
-                            top: 6,
-                            position: "relative",
-                            color: "#505050ff",
-                            fontSize: "12px"
-                          }}>@</span> <Text style={{
-                            fontSize: "15px", fontWeight: 700,
-                            position: "relative", top: 8
-                          }}>
-                            ₹{reschedulePrice.toLocaleString("en-IN")}
-                            <Text style={{
-                              fontSize: "11px",
-                              fontWeight: 500,
-                              color: "#00000073"
-                            }}>/traveller</Text>
-                          </Text>
-                        </div>
-                        <div>
-                          <input
-                            type="radio"
-                            name="refundOption"
-                            value="Rescheduling"
-                            checked={selectedRefundOption === "Rescheduling"}
-
-                            style={{
-                              height: "20px", width: "20px", marginTop: 30, cursor: "pointer"
-                            }}
-                          />
-
-                        </div>
-                      </div>
-                      <div style={{
-                        padding: 15,
-                        background: "white",
-                        borderBottomLeftRadius: 20,
-                        borderBottomRightRadius: 20
-
-                      }}>
-                        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
-                          <CheckOutlined style={{ color: "#2B9950" }} />
-                          <span>
-                            Instant refund of approx.{" "}
-                            <span style={{ fontWeight: "600", color: "#2B9950" }}>
-                              ₹{totalAmount.toLocaleString("en-IN")}
-                            </span>
-
-                          </span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
-                          <CheckOutlined style={{ color: "#2B9950" }} />
-                          <span>
-                            Cancel up to{" "}
-                            <span style={{ fontWeight: "600", color: "#2B9950" }}>8hrs</span> before
-                            departure
-                          </span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
-                          <CheckOutlined style={{ color: "#2B9950" }} />
-                          <span>No-questions-asked refund</span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                          <CheckOutlined style={{ color: "#2B9950" }} />
-                          <span>
-                            <span style={{ fontWeight: "600", color: "#2B9950" }}>24x7</span> priority
-                            customer service
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-              <div style={{
-                display: "flex", flexDirection: "row", marginTop: 20, gap: 5, alignItems: "center"
-              }}>
-                <input
-                  type="radio"
-                  name="refundOption"
-                  value="noRefund"
-                  checked={selectedRefundOption === "noRefund"}
-
-                  style={{
-                    height: "20px", width: "20px", cursor: "pointer"
-                  }}
-                  onClick={() => handleSelect("noRefund")}
-                /><Text style={{
-                  fontWeight: 500
-                }}>I don't want Free Cancellation.</Text>
-              </div>
-            </div>
-            {phoneNo !== null ? (
-              <div style={{
-                display: "flex",
-                background: "#fff",
-                width: "980px",
-                padding: 20, borderRadius: 20,
-                boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-                marginTop: 25, flexDirection: "column"
-              }}>
-                <Text style={{
-                  fontSize: 24, fontWeight: 700
-                }}>
-                  Traveller Details
-                </Text>
-
-                <Text type="secondary" style={{
-                  position: "relative", bottom: 5, fontSize: 16, fontWeight: 500
-                }}>
-                  Choose from the saved list or add a new passenger
-                </Text>
-                <div style={{
-                  background: "#ffe9a0ff",
-                  height: "30px",
-                  display: "flex",
-                  alignItems: "center",
-                  padding: 5, gap: 5, borderRadius: 10
-                }}>
-                  <svg width="20" height="20" viewBox="0 0 18 14" version="1.1" xmlns="http://www.w3.org/2000/svg"><title>Group 4</title><desc>Created with Sketch.</desc><g id="Search/Flight/ixibook" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Group-4"><path d="M15.3042727,1 L2.70790909,1 C1.765,1 1,1.78281818 1,2.74354545 L1,11.4613636 C1,12.4220909 1.765,13.2049091 2.70790909,13.2049091 L15.2864545,13.2049091 C16.2294545,13.2049091 16.9944545,12.4220909 16.9944545,11.4613636 L16.9944545,2.74354545 C17.0122727,1.78281818 16.2472727,1 15.3042727,1" id="Fill-1" fill="#AA75CC"></path><path d="M15.3042727,0.925885057 L2.70790909,0.925885057 C1.72433588,0.925885057 0.925885057,1.74159524 0.925885057,2.74354545 L0.925885057,11.4613636 C0.925885057,12.4633138 1.72433588,13.279024 2.70790909,13.279024 L15.2864545,13.279024 C16.270104,13.279024 17.0685695,12.4633288 17.0685695,11.4613636 L17.0685695,2.74354545 C17.0871012,1.74503564 16.2910306,0.925885057 15.3042727,0.925885057 Z M2.70790909,1.07411494 L15.3042727,1.07411494 C16.207753,1.07411494 16.9373649,1.82488013 16.9203523,2.74217111 L16.9203396,11.4613636 C16.9203396,12.3821636 16.1875222,13.1307941 15.2864545,13.1307941 L2.70790909,13.1307941 C1.80691889,13.1307941 1.07411494,12.3821499 1.07411494,11.4613636 L1.07411494,2.74354545 C1.07411494,1.82275922 1.80691889,1.07411494 2.70790909,1.07411494 Z" id="Stroke-3" fill="#8537B7" fill-rule="nonzero"></path><path d="M5.85704545,3.3307 C6.81777273,3.3307 7.58277273,4.11351818 7.58277273,5.09206364 C7.58277273,6.05279091 6.81777273,6.85342727 5.85704545,6.85342727 C4.89631818,6.85342727 4.13122727,6.07060909 4.13122727,5.09206364 C4.13122727,4.11351818 4.91404545,3.3307 5.85704545,3.3307" id="Fill-5" fill="#FFFFFF"></path><path d="M8.61468182,11.7460545 L3.09940909,11.7460545 C2.77913636,11.7460545 2.51222727,11.5147818 2.42331818,11.2123273 C2.61895455,9.14850909 4.07786364,7.52950909 5.85704545,7.52950909 C7.63613636,7.52950909 9.09504545,9.13069091 9.29077273,11.2123273 C9.21959091,11.5147818 8.95277273,11.7460545 8.61468182,11.7460545" id="Fill-7" fill="#FFFFFF"></path><path d="M14.7171364,6.81782727 L9.57540909,6.81782727 C9.25513636,6.81782727 9.00613636,6.55091818 9.00613636,6.23073636 C9.00613636,5.91046364 9.25513636,5.64355455 9.57540909,5.64355455 L14.7171364,5.64355455 C15.0374091,5.64355455 15.2865,5.91046364 15.2865,6.23073636 C15.3042273,6.55091818 15.0374091,6.81782727 14.7171364,6.81782727" id="Fill-9" fill="#FFFFFF"></path><path d="M14.7171364,4.48712727 L9.57540909,4.48712727 C9.25513636,4.48712727 9.00613636,4.22021818 9.00613636,3.90003636 C9.00613636,3.57976364 9.25513636,3.31285455 9.57540909,3.31285455 L14.7171364,3.31285455 C15.0374091,3.31285455 15.2865,3.57976364 15.2865,3.90003636 C15.3042273,4.22021818 15.0374091,4.48712727 14.7171364,4.48712727" id="Fill-11" fill="#FFFFFF"></path></g></g></svg>
-                  <Text style={{
-                    padding: 2, fontSize: 12, fontWeight: 500
-                  }}>Please ensure that your name matches your govt. ID such as Aadhaar, Passport or Driver's License</Text>
-                </div>
-
-                
-                <br/>
-                <Text style={{
-                    fontSize: 18, fontWeight: 500
-                  }}>Passengers</Text>
-                  <br />
-                  <button style={{
-                  border:"none",background:"transparent",color:"#008cff",fontSize:13,fontWeight:700,display:"flex",position:"relative",right:5
-                }} onClick={()=>{
-                  // if(tempArray.length>=maxAllowed){
-                  //   messageApi.open({
-                  //   content: `Only ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} allowed. Remove existing adult to select a new one.` ,
-                  //   duration: 3,
-                  // });
-                  // }
-                  // else{
-                    setExistingModal(true)
-                  // }
-                  }}>ADD EXISTING TRAVELLERS +</button>
-                  
-                <div style={{
-                  display:"flex",justifyContent:"space-between",marginTop:10
-                }}>
-                <Text style={{
-                    fontWeight: 500
-                  }}>ADULTS</Text>
-                <button style={{
-                  border:"none",background:"transparent",color:"#008cff",fontSize:13,fontWeight:700
-                }} onClick={()=>{
-                  if(tempArray.length>=maxAllowed){
-                    messageApi.open({
-                    content: `Only ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} allowed. Remove existing adult to add a new one.`,
-                    duration: 3,
-                  });
-                  }
-                  else{
-                    setAddNewModal(true)
-                  }
-                 }}>ADD NEW ADULT +</button>
-                 <ConfigProvider
-                                           theme={{
-                                             token: {
-                                               colorBgElevated: "black",
-                                               colorText: "white",
-                                             },
-                                           }}
-                                         >
-                                           {contextHolder}
-                 
-                                         </ConfigProvider>
-
-                
-
-                 <Modal 
-                footer={null}
-                                        open={addNewModal}
-                                        closable
-                                        width={"45%"}
-                                        onCancel={() => {setAddNewModal(false)
-                                          setadultFirstName("");
-                                            setadultLastName("");
-                                            setadultDOB("");
-                                            setadultGender("Male");
-                                          setFirstNameError(false);
-                                            setLastNameError(false);
-                                            setDOBError(false);
-                                            setDOBAgeVerify(false)
-                                        }}
-                                        style={{
-                                            marginTop:50  
+                              {refundFeeAdd ? (
+                                <div>
+                                  <div style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    width: "60%",
+                                    alignItems: "center",
+                                    position: "relative",
+                                    top: 25,
+                                    left: "20%"
+                                  }}>
+                                    <div style={{
+                                      textAlign: "center"
+                                    }}>
+                                      <Text style={{
+                                        fontWeight: 500,
+                                        fontSize: "15px",
+                                      }}>
+                                        Full refund of ₹{(returnSelectedFlight[0]?.fareOptions?.[travelClass]?.price * travellerValue).toLocaleString("en-IN")}
+                                      </Text>
+
+
+                                    </div>
+                                    <div>
+                                      <Text style={{
+                                        fontWeight: 500,
+                                        fontSize: "15px",
+                                        textAlign: "center"
+                                      }}>Non Refundable</Text>
+                                    </div>
+                                  </div>
+                                  <div style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+
+                                  }}>
+                                    <div style={{
+
+                                      marginTop: "50px",
+                                      textAlign: "center",
+                                      height: "4px",
+                                      width: "60%",
+                                      backgroundImage: "linear-gradient(to right, rgb(43, 153, 80), rgb(238, 154, 153))"
+                                    }}>
+                                    </div>
+                                    <div style={{
+                                      position: "relative",
+                                      // marginTop:"10px",
+                                      textAlign: "center",
+                                      height: "4px",
+                                      width: "50%",
+                                      backgroundImage: "linear-gradient(to right, rgb(238, 154, 153), rgb(220, 53, 50))",
+                                      left: "50%",
+                                      bottom: 4
+                                    }}></div>
+                                  </div>
+
+
+
+
+
+                                  <div style={{
+                                    display: "flex",
+                                    justifyContent: "space-between"
+                                  }}>
+                                    <div>
+                                      <div style={{
+                                        background: "rgb(107, 184, 133)",
+                                        height: "30px",
+                                        width: "30px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        borderRadius: "50px",
+                                        position: "relative",
+                                        right: 7,
+                                        bottom: 21
+                                      }}>
+                                        <img src={FlightTicketFilledIcon} style={{
+
+                                          height: "20px"
                                         }}>
-                                          <Text>
-                                            Add New Adult
-                                          </Text>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",
-                                          width:"100%",alignItems:"center",justifyContent:"center",flexDirection:"column",marginTop:10
-                                          }}>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"100%"
-                                          }}>
-                                          <Form>
-                              <Form.Item
-                                rules={[{ required: true }]}
-                                validateTrigger="onBlur"
-                              // validateStatus={firstNameError ? "error" : ""}
-                              // help={firstNameError ? "" : ""}
+                                        </img>
+                                      </div>
+                                      <div style={{
+                                        background: "rgb(231, 114, 112)",
+                                        height: "15px",
+                                        width: "15px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        borderRadius: "50px",
+                                        position: "relative",
+                                        left: 485,
+                                        bottom: 44
+                                      }}></div>
+
+
+                                    </div>
+
+                                    <div>
+
+                                      <div style={{
+                                        background: "rgb(220, 53, 50)",
+                                        height: "30px",
+                                        width: "30px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        borderRadius: "50px",
+                                        position: "relative",
+                                        // left:50,
+                                        bottom: 21
+                                      }}>
+                                        <img src={FlightTakeoffFilledIcon} style={{
+
+                                          height: "20px"
+                                        }}>
+                                        </img>
+                                      </div>
+
+                                    </div>
+
+                                  </div>
+                                  <div style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    position: "relative",
+                                    bottom: 18
+                                  }}>
+                                    <div style={{
+                                      flex: 1,
+                                      textAlign: "left",
+                                      position: "relative",
+                                      right: 6,
+                                      bottom: 8
+                                    }}>
+                                      <Text style={{
+                                        fontSize: "14px",
+                                        fontWeight: 500
+                                      }}>
+                                        Now
+                                      </Text>
+                                      <br />
+                                      <Text type="secondary" strong style={{
+                                        position: "relative",
+
+                                        fontSize: "12px",
+                                      }}>{currentTime}</Text>
+                                    </div>
+                                    <div style={{
+                                      flex: 1,
+                                      textAlign: "center",
+                                      position: "relative",
+                                      left: 5,
+                                      bottom: 8
+                                    }}>
+                                      <Text style={{
+                                        fontSize: "14px",
+                                        fontWeight: 500
+                                      }}>
+                                        {lessret.day} {lessret.month}
+                                      </Text>
+                                      <br />
+                                      <Text type="secondary" strong style={{
+                                        position: "relative",
+                                        fontSize: "12px",
+                                        //before 8
+                                      }}>{cancelLess}</Text>
+                                    </div>
+                                    <div style={{
+                                      flex: 1,
+                                      textAlign: "right",
+                                      position: "relative",
+                                      bottom: 8
+                                    }}>
+                                      <Text style={{
+                                        fontSize: "14px",
+                                        fontWeight: 500
+                                      }}>
+                                        Departure
+                                      </Text>
+                                      <br />
+                                      <Text type="secondary" strong style={{
+                                        position: "relative",
+
+                                        fontSize: "12px",
+                                      }}>{dep.day} {dep.month}, {onewaySelectedFlight[0]?.departureTime}</Text>
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div>
+                                  <div style={{
+                                    flex: 1,
+                                    marginTop: "50px",
+                                    textAlign: "center",
+                                    height: "4px",
+                                    width: "98%",
+                                    backgroundImage: "linear-gradient(to right, rgb(238, 154, 153), rgb(220, 53, 50))"
+                                  }}>
+                                    <Text style={{
+                                      fontWeight: 500,
+                                      fontSize: "15px",
+                                      position: "relative",
+                                      textAlign: "center",
+                                      bottom: 35
+                                    }}>Non Refundable</Text>
+
+                                  </div>
+                                  <div style={{
+                                    display: "flex",
+                                    justifyContent: "space-between"
+                                  }}>
+                                    <div>
+                                      <div style={{
+                                        background: "rgb(231, 114, 112)",
+                                        height: "30px",
+                                        width: "30px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        borderRadius: "50px",
+                                        position: "relative",
+                                        right: 7,
+                                        bottom: 17
+                                      }}>
+                                        <img src={FlightTicketFilledIcon} style={{
+
+                                          height: "20px"
+                                        }}>
+                                        </img>
+                                      </div>
+                                      <div style={{
+                                        flex: 1,
+                                        textAlign: "left",
+                                        position: "relative",
+                                        right: 6,
+                                        bottom: 8
+                                      }}>
+                                        <Text style={{
+                                          fontSize: "14px",
+                                          fontWeight: 500
+                                        }}>
+                                          Now
+                                        </Text>
+                                        <br />
+                                        <Text type="secondary" strong style={{
+                                          position: "relative",
+
+                                          fontSize: "12px",
+                                        }}>{currentTime}</Text>
+                                      </div>
+                                    </div>
+
+                                    <div>
+
+                                      <div style={{
+                                        background: "rgb(220, 53, 50)",
+                                        height: "30px",
+                                        width: "30px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        borderRadius: "50px",
+                                        position: "relative",
+                                        left: 40,
+                                        bottom: 18
+                                      }}>
+                                        <img src={FlightTakeoffFilledIcon} style={{
+
+                                          height: "20px"
+                                        }}>
+                                        </img>
+                                      </div>
+                                      <div style={{
+                                        flex: 1,
+                                        textAlign: "right",
+                                        position: "relative",
+                                        bottom: 8
+                                      }}>
+                                        <Text style={{
+                                          fontSize: "14px",
+                                          fontWeight: 500
+                                        }}>
+                                          Departure
+                                        </Text>
+                                        <br />
+                                        <Text type="secondary" strong style={{
+                                          position: "relative",
+
+                                          fontSize: "12px",
+                                        }}>{ret.day} {ret.month}, {returnSelectedFlight[0]?.departureTime}</Text>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          <br />
+                          <Text style={{
+                            fontSize: 18, fontWeight: 600
+                          }}>Add Free Cancellation to your trip</Text>
+                          <br />
+                          <div style={{
+                            background: isShaking ? "rgb(250,225,225)" : "#daf2e2",
+                            // height:10,
+                            border: "0 solid #e5e7eb",
+                            borderRadius: 20,
+                          }}
+                            ref={shakeref}
+                            tabIndex={0}
+                            className={`shaking-box ${isShaking ? "shake-effect" : ""}`}>
+                            <div style={{
+                              flex: 1, textAlign: "center", position: "relative", top: 5
+                            }}>{isShaking ? (<>
+                              <Text style={{
+                                color: "red", fontWeight: 700, fontSize: 13
+                              }}>Please select an option before proceeding</Text>
+                            </>) : (<>
+                              <Text style={{
+                                color: "#238c46", fontWeight: 700, fontSize: 13
+                              }}>Trusted by most Indian travellers</Text> <span style={{
+                                color: "#238c46", fontWeight: 500, fontSize: 9
+                              }}>IN</span></>
+
+                            )}
+
+                            </div>
+                            <div style={{
+                              display: "flex", flexDirection: "row", padding: 10, justifyContent: "space-between"
+                            }}>
+                              <div >
+                                <div style={{
+                                  border: ".5px solid #cccccc",
+                                  borderRadius: "20px",
+                                  width: "473px",
+                                  position: "relative",
+                                  // right:10
+                                }}>
+
+                                  <div style={{
+                                    maxheight: "80px",
+                                    background: "rgb(242, 249, 255)",
+                                    borderTopLeftRadius: "20px",
+                                    borderTopRightRadius: "20px",
+                                    padding: 10,
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    cursor: "pointer",
+                                    maxHeight: 80,
+
+                                  }}
+                                    onClick={() => handleSelect("Free Cancellation")}
+                                  >
+                                    <div >
+                                      <img src="https://images.ixigo.com/image/upload/icon/8378c73f79f77491eccf58ba345ee5bc-gbjnr.png"
+                                        style={{
+                                          height: 25,
+                                          position: "absolute",
+                                          zIndex: 10
+                                        }} />
+                                      <div style={{
+                                        background: "linear-gradient(90deg, #c7a2e8, transparent)",
+                                        paddingBottom: ".5px",
+                                        paddingTop: ".5px",
+                                        zIndex: 1,
+                                        position: "relative",
+                                        top: 4,
+                                        left: 73,
+                                        width: 90,
+                                        height: 13,
+                                        color: "#6e18b9",
+                                        fontSize: "12px",
+                                        textAlign: "center",
+                                        fontWeight: 500,
+
+                                      }}>
+
+
+
+                                        Most Popular
+
+                                      </div>
+                                      <br />
+                                      <Text style={{
+                                        fontWeight: 500,
+                                        fontSize: "17px",
+                                        bottom: 5,
+                                        position: "relative"
+                                      }}>Free Cancellation</Text>
+                                      <br />
+                                      <span style={{
+                                        bottom: 6,
+                                        position: "relative",
+                                        color: "#505050ff",
+                                        fontSize: "12px"
+                                      }}>@</span> <Text style={{
+                                        fontSize: "15px", fontWeight: 700, bottom: 5,
+                                        position: "relative",
+                                      }}>
+                                        ₹{cancelPrice.toLocaleString("en-IN")}
+                                        <Text style={{
+                                          fontSize: "11px",
+                                          fontWeight: 500,
+                                          color: "#00000073"
+                                        }}>/traveller</Text>
+                                      </Text>
+                                    </div>
+                                    <div>
+                                      <input
+                                        type="radio"
+                                        name="refundOption"
+                                        value="Free Cancellation"
+                                        checked={selectedRefundOption === "Free Cancellation"}
+
+                                        style={{
+                                          height: "20px", width: "20px", marginTop: 30, cursor: "pointer"
+                                        }}
+                                      />
+
+                                    </div>
+                                  </div>
+                                  <div style={{
+                                    padding: 15,
+                                    background: "white",
+                                    borderBottomLeftRadius: 20,
+                                    borderBottomRightRadius: 20
+                                  }}>
+                                    <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
+                                      <CheckOutlined style={{ color: "#2B9950" }} />
+                                      <span>
+                                        Instant refund of approx.{" "}
+                                        <span style={{ fontWeight: "600", color: "#2B9950" }}>
+                                          ₹{totalAmount.toLocaleString("en-IN")}
+                                        </span>
+
+                                      </span>
+                                    </div>
+
+                                    <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
+                                      <CheckOutlined style={{ color: "#2B9950" }} />
+                                      <span>
+                                        Cancel up to{" "}
+                                        <span style={{ fontWeight: "600", color: "#2B9950" }}>8hrs</span> before
+                                        departure
+                                      </span>
+                                    </div>
+
+                                    <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
+                                      <CheckOutlined style={{ color: "#2B9950" }} />
+                                      <span>No-questions-asked refund</span>
+                                    </div>
+
+                                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                                      <CheckOutlined style={{ color: "#2B9950" }} />
+                                      <span>
+                                        <span style={{ fontWeight: "600", color: "#2B9950" }}>24x7</span> priority
+                                        customer service
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                              </div>
+                              <div>
+                                <div style={{
+                                  border: ".5px solid #cccccc",
+                                  borderRadius: "20px",
+                                  width: "473px",
+
+                                }}
+                                >
+                                  <div style={{
+                                    height: "80px",
+                                    background: "rgb(249, 242, 255)",
+                                    borderTopLeftRadius: "20px",
+                                    borderTopRightRadius: "20px",
+                                    padding: 10,
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    cursor: "pointer",
+                                    maxHeight: 80,
+
+                                  }}
+
+                                    onClick={() => handleSelect("Rescheduling")}
+                                  >
+                                    <div >
+                                      <img src="https://images.ixigo.com/image/upload/icon/8934cfa8cec76c87ada8b3ecda4f0da1-awjph.png"
+                                        style={{
+                                          height: 25,
+                                          position: "absolute",
+                                          zIndex: 10
+                                        }} />
+
+                                      <br />
+                                      <Text style={{
+                                        fontWeight: 500,
+                                        fontSize: "17px",
+                                        top: 8,
+                                        position: "relative"
+                                      }}>Free Cancellation + Rescheduling</Text>
+                                      <br />
+                                      <span style={{
+                                        top: 6,
+                                        position: "relative",
+                                        color: "#505050ff",
+                                        fontSize: "12px"
+                                      }}>@</span> <Text style={{
+                                        fontSize: "15px", fontWeight: 700,
+                                        position: "relative", top: 8
+                                      }}>
+                                        ₹{reschedulePrice.toLocaleString("en-IN")}
+                                        <Text style={{
+                                          fontSize: "11px",
+                                          fontWeight: 500,
+                                          color: "#00000073"
+                                        }}>/traveller</Text>
+                                      </Text>
+                                    </div>
+                                    <div>
+                                      <input
+                                        type="radio"
+                                        name="refundOption"
+                                        value="Rescheduling"
+                                        checked={selectedRefundOption === "Rescheduling"}
+
+                                        style={{
+                                          height: "20px", width: "20px", marginTop: 30, cursor: "pointer"
+                                        }}
+                                      />
+
+                                    </div>
+                                  </div>
+                                  <div style={{
+                                    padding: 15,
+                                    background: "white",
+                                    borderBottomLeftRadius: 20,
+                                    borderBottomRightRadius: 20
+
+                                  }}>
+                                    <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
+                                      <CheckOutlined style={{ color: "#2B9950" }} />
+                                      <span>
+                                        Instant refund of approx.{" "}
+                                        <span style={{ fontWeight: "600", color: "#2B9950" }}>
+                                          ₹{totalAmount.toLocaleString("en-IN")}
+                                        </span>
+
+                                      </span>
+                                    </div>
+
+                                    <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
+                                      <CheckOutlined style={{ color: "#2B9950" }} />
+                                      <span>
+                                        Cancel up to{" "}
+                                        <span style={{ fontWeight: "600", color: "#2B9950" }}>8hrs</span> before
+                                        departure
+                                      </span>
+                                    </div>
+
+                                    <div style={{ display: "flex", alignItems: "center", marginBottom: "6px", gap: 5 }}>
+                                      <CheckOutlined style={{ color: "#2B9950" }} />
+                                      <span>No-questions-asked refund</span>
+                                    </div>
+
+                                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                                      <CheckOutlined style={{ color: "#2B9950" }} />
+                                      <span>
+                                        <span style={{ fontWeight: "600", color: "#2B9950" }}>24x7</span> priority
+                                        customer service
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                          </div>
+                          <div style={{
+                            display: "flex", flexDirection: "row", marginTop: 20, gap: 5, alignItems: "center"
+                          }}>
+                            <input
+                              type="radio"
+                              name="refundOption"
+                              value="noRefund"
+                              checked={selectedRefundOption === "noRefund"}
+
+                              style={{
+                                height: "20px", width: "20px", cursor: "pointer"
+                              }}
+                              onClick={() => handleSelect("noRefund")}
+                            /><Text style={{
+                              fontWeight: 500
+                            }}>I don't want Free Cancellation.</Text>
+                          </div>
+                        </div>
+                        {phoneNo !== null ? (
+                          <div style={{
+                            display: "flex",
+                            background: "#fff",
+                            width: "980px",
+                            padding: 20, borderRadius: 20,
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                            marginTop: 25, flexDirection: "column"
+                          }}>
+                            <Text style={{
+                              fontSize: 24, fontWeight: 700
+                            }}>
+                              Traveller Details
+                            </Text>
+
+                            <Text type="secondary" style={{
+                              position: "relative", bottom: 5, fontSize: 16, fontWeight: 500
+                            }}>
+                              Choose from the saved list or add a new passenger
+                            </Text>
+                            <div style={{
+                              background: "#ffe9a0ff",
+                              height: "30px",
+                              display: "flex",
+                              alignItems: "center",
+                              padding: 5, gap: 5, borderRadius: 10
+                            }}>
+                              <svg width="20" height="20" viewBox="0 0 18 14" version="1.1" xmlns="http://www.w3.org/2000/svg"><title>Group 4</title><desc>Created with Sketch.</desc><g id="Search/Flight/ixibook" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Group-4"><path d="M15.3042727,1 L2.70790909,1 C1.765,1 1,1.78281818 1,2.74354545 L1,11.4613636 C1,12.4220909 1.765,13.2049091 2.70790909,13.2049091 L15.2864545,13.2049091 C16.2294545,13.2049091 16.9944545,12.4220909 16.9944545,11.4613636 L16.9944545,2.74354545 C17.0122727,1.78281818 16.2472727,1 15.3042727,1" id="Fill-1" fill="#AA75CC"></path><path d="M15.3042727,0.925885057 L2.70790909,0.925885057 C1.72433588,0.925885057 0.925885057,1.74159524 0.925885057,2.74354545 L0.925885057,11.4613636 C0.925885057,12.4633138 1.72433588,13.279024 2.70790909,13.279024 L15.2864545,13.279024 C16.270104,13.279024 17.0685695,12.4633288 17.0685695,11.4613636 L17.0685695,2.74354545 C17.0871012,1.74503564 16.2910306,0.925885057 15.3042727,0.925885057 Z M2.70790909,1.07411494 L15.3042727,1.07411494 C16.207753,1.07411494 16.9373649,1.82488013 16.9203523,2.74217111 L16.9203396,11.4613636 C16.9203396,12.3821636 16.1875222,13.1307941 15.2864545,13.1307941 L2.70790909,13.1307941 C1.80691889,13.1307941 1.07411494,12.3821499 1.07411494,11.4613636 L1.07411494,2.74354545 C1.07411494,1.82275922 1.80691889,1.07411494 2.70790909,1.07411494 Z" id="Stroke-3" fill="#8537B7" fill-rule="nonzero"></path><path d="M5.85704545,3.3307 C6.81777273,3.3307 7.58277273,4.11351818 7.58277273,5.09206364 C7.58277273,6.05279091 6.81777273,6.85342727 5.85704545,6.85342727 C4.89631818,6.85342727 4.13122727,6.07060909 4.13122727,5.09206364 C4.13122727,4.11351818 4.91404545,3.3307 5.85704545,3.3307" id="Fill-5" fill="#FFFFFF"></path><path d="M8.61468182,11.7460545 L3.09940909,11.7460545 C2.77913636,11.7460545 2.51222727,11.5147818 2.42331818,11.2123273 C2.61895455,9.14850909 4.07786364,7.52950909 5.85704545,7.52950909 C7.63613636,7.52950909 9.09504545,9.13069091 9.29077273,11.2123273 C9.21959091,11.5147818 8.95277273,11.7460545 8.61468182,11.7460545" id="Fill-7" fill="#FFFFFF"></path><path d="M14.7171364,6.81782727 L9.57540909,6.81782727 C9.25513636,6.81782727 9.00613636,6.55091818 9.00613636,6.23073636 C9.00613636,5.91046364 9.25513636,5.64355455 9.57540909,5.64355455 L14.7171364,5.64355455 C15.0374091,5.64355455 15.2865,5.91046364 15.2865,6.23073636 C15.3042273,6.55091818 15.0374091,6.81782727 14.7171364,6.81782727" id="Fill-9" fill="#FFFFFF"></path><path d="M14.7171364,4.48712727 L9.57540909,4.48712727 C9.25513636,4.48712727 9.00613636,4.22021818 9.00613636,3.90003636 C9.00613636,3.57976364 9.25513636,3.31285455 9.57540909,3.31285455 L14.7171364,3.31285455 C15.0374091,3.31285455 15.2865,3.57976364 15.2865,3.90003636 C15.3042273,4.22021818 15.0374091,4.48712727 14.7171364,4.48712727" id="Fill-11" fill="#FFFFFF"></path></g></g></svg>
+                              <Text style={{
+                                padding: 2, fontSize: 12, fontWeight: 500
+                              }}>Please ensure that your name matches your govt. ID such as Aadhaar, Passport or Driver's License</Text>
+                            </div>
+
+
+                            <br />
+                            <Text style={{
+                              fontSize: 18, fontWeight: 500
+                            }}>Passengers</Text>
+                            <br />
+                            <button style={{
+                              border: "none", background: "transparent", color: "#008cff", fontSize: 13, fontWeight: 700, display: "flex", position: "relative", right: 5
+                            }} onClick={() => {
+                              // if(tempArray.length>=maxAllowed){
+                              //   messageApi.open({
+                              //   content: `Only ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} allowed. Remove existing adult to select a new one.` ,
+                              //   duration: 3,
+                              // });
+                              // }
+                              // else{
+                              setExistingModal(true)
+                              // }
+                            }}>ADD EXISTING TRAVELLERS +</button>
+
+                            <div style={{
+                              display: "flex", justifyContent: "space-between", marginTop: 10
+                            }}>
+                              <Text style={{
+                                fontWeight: 500
+                              }}>ADULTS</Text>
+                              <button style={{
+                                border: "none", background: "transparent", color: "#008cff", fontSize: 13, fontWeight: 700
+                              }} onClick={() => {
+                                if (tempArray.length >= maxAllowed) {
+                                  messageApi.open({
+                                    content: `Only ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} allowed. Remove existing adult to add a new one.`,
+                                    duration: 3,
+                                  });
+                                }
+                                else {
+                                  setAddNewModal(true)
+                                }
+                              }}>ADD NEW ADULT +</button>
+                              <ConfigProvider
+                                theme={{
+                                  token: {
+                                    colorBgElevated: "black",
+                                    colorText: "white",
+                                  },
+                                }}
                               >
-                                <FloatingInput
-                                  label="First Name"
-                                  value={adultFirstName}
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value
-                                            if(adultFirstName !== newValue){ 
+                                {contextHolder}
+
+                              </ConfigProvider>
+
+
+
+                              <Modal
+                                footer={null}
+                                open={addNewModal}
+                                closable
+                                width={"45%"}
+                                onCancel={() => {
+                                  setAddNewModal(false)
+                                  setadultFirstName("");
+                                  setadultLastName("");
+                                  setadultDOB("");
+                                  setadultGender("Male");
+                                  setFirstNameError(false);
+                                  setLastNameError(false);
+                                  setDOBError(false);
+                                  setDOBAgeVerify(false)
+                                }}
+                                style={{
+                                  marginTop: 50
+                                }}>
+                                <Text>
+                                  Add New Adult
+                                </Text>
+                                <br />
+                                <div style={{
+                                  display: "flex",
+                                  width: "100%", alignItems: "center", justifyContent: "center", flexDirection: "column", marginTop: 10
+                                }}>
+                                  <div style={{
+                                    display: "flex", justifyContent: "space-between", width: "100%"
+                                  }}>
+                                    <Form>
+                                      <Form.Item
+                                        rules={[{ required: true }]}
+                                        validateTrigger="onBlur"
+                                      // validateStatus={firstNameError ? "error" : ""}
+                                      // help={firstNameError ? "" : ""}
+                                      >
+                                        <FloatingInput
+                                          label="First Name"
+                                          value={adultFirstName}
+                                          onChange={(e) => {
+                                            const newValue = e.target.value
+                                            if (adultFirstName !== newValue) {
                                               setFirstNameError(false)
                                             }
                                             setadultFirstName(newValue);
-                                        
-                                  }}
-                                  error={
-                                    firstNameError && "Your first name should have 1–27 characters"
-                                  }
-                                />
-                              </Form.Item>
-                            </Form>
+
+                                          }}
+                                          error={
+                                            firstNameError && "Your first name should have 1–27 characters"
+                                          }
+                                        />
+                                      </Form.Item>
+                                    </Form>
 
 
-                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="Last Name"
-                                  value={adultLastName}
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value
-                                            if(adultLastName !== newValue){ 
+                                    <Form>
+                                      <Form.Item>
+                                        <FloatingInput
+                                          label="Last Name"
+                                          value={adultLastName}
+                                          onChange={(e) => {
+                                            const newValue = e.target.value
+                                            if (adultLastName !== newValue) {
                                               setLastNameError(false)
                                             }
-                                            setadultLastName(newValue); 
-                                        
-                                  }}
-                                  error={lastNameError && "Your last name should have 1–27 characters "}
-                                />
-                              </Form.Item>
-                            </Form>
-                                          </div>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="DOB (DD/MM/YYYY)"
-                                  type={dayjs("DD/MM/YYYY")}
-                                  value={adultDOB}
-                                  onChange={handleaddDOBChange}  
-                                  
-                                  error={
-                                      DOBError
-                                        ? "Enter Valid Age"
-                                        : DOBAgeVerify 
-                                        ? "Age should be above 12 years"
-                                        : undefined
-                                    }
+                                            setadultLastName(newValue);
+
+                                          }}
+                                          error={lastNameError && "Your last name should have 1–27 characters "}
+                                        />
+                                      </Form.Item>
+                                    </Form>
+                                  </div>
+                                  <br />
+                                  <div style={{
+                                    display: "flex", justifyContent: "space-between", width: "95%"
+                                  }}>
+                                    <Form>
+                                      <Form.Item>
+                                        <FloatingInput
+                                          label="DOB (DD/MM/YYYY)"
+                                          type={dayjs("DD/MM/YYYY")}
+                                          value={adultDOB}
+                                          onChange={handleaddDOBChange}
+
+                                          error={
+                                            DOBError
+                                              ? "Enter Valid Age"
+                                              : DOBAgeVerify
+                                                ? "Age should be above 12 years"
+                                                : undefined
+                                          }
 
 
 
-                                />
+                                        />
 
-                              </Form.Item>
-                            </Form>
+                                      </Form.Item>
+                                    </Form>
 
-                            <ConfigProvider
-                              theme={{
-                                components: {
-                                  Segmented: {
-                                    itemSelectedBg: "#fc790d",
-                                    itemSelectedColor: "white"
-                                  },
-                                }
-                              }}
-                            >
+                                    <ConfigProvider
+                                      theme={{
+                                        components: {
+                                          Segmented: {
+                                            itemSelectedBg: "#fc790d",
+                                            itemSelectedColor: "white"
+                                          },
+                                        }
+                                      }}
+                                    >
 
 
 
-                              <Segmented
-                                value={adultGender || "Male"}
-                                options={["Male", "Female"]} 
-                                style={{
-                                  background: "#f1f1f1",
-                                  borderRadius: "10px",
-                                  boxShadow: "0 0 5px rgba(0,0,0,0.1)",
-                                  fontWeight: 500,
-                                  border: "1.5px solid #c9c9c9", 
-                                  height: 50,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "flex-end",
-                                  paddingLeft: 12,
-                                  paddingRight: 12,
-                                  fontSize: 15,
-                                  backgroundColor: "white", transition: "0.2s ease",
-                                  position:"relative",left:25 
-                                }}
-                                onChange={(val) => {
-                                  setadultGender(val);
-                                }} />
-                            </ConfigProvider>
-                                          </div>
-                                        
-                                          </div>
-                                          <div style={{
-                                           display:"flex",justifyContent:"flex-end",width:"97%",gap:10,flexDirection:"row"
-                                          }}>
-                                            <button style={{
-                                              borderRadius: 10,
-                                              width:"100px",
-                                              height:"35px",
-                                              fontSize:"16px",
-                                              color:"black",background:"white",border: "1px solid #b8b8bcff"
-                                            }} onClick={(e) => {
-                                            setAddNewModal(false)
-                                            setadultFirstName("");
-                                            setadultLastName("");
-                                            setadultDOB("");
-                                            setadultGender("Male");
-                                            setFirstNameError(false);
-                                            setLastNameError(false);
-                                            setDOBError(false);
-                                            setDOBAgeVerify(false);
-
-                                              }}>
-                                              CANCEL
-                                            </button>
-                                            <button
-                                              type="primary"
-                                              style={{
-                                                background: "#ff7a00",
-                                                border: "none",
-                                                borderRadius: 10,
-                                                width:"100px",
-                                                height:"35px",
-                                                fontSize:"16px",
-                                                color:"white",
-                                                position:"relative",
-                                                
-                                              }}
-                                              onClick={handleAdd}
-                                            >
-                                              ADD
-                                            </button>
-                                          </div>
-                                        </Modal>
-                </div>
-                
-
-                <div >
-                  
-                  
-                    <div style={{
-                      marginTop: 10
-                    }}>
-                      {tempArray.map((item, idx) => (
-                        <div key={idx} style={{
-                          display: "flex", justifyContent: "space-between",border: "1px solid #c0c0c0ff",alignItems:"center",padding:12,borderRadius:8,marginTop:10,
-                          transition:"all 0.3 ease"
-                        }}>
-                          <Text style={{
-                            fontSize:15,fontWeight:500,textTransform:"uppercase"
-                          }}>
-                         Adult {idx + 1} -  {item.firstName} {item.lastName}
-                         </Text>
-                          <div style={{
-                            display:"flex",flexDirection:"row",gap:15
-                          }}>
-                            <EditOutlined style={{
-                              cursor:"pointer",fontSize:20,color:"#008cff"
-                            }} 
-                            onClick={()=>{seteditNewModal(true)
-                              setEditingAdult(item);
-                            }}/>
-                            <DeleteOutlined style={{
-                              cursor:"pointer",fontSize:20,color:"red"
-                            }} 
-                            onClick={() => {
-                                                  settempArray(prev =>
-                                                  prev.filter(
-                                                    a => !(a.firstName === item.firstName && a.lastName === item.lastName)
-                                                  )
-                                                );
-
-                                                  setSelectedAdults(prev =>
-                              prev.filter(a => !(a.firstName === item.firstName && a.lastName === item.lastName))
-                            );
-
-                            setDisabledAdults(prev =>
-                              prev.filter(key =>
-                                // find the adult object for this key
-                                !selectedAdults.some(
-                                  a => a.key === key &&
-                                      a.firstName === item.firstName &&
-                                      a.lastName === item.lastName
-                                )
-                              )
-                            );
-
-                          }}/>
-                          </div>
-                          <Modal 
-                footer={null}
-                                        open={editNewModal}
-                                        closable 
-                                        width={"45%"}
-                                        onCancel={() => {seteditNewModal(false)
-                                          setFirstNameError(false);
-                                            setLastNameError(false);
-                                            setDOBError(false);
-                                            setDOBAgeVerify(false);
-                                        }}
+                                      <Segmented
+                                        value={adultGender || "Male"}
+                                        options={["Male", "Female"]}
                                         style={{
-                                            marginTop:50  
-                                        }}>
-                                          <Text style={{
-                                            fontWeight:500,fontSize:16
-                                          }}>
-                                            Edit Adult
-                                          </Text>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",
-                                          width:"95%",alignItems:"center",justifyContent:"center",flexDirection:"column",marginTop:10
-                                          }}>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                          <Form>
-                              <Form.Item
-                                rules={[{ required: true }]}
-                                validateTrigger="onBlur"
-                              // validateStatus={firstNameError ? "error" : ""}
-                              // help={firstNameError ? "" : ""}
-                              >
-                                <FloatingInput
-                                  label="First Name"
-                                  value={editingAdult?.firstName || ""} 
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value;
-                                    setEditingAdult(prev => ({ ...prev, firstName: newValue }));
-                                    setFirstNameError(false);
-                                        
-                                  }}
-                                  error={
-                                    firstNameError && "Your first name should have 1–27 characters"
-                                  }
-                                />
-                              </Form.Item>
-                            </Form>
-
-
-                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="Last Name"
-                                  value={editingAdult?.lastName || ""}
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value
-                                    setEditingAdult(prev => ({ ...prev, lastName: newValue }));
-                                    setLastNameError(false);
-                                  }}
-                                  error={lastNameError && "Your last name should have 1–27 characters "}
-                                />
-                              </Form.Item>
-                            </Form>
-                                          </div>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="DOB (DD/MM/YYYY)"
-                                  type={dayjs("DD/MM/YYYY")}
-                                  value={editingAdult?.DOBValue || ""}
-                                  onChange={handleEditDOBChange}  
-                                  
-                                  error={
-                                    DOBError
-                                      ? "Enter Valid Age"
-                                      : DOBAgeVerify
-                                      ? "Age should be above 12 years"
-                                      : undefined
-                                  }
-
-
-
-                                />
-
-                              </Form.Item>
-                            </Form>
-
-                            <ConfigProvider
-                              theme={{
-                                components: {
-                                  Segmented: {
-                                    itemSelectedBg: "#fc790d",
-                                    itemSelectedColor: "white"
-                                  },
-                                }
-                              }}
-                            >
-
-
-
-                              <Segmented
-                                value={editingAdult?.genderValue || "Male"}
-                                options={["Male", "Female"]}
-                                style={{
-                                  background: "#e7e7e7ff",
-                                  borderRadius: "10px",
-                                  boxShadow: "0 0 5px rgba(0,0,0,0.1)",
-                                  fontWeight: 500,
-                                  border: "1.5px solid #c9c9c9", 
-                                  height: 50,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "flex-end",
-                                  paddingLeft: 12,
-                                  paddingRight: 12,
-                                  fontSize: 15,
-                                  backgroundColor: "white", transition: "0.2s ease",
-                                  position:"relative",left:25 
-                                }}
-                                onChange={(val) => {
-    
-                                  setEditingAdult(prev => ({ ...prev, genderValue: val }));
-                                }}/>
-                            </ConfigProvider>
-                                          </div>
-                                        
-                                          </div>
-                                          <div style={{
-                                           display:"flex",justifyContent:"flex-end",width:"97%",gap:10,flexDirection:"row"
-                                          }}>
-                                            <button style={{
-                                              borderRadius: 10,
-                                              width:"100px",
-                                              height:"35px",
-                                              fontSize:"16px",
-                                              color:"black",background:"white",border: "1px solid #b8b8bcff"
-                                            }} onClick={(e) => {
-                                            seteditNewModal(false)
-                                            setFirstNameError(false);
-                                            setLastNameError(false);
-                                            setDOBError(false);
-                                            setDOBAgeVerify(false);
-                                              }}>
-                                              CANCEL
-                                            </button>
-                                            <button
-                                              type="primary"
-                                              style={{
-                                                background: "#ff7a00",
-                                                border: "none",
-                                                borderRadius: 10,
-                                                width:"100px",
-                                                height:"35px",
-                                                fontSize:"16px",
-                                                color:"white",
-                                                position:"relative",
-                                                
-                                              }}
-                                              onClick={handleEdit}
-                                            >
-                                              UPDATE
-                                            </button>
-                                          </div>
-                                        </Modal>
-                        </div>
-                      ))}
-                    </div>
-                 
-                  <br />
-                  {!travellers.Children === 0 && (
-                        <div>
-                      
-                      <div style={{
-                  display:"flex",justifyContent:"space-between",marginTop:10
-                }}>
-                  <Text style={{
-                    fontWeight: 500
-                  }}>CHILDREN</Text>
-
-                  <button style={{
-                  border:"none",background:"transparent",color:"#008cff",fontSize:13,fontWeight:700
-                }} onClick={()=>{
-                  if(tempChildArray.length>=maxAllowedChildren){
-                    messageApi.open({
-                    content: `Only ${travellers?.Children} ${travellers?.Children === 1 ? "Child" : "Children"} allowed. Remove existing Child to add a new one.`,
-                    duration: 3,
-                  });
-                  }
-                  else{
-                    setAddNewChildModal(true)
-                  }
-                 }}>ADD NEW CHILD +</button>
-                </div>
-                <Modal 
-                footer={null}
-                                        open={addNewChildModal}
-                                        closable
-                                        width={"45%"}
-                                        onCancel={() => {setAddNewChildModal(false)
-                                          setadultFirstName("");
-                                            setadultLastName("");
-                                            setadultDOB("");
-                                            setadultGender("Male");
-                                          setFirstNameError(false);
-                                            setLastNameError(false);
-                                            setDOBError(false);
-                                            setDOBAgeVerify(false);
+                                          background: "#f1f1f1",
+                                          borderRadius: "10px",
+                                          boxShadow: "0 0 5px rgba(0,0,0,0.1)",
+                                          fontWeight: 500,
+                                          border: "1.5px solid #c9c9c9",
+                                          height: 50,
+                                          display: "flex",
+                                          alignItems: "center",
+                                          justifyContent: "flex-end",
+                                          paddingLeft: 12,
+                                          paddingRight: 12,
+                                          fontSize: 15,
+                                          backgroundColor: "white", transition: "0.2s ease",
+                                          position: "relative", left: 25
                                         }}
-                                        style={{
-                                            marginTop:50  
-                                        }}>
-                                          <Text>
-                                            Add New Child
-                                          </Text>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",
-                                          width:"95%",alignItems:"center",justifyContent:"center",flexDirection:"column"
-                                          }}>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                          <Form>
-                              <Form.Item
-                                rules={[{ required: true }]}
-                                validateTrigger="onBlur"
-                              // validateStatus={firstNameError ? "error" : ""}
-                              // help={firstNameError ? "" : ""}
-                              >
-                                <FloatingInput
-                                  label="First Name"
-                                  value={adultFirstName}
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value
-                                            if(adultFirstName !== newValue){ 
-                                              setFirstNameError(false)
-                                            }
-                                            setadultFirstName(newValue);
-                                        
-                                  }}
-                                  error={
-                                    firstNameError && "Your first name should have 1–27 characters"
-                                  }
-                                />
-                              </Form.Item>
-                            </Form>
+                                        onChange={(val) => {
+                                          setadultGender(val);
+                                        }} />
+                                    </ConfigProvider>
+                                  </div>
 
-
-                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="Last Name"
-                                  value={adultLastName}
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value
-                                            if(adultLastName !== newValue){ 
-                                              setLastNameError(false)
-                                            }
-                                            setadultLastName(newValue); 
-                                        
-                                  }}
-                                  error={lastNameError && "Your last name should have 1–27 characters "}
-                                />
-                              </Form.Item>
-                            </Form>
-                                          </div>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="DOB (DD/MM/YYYY)"
-                                  type={dayjs("DD/MM/YYYY")}
-                                  value={adultDOB}
-                                  onChange={handleaddChildDOBChange}  
-                                  
-                                  error={
-                                  DOBError
-                                    ? "Enter Valid Age"
-                                    : DOBAgeVerify 
-                                    ? "Age should be  2-12 years"
-                                    : undefined
-                                }
-
-
-
-                                />
-
-                              </Form.Item>
-                            </Form>
-
-                            <ConfigProvider
-                              theme={{
-                                components: {
-                                  Segmented: {
-                                    itemSelectedBg: "#fc790d",
-                                    itemSelectedColor: "white"
-                                  },
-                                }
-                              }}
-                            >
-
-
-
-                              <Segmented
-                                value={adultGender || "Male"}
-                                options={["Male", "Female"]} 
-                                style={{
-                                  background: "#f1f1f1",
-                                  borderRadius: "10px",
-                                  boxShadow: "0 0 5px rgba(0,0,0,0.1)",
-                                  fontWeight: 500,
-                                  border: "1.5px solid #c9c9c9", 
-                                  height: 50,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "flex-end",
-                                  paddingLeft: 12,
-                                  paddingRight: 12,
-                                  fontSize: 15,
-                                  backgroundColor: "white", transition: "0.2s ease",
-                                  position:"relative",left:25 
-                                }}
-                                onChange={(val) => {
-                                  setadultGender(val);
-                                }} />
-                            </ConfigProvider>
-                                          </div>
-                                        
-                                          </div>
-                                          <div style={{
-                                           display:"flex",justifyContent:"flex-end",width:"97%",gap:10,flexDirection:"row"
-                                          }}>
-                                            <button style={{
-                                              borderRadius: 10,
-                                              width:"100px",
-                                              height:"35px",
-                                              fontSize:"16px",
-                                              color:"black",background:"white",border: "1px solid #b8b8bcff"
-                                            }} onClick={(e) => {
-                                            setAddNewChildModal(false)
-                                            setadultFirstName("");
-                                            setadultLastName("");
-                                            setadultDOB("");
-                                            setadultGender("Male");
-                                            setFirstNameError(false);
-                                            setLastNameError(false);
-                                            setDOBError(false);
-                                            setDOBAgeVerify(false);
-
-                                              }}>
-                                              CANCEL
-                                            </button>
-                                            <button
-                                              type="primary"
-                                              style={{
-                                                background: "#ff7a00",
-                                                border: "none",
-                                                borderRadius: 10,
-                                                width:"100px",
-                                                height:"35px",
-                                                fontSize:"16px",
-                                                color:"white",
-                                                position:"relative",
-                                                
-                                              }}
-                                              onClick={handleChildAdd}
-                                            >
-                                              ADD
-                                            </button>
-                                          </div>
-                                        </Modal>
-                <div>
-                  {tempChildArray.map((item, idx) => (
-                        <div key={idx} style={{
-                          display: "flex", justifyContent: "space-between",border: "1px solid #c0c0c0ff",alignItems:"center",padding:12,borderRadius:8,marginTop:10,
-                          transition:"all 0.3 ease"
-                        }}>
-                          <Text style={{
-                            fontSize:15,fontWeight:500,textTransform:"uppercase"
-                          }}>
-                         Child {idx + 1} -  {item.firstName} {item.lastName}
-                         </Text>
-                          <div style={{
-                            display:"flex",flexDirection:"row",gap:15
-                          }}>
-                            <EditOutlined style={{
-                              cursor:"pointer",fontSize:20,color: "#008cff"
-                            }} 
-                            onClick={()=>{seteditChildNewModal(true)
-                              setEditingChild(item);
-                            }}/>
-                            <DeleteOutlined style={{
-                              cursor:"pointer",fontSize:20,color:"red"
-                            }} 
-                            onClick={() => {
-                                                  setTempChildArray(prev =>
-                                                  prev.filter(
-                                                    a => !(a.firstName === item.firstName && a.lastName === item.lastName)
-                                                  )
-                                                );
-
-                                                  setSelectedChildren(prev =>
-                              prev.filter(a => !(a.firstName === item.firstName && a.lastName === item.lastName))
-                            );
-
-                            setDisabledChild(prev =>
-                              prev.filter(key =>
-                                // find the adult object for this key
-                                !selectedChildren.some(
-                                  a => a.key === key &&
-                                      a.firstName === item.firstName &&
-                                      a.lastName === item.lastName
-                                )
-                              )
-                            );
-
-                          }}/>
-                          </div>
-                          <Modal 
-                footer={null}
-                                        open={editNewChildModal}
-                                        closable 
-                                        width={"45%"}
-                                        onCancel={() => {seteditChildNewModal(false)
-                                          setFirstNameError(false);
-                                            setLastNameError(false);
-                                            setDOBError(false);
-                                        }}
-                                        style={{
-                                            marginTop:50  
-                                        }}>
-                                          <Text style={{
-                                            fontWeight:500,fontSize:16
-                                          }}>
-                                            Edit Child
-                                          </Text>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",
-                                          width:"95%",alignItems:"center",justifyContent:"center",flexDirection:"column",marginTop:10
-                                          }}>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                          <Form>
-                              <Form.Item
-                                rules={[{ required: true }]}
-                                validateTrigger="onBlur"
-                              // validateStatus={firstNameError ? "error" : ""}
-                              // help={firstNameError ? "" : ""}
-                              >
-                                <FloatingInput
-                                  label="First Name"
-                                  value={editingChild?.firstName || ""} 
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value;
-                                    setEditingChild(prev => ({ ...prev, firstName: newValue }));
-                                    setFirstNameError(false);
-                                        
-                                  }}
-                                  error={
-                                    firstNameError && "Your first name should have 1–27 characters"
-                                  }
-                                />
-                              </Form.Item>
-                            </Form>
-
-
-                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="Last Name"
-                                  value={editingChild?.lastName || ""}
-                                  onChange={(e)=>{
-                                    const newValue = e.target.value
-                                    setEditingChild(prev => ({ ...prev, lastName: newValue }));
-                                    setLastNameError(false);
-                                  }}
-                                  error={lastNameError && "Your last name should have 1–27 characters "}
-                                />
-                              </Form.Item>
-                            </Form>
-                                          </div>
-                                          <br/>
-                                          <div style={{
-                                            display:"flex",justifyContent:"space-between",width:"95%"
-                                          }}>
-                                            <Form>
-                              <Form.Item>
-                                <FloatingInput
-                                  label="DOB (DD/MM/YYYY)"
-                                  type={dayjs("DD/MM/YYYY")}
-                                  value={editingChild?.DOBValue || ""} 
-                                  onChange={handleChildEditDOBChange}  
-                                  
-                                  error={
-                                  DOBError
-                                    ? "Enter Valid Age"
-                                    : DOBAgeVerify 
-                                    ? "Age should be  2-12 years"
-                                    : undefined
-                                }
-
-
-
-                                />
-
-                              </Form.Item>
-                            </Form>
-
-                            <ConfigProvider
-                              theme={{
-                                components: {
-                                  Segmented: {
-                                    itemSelectedBg: "#fc790d",
-                                    itemSelectedColor: "white"
-                                  },
-                                }
-                              }}
-                            >
-
-
-
-                              <Segmented
-                                value={editingChild?.genderValue || "Male"}
-                                options={["Male", "Female"]}
-                                style={{
-                                  background: "#e7e7e7ff",
-                                  borderRadius: "10px",
-                                  boxShadow: "0 0 5px rgba(0,0,0,0.1)",
-                                  fontWeight: 500,
-                                  border: "1.5px solid #c9c9c9", 
-                                  height: 50,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "flex-end",
-                                  paddingLeft: 12,
-                                  paddingRight: 12,
-                                  fontSize: 15,
-                                  backgroundColor: "white", transition: "0.2s ease",
-                                  position:"relative",left:25 
-                                }}
-                                onChange={(val) => {
-    
-                                  setEditingChild(prev => ({ ...prev, genderValue: val }));
-                                }}/>
-                            </ConfigProvider>
-                                          </div>
-                                        
-                                          </div>
-                                          <div style={{
-                                           display:"flex",justifyContent:"flex-end",width:"97%",gap:10,flexDirection:"row"
-                                          }}>
-                                            <button style={{
-                                              borderRadius: 10,
-                                              width:"100px",
-                                              height:"35px",
-                                              fontSize:"16px",
-                                              color:"black",background:"white",border: "1px solid #b8b8bcff"
-                                            }} onClick={(e) => {
-                                            seteditChildNewModal(false)
-                                            setFirstNameError(false);
-                                            setLastNameError(false);
-                                            setDOBError(false);
-                                            setDOBAgeVerify(false);
-                                              }}>
-                                              CANCEL
-                                            </button>
-                                            <button
-                                              type="primary"
-                                              style={{
-                                                background: "#ff7a00",
-                                                border: "none",
-                                                borderRadius: 10,
-                                                width:"100px",
-                                                height:"35px",
-                                                fontSize:"16px",
-                                                color:"white",
-                                                position:"relative",
-                                                
-                                              }}
-                                              onClick={handleChildEdit}
-                                            >
-                                              UPDATE
-                                            </button>
-                                          </div>
-                                        </Modal>
-                        </div>
-                      ))}
-                </div>
-                    </div>
-                      )}
-                    
-                </div>
-
-
-
-
-
-                <div>
-                  
-
-
-                  
-
-
-
-                </div>
-
-
-              </div>
-            ) : null}
-
-
-
-            {/* Down Card */}
-            <div style={{
-              position: "fixed",
-              bottom: 0,
-              width: "972px",
-              height: "7%",
-              zIndex: 1000,
-              background: "#fff",
-              padding: "10px 20px",
-              left: "32%",
-              boxShadow: "0 5px 25px rgba(0, 0, 0, 0.3)",
-              display: "flex",
-              justifyContent: "space-between",
-              borderTopLeftRadius: "30px",
-              borderTopRightRadius: "30px",
-              alignItems: "center"
-            }}>
-              <div style={{
-                display: "flex",
-                flexDirection: "row",
-              }}>
-                <Text style={{
-                  fontSize: 24, fontWeight: 600
-                }}>
-                  ₹{finalAmount.toLocaleString("en-IN")}
-
-                </Text>
-                <div style={{
-                  display: "flex", marginTop: 12, marginLeft: 5
-                }}>
-            <s style={{ color: "#b22422" }}>
-            {promoOfferList[0].amount
-              ? `₹ ${
-                  (
-                    slashAmount +
-                    (refundValue?.planType === "Free Cancellation" || refundValue?.planType === "Rescheduling"
-                      ? refundValue.price * travellerValue 
-                      : 0)
-                  ).toLocaleString("en-IN")
-                }`
-              : null}
-          </s>
-
-                  <Text style={{
-                    color: "#5e616e", marginTop: -2, fontWeight: 500,
-                  }}> &nbsp;  {travellerValue === 1
-                    ? null
-                    : `•  ${travellerValue} Travellers`}</Text>
-                </div>
-
-              </div>
-              <div>
-                <ContinueButton
-                  
-                  onClick={() => {
-                    
-
-                    if (!phoneNo) {
-                      dispatch(setOpenDrawer(true));
-                      return;
-                    }
-
-                    
-                    if(tempArray.length !== travellers?.Adults){
-                      messageApi.destroy("adults-check");
-                      messageApi.open({
-                      key: "adults-check",
-                      type: "error",
-                      content: `Please add ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} to Continue`,
-                      duration: 3,
-                    });
-                    return;
-                    }
-
-                    if(tempChildArray.length !== travellers?.Children){
-                      messageApi.destroy("child-check");
-                      messageApi.open({
-                      key: "child-check",
-                      type: "error",
-                      content: `Please add ${travellers?.Children} ${travellers?.Children === 1 ? "Child" : "Children"} to Continue`,
-                      duration: 3,
-                    });
-                    return;
-                    }
-                    if (refundValue.planType === null ) {
-                      startShake();
-                      if (shakeref.current) {
-                        shakeref.current.focus();
-                      }
-                      return;
-                    }
-                    dispatch(setCurrentState(2));
-                    dispatch(setPromoRadioValue(promoOfferList[0].amount))
-                    dispatch(setFinalAmount(finalAmount))
-                    navigate("/addOns")
-                    const combinedArray = [
-                      ...tempArray.map(a => ({ ...a, type: "adult" })),
-                      ...tempChildArray.map(c => ({ ...c, type: "child" }))
-                    ];
-                    dispatch(setTravellerDetails(combinedArray))
-                     
-                    
-
-                  }}
-                  text="Continue"
-                >
-                   
-                </ContinueButton>
-              </div>
-            </div>
-          </Col>
-        </div>
-        <Drawer
-          title={null}
-          closable={false}
-          destroyOnHidden
-          placement="right"
-          trigger={["click"]}
-          arrow
-          open={viewOffers}
-          onClose={() => setViewOffers(false)}
-
-          overlayStyle={{
-            marginBottom: "10px"
-          }}
-          maskClosable={true}
-          width={"28%"}
-          style={{
-            // padding: "24px",
-            background: "#fff",
-            // borderRadius: "8px 0 0 8px",
-            overflow: "auto",
-          }}>
-          <div style={{
-            // padding:12
-          }}>
-            <div style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between"
-            }}>
-              <Text style={{
-                fontSize: "24px",
-                fontWeight: 700
-              }}>Offers For You</Text>
-              <CloseOutlined
-                onClick={() => setViewOffers(false)}
-                style={{
-                  fontSize: 14,
-                  cursor: "pointer",
-                  // marginLeft: 8,
-
-                }}
-              />
-            </div>
-
-            <div
-              style={{
-                height: "45px",
-                border: "1px solid #8a8a8a",
-                marginTop: 10,
-                borderRadius: 10,
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "row",
-                paddingLeft: "10px",
-                paddingRight: "10px",
-                background: "#fff",
-              }}
-            >
-              <Input
-                placeholder="Have a promocode? Redeem here"
-                variant="borderless"
-                style={{
-                  fontSize: "16px",
-                  fontWeight: 500,
-                  width: 300,
-
-                }}
-                value={promoCodeValue2}
-                onChange={(e) => {
-                  const text = e.target.value || "";
-                  setPromoCodeValue2(text.toLocaleUpperCase());
-                }}
-              />
-
-              {promoCodeValue2 ? (
-                <button
-                  style={{
-                    color: "#0770e4",
-                    border: "none",
-                    background: "none",
-                    fontSize: "16px",
-                    fontWeight: 500,
-                    cursor: "pointer",
-                  }}
-                >
-                  Apply
-                </button>
-              ) : null}
-
-
-            </div>
-            <div style={{
-              marginTop: 20
-            }}>
-              <Radio.Group
-                value={radioValue}
-
-                style={{ color: "black" }}
-              >
-                <Space direction="vertical">
-                  {promoOfferList.map((item, idx) => (
-
-
-                    <div key={idx} style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      // width: "100%",
-
-                    }}>
-                      <div style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        padding: "5px 0",
-                        justifyContent: "space-between",
-
-                      }}>
-                        <>
-                          <style>
-                            {`
-                .custom-radio .ant-radio-inner {
-                    border: 1px solid #848794 !important;
-                }
-
-                .custom-radio.ant-radio-wrapper-checked .ant-radio-inner {
-                    border: 1px solid #0770e4 !important; /* selected border (blue) */
-                }
-                `}
-                          </style>
-
-                          <ConfigProvider>
-                            <Radio value={idx} className="custom-radio" style={{
-                              fontSize: "16px",
-                              fontWeight: 600, textTransform: "uppercase", fontFamily: "Roboto"
-                            }}
-                              onChange={() => {
-                                handleRadioValue(idx)
-                                setViewOffers(false)
-                              }
-                              }>
-                              {item.name}
-                            </Radio>
-                          </ConfigProvider>
-                        </>
-
-                        <div style={{
-                          flex: 1, textAlign: "end"
-                        }}>{item.amount >= 0 ? (<Text style={{
-                          fontSize: "14px", fontWeight: 700
-                        }}>{item?.amount > 0 && `₹${item.amount} Off`}  </Text>) : null}
-                        </div>
-
-                      </div>
-                      <Text style={{
-                        position: "relative",
-                        color: radioValue === idx ? "green" : "black",
-                        fontFamily: "Roboto",
-                        fontSize: 14.5,
-                        bottom: 10, left: 25, paddingRight: 15
-                      }}>
-                        {item.descriptions}
-                      </Text>
-                    </div>
-                  )
-                  )}
-
-                </Space>
-              </Radio.Group>
-            </div>
-          </div>
-
-        </Drawer>
-        <Drawer
-          title={null}
-          closable={false}
-          destroyOnHidden
-          placement="right"
-          trigger={["click"]}
-          arrow
-          open={existingModal}
-          onClose={() => {setExistingModal(false)
-            if(travellers.Children>0 && selectedChildren.length>0){
-                                               setSelectedChildren(prev =>
-                                                  prev.filter(a => disabledChild.includes(a.key))
-                                                );
-                                               }
-                                                setSelectedAdults(prev =>
-                                                  prev.filter(a => disabledAdults.includes(a.key))
-                                                );
-          }}
-
-          overlayStyle={{
-            marginBottom: "10px"
-          }}
-          maskClosable={true}
-          width={"28%"}
-          style={{
-            // padding: "24px",
-            background: "#fff",
-            // borderRadius: "8px 0 0 8px",
-            overflow: "auto",
-          }}>
-            <Text style={{
-              fontWeight:700,fontSize:17,color:"#008cff"
-            }}>
-              ADD EXISTING TRAVELLERS
-            </Text>
-            <div style={{
-              marginTop:20
-            }}>
-              <div style={{
-                                                display:"flex",justifyContent:"center",border:"1px solid #b8b8bcff",borderRadius:10,marginTop:20,padding:10,flexDirection:"column"
-                                              }}>
-                                                 <Text  style={{
-                                                fontWeight:700,fontSize:16
-                                              }}>Adults(12 years or above)</Text>
-            {adults.map((person,idx)=>{
-                                            const isSelected = Array.isArray(selectedAdults) && Array.isArray(tempArray) && selectedAdults.some(a => a.key === person.key);
-                                            const isDisabled = disabledAdults.includes(person.key);
-                                            return(
-                                              <>
-                                              
-                                             
-                                              <div key={person.key} style={{ display: "flex", flexDirection: "column",marginTop:10 }}>
-                                
-                                {/* CHECKBOX FOR EXISTING PERSON */}
-                                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                  <input
-                                    type="checkbox"
-                                    checked={isSelected}
-                                     disabled={isDisabled}
-                                    onChange={() => {
-                                      handleSelectAdult(person);
-                                         
-                                    }}
-                                    style={{ height: 20, width: 20 }}
-                                  />
-                                  
-                                  <span style={{
-                                    fontSize:15,fontWeight:500
-                                  }}>{person.firstName} {person.lastName}</span>
                                 </div>
+                                <div style={{
+                                  display: "flex", justifyContent: "flex-end", width: "97%", gap: 10, flexDirection: "row"
+                                }}>
+                                  <button style={{
+                                    borderRadius: 10,
+                                    width: "100px",
+                                    height: "35px",
+                                    fontSize: "16px",
+                                    color: "black", background: "white", border: "1px solid #b8b8bcff"
+                                  }} onClick={(e) => {
+                                    setAddNewModal(false)
+                                    setadultFirstName("");
+                                    setadultLastName("");
+                                    setadultDOB("");
+                                    setadultGender("Male");
+                                    setFirstNameError(false);
+                                    setLastNameError(false);
+                                    setDOBError(false);
+                                    setDOBAgeVerify(false);
 
-                               
+                                  }}>
+                                    CANCEL
+                                  </button>
+                                  <button
+                                    type="primary"
+                                    style={{
+                                      background: "#ff7a00",
+                                      border: "none",
+                                      borderRadius: 10,
+                                      width: "100px",
+                                      height: "35px",
+                                      fontSize: "16px",
+                                      color: "white",
+                                      position: "relative",
 
-                              </div>
-                              
-                                              </>
-                                            )
-                                          })}
-                                          </div>
-                                          {travellers.Children>0 && children.length>0 && (
-                                            <div style={{
-                                                display:"flex",justifyContent:"center",border:"1px solid #b8b8bcff",borderRadius:10,marginTop:20,padding:10,flexDirection:"column"
-                                              }}>
-                                                 <Text  style={{
-                                                fontWeight:700,fontSize:16
-                                              }}>Children(2 to 12 years)</Text>
-                                              {children.map((person,idx)=>{
-                                            const isSelected = Array.isArray(selectedChildren) && Array.isArray(tempChildArray) && selectedChildren.some(a => a.key === person.key);
-                                            const isDisabled = disabledChild.includes(person.key);
-                                            return(
-                                              <>
-                                              
-                                             
-                                              <div key={person.key} style={{ display: "flex", flexDirection: "column",marginTop:10 }}>
-                                
-                                {/* CHECKBOX FOR EXISTING PERSON */}
-                                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                  <input
-                                    type="checkbox"
-                                    checked={isSelected}
-                                     disabled={isDisabled}
-                                    onChange={() => {
-                                      handleSelectChildren(person);
-                                         
                                     }}
-                                    style={{ height: 20, width: 20 }}
-                                  />
-                                  
-                                  <span style={{
-                                    fontSize:15,fontWeight:500
-                                  }}>{person.firstName} {person.lastName}</span>
+                                    onClick={handleAdd}
+                                  >
+                                    ADD
+                                  </button>
                                 </div>
+                              </Modal>
+                            </div>
 
-                               
 
-                              </div>
-                              
-                                              </>
+                            <div >
+
+
+                              <div style={{
+                                marginTop: 10
+                              }}>
+                                {tempArray.map((item, idx) => (
+                                  <div key={idx} style={{
+                                    display: "flex", justifyContent: "space-between", border: "1px solid #c0c0c0ff", alignItems: "center", padding: 12, borderRadius: 8, marginTop: 10,
+                                    transition: "all 0.3 ease"
+                                  }}>
+                                    <Text style={{
+                                      fontSize: 15, fontWeight: 500, textTransform: "uppercase"
+                                    }}>
+                                      Adult {idx + 1} -  {item.firstName} {item.lastName}
+                                    </Text>
+                                    <div style={{
+                                      display: "flex", flexDirection: "row", gap: 15
+                                    }}>
+                                      <EditOutlined style={{
+                                        cursor: "pointer", fontSize: 20, color: "#008cff"
+                                      }}
+                                        onClick={() => {
+                                          seteditNewModal(true)
+                                          setEditingAdult(item);
+                                        }} />
+                                      <DeleteOutlined style={{
+                                        cursor: "pointer", fontSize: 20, color: "red"
+                                      }}
+                                        onClick={() => {
+                                          settempArray(prev =>
+                                            prev.filter(
+                                              a => !(a.firstName === item.firstName && a.lastName === item.lastName)
                                             )
-                                          })}
-                                              </div>
-                                          )}
-                                           <div style={{
-                                            position:"fixed",
-                                            bottom: 0,
-                                            width: "25.2%",
-                                            height:"7%",
-                                            zIndex: 1000,
-                                            background: "#fff",
-                                            padding: "10px 20px",
-                                            right:"2px",
-                                            boxShadow: "0 5px 25px rgba(0, 0, 0, 0.3)",
-                                            display:"flex",
-                                            justifyContent:"space-between",
-                                            alignItems:"center"
-                                            }}>
-                                           <button
-                                                style={{
-                                                  borderRadius: 10,
-                                                  width: "100px",
-                                                  height: "35px",
-                                                  fontSize: "16px",
-                                                  color: "black",
-                                                  background: "white",
-                                                  border: "1px solid #b8b8bcff",
+                                          );
+
+                                          setSelectedAdults(prev =>
+                                            prev.filter(a => !(a.firstName === item.firstName && a.lastName === item.lastName))
+                                          );
+
+                                          setDisabledAdults(prev =>
+                                            prev.filter(key =>
+                                              // find the adult object for this key
+                                              !selectedAdults.some(
+                                                a => a.key === key &&
+                                                  a.firstName === item.firstName &&
+                                                  a.lastName === item.lastName
+                                              )
+                                            )
+                                          );
+
+                                        }} />
+                                    </div>
+                                    <Modal
+                                      footer={null}
+                                      open={editNewModal}
+                                      closable
+                                      width={"45%"}
+                                      onCancel={() => {
+                                        seteditNewModal(false)
+                                        setFirstNameError(false);
+                                        setLastNameError(false);
+                                        setDOBError(false);
+                                        setDOBAgeVerify(false);
+                                      }}
+                                      style={{
+                                        marginTop: 50
+                                      }}>
+                                      <Text style={{
+                                        fontWeight: 500, fontSize: 16
+                                      }}>
+                                        Edit Adult
+                                      </Text>
+                                      <br />
+                                      <div style={{
+                                        display: "flex",
+                                        width: "95%", alignItems: "center", justifyContent: "center", flexDirection: "column", marginTop: 10
+                                      }}>
+                                        <div style={{
+                                          display: "flex", justifyContent: "space-between", width: "95%"
+                                        }}>
+                                          <Form>
+                                            <Form.Item
+                                              rules={[{ required: true }]}
+                                              validateTrigger="onBlur"
+                                            // validateStatus={firstNameError ? "error" : ""}
+                                            // help={firstNameError ? "" : ""}
+                                            >
+                                              <FloatingInput
+                                                label="First Name"
+                                                value={editingAdult?.firstName || ""}
+                                                onChange={(e) => {
+                                                  const newValue = e.target.value;
+                                                  setEditingAdult(prev => ({ ...prev, firstName: newValue }));
+                                                  setFirstNameError(false);
+
                                                 }}
-                                               onClick={() => {
-                                               if(travellers.Children>0 && selectedChildren.length>0){
-                                               setSelectedChildren(prev =>
-                                                  prev.filter(a => disabledChild.includes(a.key))
-                                                );
-                                               }
-                                                setSelectedAdults(prev =>
-                                                  prev.filter(a => disabledAdults.includes(a.key))
-                                                );
+                                                error={
+                                                  firstNameError && "Your first name should have 1–27 characters"
+                                                }
+                                              />
+                                            </Form.Item>
+                                          </Form>
 
-                                                setExistingModal(false); 
+
+                                          <Form>
+                                            <Form.Item>
+                                              <FloatingInput
+                                                label="Last Name"
+                                                value={editingAdult?.lastName || ""}
+                                                onChange={(e) => {
+                                                  const newValue = e.target.value
+                                                  setEditingAdult(prev => ({ ...prev, lastName: newValue }));
+                                                  setLastNameError(false);
+                                                }}
+                                                error={lastNameError && "Your last name should have 1–27 characters "}
+                                              />
+                                            </Form.Item>
+                                          </Form>
+                                        </div>
+                                        <br />
+                                        <div style={{
+                                          display: "flex", justifyContent: "space-between", width: "95%"
+                                        }}>
+                                          <Form>
+                                            <Form.Item>
+                                              <FloatingInput
+                                                label="DOB (DD/MM/YYYY)"
+                                                type={dayjs("DD/MM/YYYY")}
+                                                value={editingAdult?.DOBValue || ""}
+                                                onChange={handleEditDOBChange}
+
+                                                error={
+                                                  DOBError
+                                                    ? "Enter Valid Age"
+                                                    : DOBAgeVerify
+                                                      ? "Age should be above 12 years"
+                                                      : undefined
+                                                }
+
+
+
+                                              />
+
+                                            </Form.Item>
+                                          </Form>
+
+                                          <ConfigProvider
+                                            theme={{
+                                              components: {
+                                                Segmented: {
+                                                  itemSelectedBg: "#fc790d",
+                                                  itemSelectedColor: "white"
+                                                },
+                                              }
+                                            }}
+                                          >
+
+
+
+                                            <Segmented
+                                              value={editingAdult?.genderValue || "Male"}
+                                              options={["Male", "Female"]}
+                                              style={{
+                                                background: "#e7e7e7ff",
+                                                borderRadius: "10px",
+                                                boxShadow: "0 0 5px rgba(0,0,0,0.1)",
+                                                fontWeight: 500,
+                                                border: "1.5px solid #c9c9c9",
+                                                height: 50,
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "flex-end",
+                                                paddingLeft: 12,
+                                                paddingRight: 12,
+                                                fontSize: 15,
+                                                backgroundColor: "white", transition: "0.2s ease",
+                                                position: "relative", left: 25
                                               }}
+                                              onChange={(val) => {
 
-                                              >
-                                                SKIP
-                                              </button>
+                                                setEditingAdult(prev => ({ ...prev, genderValue: val }));
+                                              }} />
+                                          </ConfigProvider>
+                                        </div>
+
+                                      </div>
+                                      <div style={{
+                                        display: "flex", justifyContent: "flex-end", width: "97%", gap: 10, flexDirection: "row"
+                                      }}>
+                                        <button style={{
+                                          borderRadius: 10,
+                                          width: "100px",
+                                          height: "35px",
+                                          fontSize: "16px",
+                                          color: "black", background: "white", border: "1px solid #b8b8bcff"
+                                        }} onClick={(e) => {
+                                          seteditNewModal(false)
+                                          setFirstNameError(false);
+                                          setLastNameError(false);
+                                          setDOBError(false);
+                                          setDOBAgeVerify(false);
+                                        }}>
+                                          CANCEL
+                                        </button>
+                                        <button
+                                          type="primary"
+                                          style={{
+                                            background: "#ff7a00",
+                                            border: "none",
+                                            borderRadius: 10,
+                                            width: "100px",
+                                            height: "35px",
+                                            fontSize: "16px",
+                                            color: "white",
+                                            position: "relative",
+
+                                          }}
+                                          onClick={handleEdit}
+                                        >
+                                          UPDATE
+                                        </button>
+                                      </div>
+                                    </Modal>
+                                  </div>
+                                ))}
+                              </div>
+
+                              <br />
+                              {!travellers.Children === 0 && (
+                                <div>
+
+                                  <div style={{
+                                    display: "flex", justifyContent: "space-between", marginTop: 10
+                                  }}>
+                                    <Text style={{
+                                      fontWeight: 500
+                                    }}>CHILDREN</Text>
+
+                                    <button style={{
+                                      border: "none", background: "transparent", color: "#008cff", fontSize: 13, fontWeight: 700
+                                    }} onClick={() => {
+                                      if (tempChildArray.length >= maxAllowedChildren) {
+                                        messageApi.open({
+                                          content: `Only ${travellers?.Children} ${travellers?.Children === 1 ? "Child" : "Children"} allowed. Remove existing Child to add a new one.`,
+                                          duration: 3,
+                                        });
+                                      }
+                                      else {
+                                        setAddNewChildModal(true)
+                                      }
+                                    }}>ADD NEW CHILD +</button>
+                                  </div>
+                                  <Modal
+                                    footer={null}
+                                    open={addNewChildModal}
+                                    closable
+                                    width={"45%"}
+                                    onCancel={() => {
+                                      setAddNewChildModal(false)
+                                      setadultFirstName("");
+                                      setadultLastName("");
+                                      setadultDOB("");
+                                      setadultGender("Male");
+                                      setFirstNameError(false);
+                                      setLastNameError(false);
+                                      setDOBError(false);
+                                      setDOBAgeVerify(false);
+                                    }}
+                                    style={{
+                                      marginTop: 50
+                                    }}>
+                                    <Text>
+                                      Add New Child
+                                    </Text>
+                                    <br />
+                                    <div style={{
+                                      display: "flex",
+                                      width: "95%", alignItems: "center", justifyContent: "center", flexDirection: "column"
+                                    }}>
+                                      <div style={{
+                                        display: "flex", justifyContent: "space-between", width: "95%"
+                                      }}>
+                                        <Form>
+                                          <Form.Item
+                                            rules={[{ required: true }]}
+                                            validateTrigger="onBlur"
+                                          // validateStatus={firstNameError ? "error" : ""}
+                                          // help={firstNameError ? "" : ""}
+                                          >
+                                            <FloatingInput
+                                              label="First Name"
+                                              value={adultFirstName}
+                                              onChange={(e) => {
+                                                const newValue = e.target.value
+                                                if (adultFirstName !== newValue) {
+                                                  setFirstNameError(false)
+                                                }
+                                                setadultFirstName(newValue);
+
+                                              }}
+                                              error={
+                                                firstNameError && "Your first name should have 1–27 characters"
+                                              }
+                                            />
+                                          </Form.Item>
+                                        </Form>
+
+
+                                        <Form>
+                                          <Form.Item>
+                                            <FloatingInput
+                                              label="Last Name"
+                                              value={adultLastName}
+                                              onChange={(e) => {
+                                                const newValue = e.target.value
+                                                if (adultLastName !== newValue) {
+                                                  setLastNameError(false)
+                                                }
+                                                setadultLastName(newValue);
+
+                                              }}
+                                              error={lastNameError && "Your last name should have 1–27 characters "}
+                                            />
+                                          </Form.Item>
+                                        </Form>
+                                      </div>
+                                      <br />
+                                      <div style={{
+                                        display: "flex", justifyContent: "space-between", width: "95%"
+                                      }}>
+                                        <Form>
+                                          <Form.Item>
+                                            <FloatingInput
+                                              label="DOB (DD/MM/YYYY)"
+                                              type={dayjs("DD/MM/YYYY")}
+                                              value={adultDOB}
+                                              onChange={handleaddChildDOBChange}
+
+                                              error={
+                                                DOBError
+                                                  ? "Enter Valid Age"
+                                                  : DOBAgeVerify
+                                                    ? "Age should be  2-12 years"
+                                                    : undefined
+                                              }
+
+
+
+                                            />
+
+                                          </Form.Item>
+                                        </Form>
+
+                                        <ConfigProvider
+                                          theme={{
+                                            components: {
+                                              Segmented: {
+                                                itemSelectedBg: "#fc790d",
+                                                itemSelectedColor: "white"
+                                              },
+                                            }
+                                          }}
+                                        >
+
+
+
+                                          <Segmented
+                                            value={adultGender || "Male"}
+                                            options={["Male", "Female"]}
+                                            style={{
+                                              background: "#f1f1f1",
+                                              borderRadius: "10px",
+                                              boxShadow: "0 0 5px rgba(0,0,0,0.1)",
+                                              fontWeight: 500,
+                                              border: "1.5px solid #c9c9c9",
+                                              height: 50,
+                                              display: "flex",
+                                              alignItems: "center",
+                                              justifyContent: "flex-end",
+                                              paddingLeft: 12,
+                                              paddingRight: 12,
+                                              fontSize: 15,
+                                              backgroundColor: "white", transition: "0.2s ease",
+                                              position: "relative", left: 25
+                                            }}
+                                            onChange={(val) => {
+                                              setadultGender(val);
+                                            }} />
+                                        </ConfigProvider>
+                                      </div>
+
+                                    </div>
+                                    <div style={{
+                                      display: "flex", justifyContent: "flex-end", width: "97%", gap: 10, flexDirection: "row"
+                                    }}>
+                                      <button style={{
+                                        borderRadius: 10,
+                                        width: "100px",
+                                        height: "35px",
+                                        fontSize: "16px",
+                                        color: "black", background: "white", border: "1px solid #b8b8bcff"
+                                      }} onClick={(e) => {
+                                        setAddNewChildModal(false)
+                                        setadultFirstName("");
+                                        setadultLastName("");
+                                        setadultDOB("");
+                                        setadultGender("Male");
+                                        setFirstNameError(false);
+                                        setLastNameError(false);
+                                        setDOBError(false);
+                                        setDOBAgeVerify(false);
+
+                                      }}>
+                                        CANCEL
+                                      </button>
                                       <button
+                                        type="primary"
                                         style={{
                                           background: "#ff7a00",
                                           border: "none",
@@ -6025,79 +5331,788 @@ const handleFirstNameChange = (value, key) => {
                                           height: "35px",
                                           fontSize: "16px",
                                           color: "white",
+                                          position: "relative",
+
                                         }}
-                                        onClick={() => {
-                                        if(travellers.Children>0 && selectedChildren.length>0){
-                                        setDisabledChild(prev => [
-                                      ...prev,
-                                      ...selectedChildren.map(a => a.key)
-                                    ]);
-
-                                    
-                                    
-
-                                    
-                                    setTempChildArray(prev => [
-                                ...prev,
-                                ...selectedChildren
-                                  .filter(a => a && !disabledChild.includes(a.key)) 
-                                  .map((a, idx) => ({
-                                    key: prev.length + idx,
-                                    firstName: a.firstName || "",
-                                    lastName: a.lastName || "",
-                                    DOBValue: a?.DOBValue || "", 
-                                    genderValue: a?.genderValue || "Male",
-                                  }))
-                              ]);
-
-                                        }
-
-                                        //Adult
-                                        setDisabledAdults(prev => [
-                                      ...prev,
-                                      ...selectedAdults.map(a => a.key)
-                                    ]);
-
-                                    
-                                    setExistingModal(false);
-
-                                    
-                                    settempArray(prev => [
-                                ...prev,
-                                ...selectedAdults
-                                  .filter(a => a && !disabledAdults.includes(a.key)) 
-                                  .map((a, idx) => ({
-                                    key: prev.length + idx,
-                                    firstName: a.firstName || "",
-                                    lastName: a.lastName || "",
-                                    DOBValue: a.DOBValue || "", 
-                                    genderValue: a?.genderValue || "Male",
-                                  }))
-                              ]);
-
-                                    
-                                    
-
-                                  }}
-
+                                        onClick={handleChildAdd}
                                       >
-                                        SELECT
+                                        ADD
                                       </button>
-                                    </div> 
+                                    </div>
+                                  </Modal>
+                                  <div>
+                                    {tempChildArray.map((item, idx) => (
+                                      <div key={idx} style={{
+                                        display: "flex", justifyContent: "space-between", border: "1px solid #c0c0c0ff", alignItems: "center", padding: 12, borderRadius: 8, marginTop: 10,
+                                        transition: "all 0.3 ease"
+                                      }}>
+                                        <Text style={{
+                                          fontSize: 15, fontWeight: 500, textTransform: "uppercase"
+                                        }}>
+                                          Child {idx + 1} -  {item.firstName} {item.lastName}
+                                        </Text>
+                                        <div style={{
+                                          display: "flex", flexDirection: "row", gap: 15
+                                        }}>
+                                          <EditOutlined style={{
+                                            cursor: "pointer", fontSize: 20, color: "#008cff"
+                                          }}
+                                            onClick={() => {
+                                              seteditChildNewModal(true)
+                                              setEditingChild(item);
+                                            }} />
+                                          <DeleteOutlined style={{
+                                            cursor: "pointer", fontSize: 20, color: "red"
+                                          }}
+                                            onClick={() => {
+                                              setTempChildArray(prev =>
+                                                prev.filter(
+                                                  a => !(a.firstName === item.firstName && a.lastName === item.lastName)
+                                                )
+                                              );
+
+                                              setSelectedChildren(prev =>
+                                                prev.filter(a => !(a.firstName === item.firstName && a.lastName === item.lastName))
+                                              );
+
+                                              setDisabledChild(prev =>
+                                                prev.filter(key =>
+                                                  // find the adult object for this key
+                                                  !selectedChildren.some(
+                                                    a => a.key === key &&
+                                                      a.firstName === item.firstName &&
+                                                      a.lastName === item.lastName
+                                                  )
+                                                )
+                                              );
+
+                                            }} />
+                                        </div>
+                                        <Modal
+                                          footer={null}
+                                          open={editNewChildModal}
+                                          closable
+                                          width={"45%"}
+                                          onCancel={() => {
+                                            seteditChildNewModal(false)
+                                            setFirstNameError(false);
+                                            setLastNameError(false);
+                                            setDOBError(false);
+                                          }}
+                                          style={{
+                                            marginTop: 50
+                                          }}>
+                                          <Text style={{
+                                            fontWeight: 500, fontSize: 16
+                                          }}>
+                                            Edit Child
+                                          </Text>
+                                          <br />
+                                          <div style={{
+                                            display: "flex",
+                                            width: "95%", alignItems: "center", justifyContent: "center", flexDirection: "column", marginTop: 10
+                                          }}>
+                                            <div style={{
+                                              display: "flex", justifyContent: "space-between", width: "95%"
+                                            }}>
+                                              <Form>
+                                                <Form.Item
+                                                  rules={[{ required: true }]}
+                                                  validateTrigger="onBlur"
+                                                // validateStatus={firstNameError ? "error" : ""}
+                                                // help={firstNameError ? "" : ""}
+                                                >
+                                                  <FloatingInput
+                                                    label="First Name"
+                                                    value={editingChild?.firstName || ""}
+                                                    onChange={(e) => {
+                                                      const newValue = e.target.value;
+                                                      setEditingChild(prev => ({ ...prev, firstName: newValue }));
+                                                      setFirstNameError(false);
+
+                                                    }}
+                                                    error={
+                                                      firstNameError && "Your first name should have 1–27 characters"
+                                                    }
+                                                  />
+                                                </Form.Item>
+                                              </Form>
+
+
+                                              <Form>
+                                                <Form.Item>
+                                                  <FloatingInput
+                                                    label="Last Name"
+                                                    value={editingChild?.lastName || ""}
+                                                    onChange={(e) => {
+                                                      const newValue = e.target.value
+                                                      setEditingChild(prev => ({ ...prev, lastName: newValue }));
+                                                      setLastNameError(false);
+                                                    }}
+                                                    error={lastNameError && "Your last name should have 1–27 characters "}
+                                                  />
+                                                </Form.Item>
+                                              </Form>
+                                            </div>
+                                            <br />
+                                            <div style={{
+                                              display: "flex", justifyContent: "space-between", width: "95%"
+                                            }}>
+                                              <Form>
+                                                <Form.Item>
+                                                  <FloatingInput
+                                                    label="DOB (DD/MM/YYYY)"
+                                                    type={dayjs("DD/MM/YYYY")}
+                                                    value={editingChild?.DOBValue || ""}
+                                                    onChange={handleChildEditDOBChange}
+
+                                                    error={
+                                                      DOBError
+                                                        ? "Enter Valid Age"
+                                                        : DOBAgeVerify
+                                                          ? "Age should be  2-12 years"
+                                                          : undefined
+                                                    }
+
+
+
+                                                  />
+
+                                                </Form.Item>
+                                              </Form>
+
+                                              <ConfigProvider
+                                                theme={{
+                                                  components: {
+                                                    Segmented: {
+                                                      itemSelectedBg: "#fc790d",
+                                                      itemSelectedColor: "white"
+                                                    },
+                                                  }
+                                                }}
+                                              >
+
+
+
+                                                <Segmented
+                                                  value={editingChild?.genderValue || "Male"}
+                                                  options={["Male", "Female"]}
+                                                  style={{
+                                                    background: "#e7e7e7ff",
+                                                    borderRadius: "10px",
+                                                    boxShadow: "0 0 5px rgba(0,0,0,0.1)",
+                                                    fontWeight: 500,
+                                                    border: "1.5px solid #c9c9c9",
+                                                    height: 50,
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "flex-end",
+                                                    paddingLeft: 12,
+                                                    paddingRight: 12,
+                                                    fontSize: 15,
+                                                    backgroundColor: "white", transition: "0.2s ease",
+                                                    position: "relative", left: 25
+                                                  }}
+                                                  onChange={(val) => {
+
+                                                    setEditingChild(prev => ({ ...prev, genderValue: val }));
+                                                  }} />
+                                              </ConfigProvider>
+                                            </div>
 
                                           </div>
-        </Drawer>
-        <LoginPage />
-      </div>
-      </>
-    )}
-      
+                                          <div style={{
+                                            display: "flex", justifyContent: "flex-end", width: "97%", gap: 10, flexDirection: "row"
+                                          }}>
+                                            <button style={{
+                                              borderRadius: 10,
+                                              width: "100px",
+                                              height: "35px",
+                                              fontSize: "16px",
+                                              color: "black", background: "white", border: "1px solid #b8b8bcff"
+                                            }} onClick={(e) => {
+                                              seteditChildNewModal(false)
+                                              setFirstNameError(false);
+                                              setLastNameError(false);
+                                              setDOBError(false);
+                                              setDOBAgeVerify(false);
+                                            }}>
+                                              CANCEL
+                                            </button>
+                                            <button
+                                              type="primary"
+                                              style={{
+                                                background: "#ff7a00",
+                                                border: "none",
+                                                borderRadius: 10,
+                                                width: "100px",
+                                                height: "35px",
+                                                fontSize: "16px",
+                                                color: "white",
+                                                position: "relative",
+
+                                              }}
+                                              onClick={handleChildEdit}
+                                            >
+                                              UPDATE
+                                            </button>
+                                          </div>
+                                        </Modal>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                            </div>
 
 
-      
-    </>
-      )
-    }
+
+
+
+                            <div>
+
+
+
+
+
+
+
+                            </div>
+
+
+                          </div>
+                        ) : null}
+
+
+
+                        {/* Down Card */}
+                        <div style={{
+                          position: "fixed",
+                          bottom: 0,
+                          width: "972px",
+                          height: "7%",
+                          zIndex: 1000,
+                          background: "#fff",
+                          padding: "10px 20px",
+                          left: "32%",
+                          boxShadow: "0 5px 25px rgba(0, 0, 0, 0.3)",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          borderTopLeftRadius: "30px",
+                          borderTopRightRadius: "30px",
+                          alignItems: "center"
+                        }}>
+                          <div style={{
+                            display: "flex",
+                            flexDirection: "row",
+                          }}>
+                            <Text style={{
+                              fontSize: 24, fontWeight: 600
+                            }}>
+                              ₹{finalAmount.toLocaleString("en-IN")}
+
+                            </Text>
+                            <div style={{
+                              display: "flex", marginTop: 12, marginLeft: 5
+                            }}>
+                              <s style={{ color: "#b22422" }}>
+                                {promoOfferList[0].amount
+                                  ? `₹ ${(
+                                    slashAmount +
+                                    (refundValue?.planType === "Free Cancellation" || refundValue?.planType === "Rescheduling"
+                                      ? refundValue.price * travellerValue
+                                      : 0)
+                                  ).toLocaleString("en-IN")
+                                  }`
+                                  : null}
+                              </s>
+
+                              <Text style={{
+                                color: "#5e616e", marginTop: -2, fontWeight: 500,
+                              }}> &nbsp;  {travellerValue === 1
+                                ? null
+                                : `•  ${travellerValue} Travellers`}</Text>
+                            </div>
+
+                          </div>
+                          <div>
+                            <ContinueButton
+
+                              onClick={() => {
+
+
+                                if (!phoneNo) {
+                                  dispatch(setOpenDrawer(true));
+                                  return;
+                                }
+
+
+                                if (tempArray.length !== travellers?.Adults) {
+                                  messageApi.destroy("adults-check");
+                                  messageApi.open({
+                                    key: "adults-check",
+                                    type: "error",
+                                    content: `Please add ${travellers?.Adults} ${travellers?.Adults === 1 ? "Adult" : "Adults"} to Continue`,
+                                    duration: 3,
+                                  });
+                                  return;
+                                }
+
+                                if (tempChildArray.length !== travellers?.Children) {
+                                  messageApi.destroy("child-check");
+                                  messageApi.open({
+                                    key: "child-check",
+                                    type: "error",
+                                    content: `Please add ${travellers?.Children} ${travellers?.Children === 1 ? "Child" : "Children"} to Continue`,
+                                    duration: 3,
+                                  });
+                                  return;
+                                }
+                                if (refundValue.planType === null) {
+                                  startShake();
+                                  if (shakeref.current) {
+                                    shakeref.current.focus();
+                                  }
+                                  return;
+                                }
+                                dispatch(setCurrentState(2));
+                                dispatch(setPromoRadioValue(promoOfferList[0].amount))
+                                dispatch(setFinalAmount(finalAmount))
+                                navigate("/addOns")
+                                const combinedArray = [
+                                  ...tempArray.map(a => ({ ...a, type: "adult" })),
+                                  ...tempChildArray.map(c => ({ ...c, type: "child" }))
+                                ];
+                                dispatch(setTravellerDetails(combinedArray))
+
+
+
+                              }}
+                              text="Continue"
+                            >
+
+                            </ContinueButton>
+                          </div>
+                        </div>
+                      </Col>
+                    </div>
+                    <Drawer
+                      title={null}
+                      closable={false}
+                      destroyOnHidden
+                      placement="right"
+                      trigger={["click"]}
+                      arrow
+                      open={viewOffers}
+                      onClose={() => setViewOffers(false)}
+
+                      overlayStyle={{
+                        marginBottom: "10px"
+                      }}
+                      maskClosable={true}
+                      width={"28%"}
+                      style={{
+                        // padding: "24px",
+                        background: "#fff",
+                        // borderRadius: "8px 0 0 8px",
+                        overflow: "auto",
+                      }}>
+                      <div style={{
+                        // padding:12
+                      }}>
+                        <div style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between"
+                        }}>
+                          <Text style={{
+                            fontSize: "24px",
+                            fontWeight: 700
+                          }}>Offers For You</Text>
+                          <CloseOutlined
+                            onClick={() => setViewOffers(false)}
+                            style={{
+                              fontSize: 14,
+                              cursor: "pointer",
+                              // marginLeft: 8,
+
+                            }}
+                          />
+                        </div>
+
+                        <div
+                          style={{
+                            height: "45px",
+                            border: "1px solid #8a8a8a",
+                            marginTop: 10,
+                            borderRadius: 10,
+                            display: "flex",
+                            alignItems: "center",
+                            flexDirection: "row",
+                            paddingLeft: "10px",
+                            paddingRight: "10px",
+                            background: "#fff",
+                          }}
+                        >
+                          <Input
+                            placeholder="Have a promocode? Redeem here"
+                            variant="borderless"
+                            style={{
+                              fontSize: "16px",
+                              fontWeight: 500,
+                              width: 300,
+
+                            }}
+                            value={promoCodeValue2}
+                            onChange={(e) => {
+                              const text = e.target.value || "";
+                              setPromoCodeValue2(text.toLocaleUpperCase());
+                            }}
+                          />
+
+                          {promoCodeValue2 ? (
+                            <button
+                              style={{
+                                color: "#0770e4",
+                                border: "none",
+                                background: "none",
+                                fontSize: "16px",
+                                fontWeight: 500,
+                                cursor: "pointer",
+                              }}
+                            >
+                              Apply
+                            </button>
+                          ) : null}
+
+
+                        </div>
+                        <div style={{
+                          marginTop: 20
+                        }}>
+                          <Radio.Group
+                            value={radioValue}
+
+                            style={{ color: "black" }}
+                          >
+                            <Space direction="vertical">
+                              {promoOfferList.map((item, idx) => (
+
+
+                                <div key={idx} style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  // width: "100%",
+
+                                }}>
+                                  <div style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    padding: "5px 0",
+                                    justifyContent: "space-between",
+
+                                  }}>
+                                    <>
+                                      <style>
+                                        {`
+                .custom-radio .ant-radio-inner {
+                    border: 1px solid #848794 !important;
+                }
+
+                .custom-radio.ant-radio-wrapper-checked .ant-radio-inner {
+                    border: 1px solid #0770e4 !important; /* selected border (blue) */
+                }
+                `}
+                                      </style>
+
+                                      <ConfigProvider>
+                                        <Radio value={idx} className="custom-radio" style={{
+                                          fontSize: "16px",
+                                          fontWeight: 600, textTransform: "uppercase", fontFamily: "Roboto"
+                                        }}
+                                          onChange={() => {
+                                            handleRadioValue(idx)
+                                            setViewOffers(false)
+                                          }
+                                          }>
+                                          {item.name}
+                                        </Radio>
+                                      </ConfigProvider>
+                                    </>
+
+                                    <div style={{
+                                      flex: 1, textAlign: "end"
+                                    }}>{item.amount >= 0 ? (<Text style={{
+                                      fontSize: "14px", fontWeight: 700
+                                    }}>{item?.amount > 0 && `₹${item.amount} Off`}  </Text>) : null}
+                                    </div>
+
+                                  </div>
+                                  <Text style={{
+                                    position: "relative",
+                                    color: radioValue === idx ? "green" : "black",
+                                    fontFamily: "Roboto",
+                                    fontSize: 14.5,
+                                    bottom: 10, left: 25, paddingRight: 15
+                                  }}>
+                                    {item.descriptions}
+                                  </Text>
+                                </div>
+                              )
+                              )}
+
+                            </Space>
+                          </Radio.Group>
+                        </div>
+                      </div>
+
+                    </Drawer>
+                    <Drawer
+                      title={null}
+                      closable={false}
+                      destroyOnHidden
+                      placement="right"
+                      trigger={["click"]}
+                      arrow
+                      open={existingModal}
+                      onClose={() => {
+                        setExistingModal(false)
+                        if (travellers.Children > 0 && selectedChildren.length > 0) {
+                          setSelectedChildren(prev =>
+                            prev.filter(a => disabledChild.includes(a.key))
+                          );
+                        }
+                        setSelectedAdults(prev =>
+                          prev.filter(a => disabledAdults.includes(a.key))
+                        );
+                      }}
+
+                      overlayStyle={{
+                        marginBottom: "10px"
+                      }}
+                      maskClosable={true}
+                      width={"28%"}
+                      style={{
+                        // padding: "24px",
+                        background: "#fff",
+                        // borderRadius: "8px 0 0 8px",
+                        overflow: "auto",
+                      }}>
+                      <Text style={{
+                        fontWeight: 700, fontSize: 17, color: "#008cff"
+                      }}>
+                        ADD EXISTING TRAVELLERS
+                      </Text>
+                      <div style={{
+                        marginTop: 20
+                      }}>
+                        <div style={{
+                          display: "flex", justifyContent: "center", border: "1px solid #b8b8bcff", borderRadius: 10, marginTop: 20, padding: 10, flexDirection: "column"
+                        }}>
+                          <Text style={{
+                            fontWeight: 700, fontSize: 16
+                          }}>Adults(12 years or above)</Text>
+                          {adults.map((person, idx) => {
+                            const isSelected = Array.isArray(selectedAdults) && Array.isArray(tempArray) && selectedAdults.some(a => a.key === person.key);
+                            const isDisabled = disabledAdults.includes(person.key);
+                            return (
+                              <>
+
+
+                                <div key={person.key} style={{ display: "flex", flexDirection: "column", marginTop: 10 }}>
+
+                                  {/* CHECKBOX FOR EXISTING PERSON */}
+                                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                    <input
+                                      type="checkbox"
+                                      checked={isSelected}
+                                      disabled={isDisabled}
+                                      onChange={() => {
+                                        handleSelectAdult(person);
+
+                                      }}
+                                      style={{ height: 20, width: 20 }}
+                                    />
+
+                                    <span style={{
+                                      fontSize: 15, fontWeight: 500
+                                    }}>{person.firstName} {person.lastName}</span>
+                                  </div>
+
+
+
+                                </div>
+
+                              </>
+                            )
+                          })}
+                        </div>
+                        {travellers.Children > 0 && children.length > 0 && (
+                          <div style={{
+                            display: "flex", justifyContent: "center", border: "1px solid #b8b8bcff", borderRadius: 10, marginTop: 20, padding: 10, flexDirection: "column"
+                          }}>
+                            <Text style={{
+                              fontWeight: 700, fontSize: 16
+                            }}>Children(2 to 12 years)</Text>
+                            {children.map((person, idx) => {
+                              const isSelected = Array.isArray(selectedChildren) && Array.isArray(tempChildArray) && selectedChildren.some(a => a.key === person.key);
+                              const isDisabled = disabledChild.includes(person.key);
+                              return (
+                                <>
+
+
+                                  <div key={person.key} style={{ display: "flex", flexDirection: "column", marginTop: 10 }}>
+
+                                    {/* CHECKBOX FOR EXISTING PERSON */}
+                                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                      <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        disabled={isDisabled}
+                                        onChange={() => {
+                                          handleSelectChildren(person);
+
+                                        }}
+                                        style={{ height: 20, width: 20 }}
+                                      />
+
+                                      <span style={{
+                                        fontSize: 15, fontWeight: 500
+                                      }}>{person.firstName} {person.lastName}</span>
+                                    </div>
+
+
+
+                                  </div>
+
+                                </>
+                              )
+                            })}
+                          </div>
+                        )}
+                        <div style={{
+                          position: "fixed",
+                          bottom: 0,
+                          width: "25.2%",
+                          height: "7%",
+                          zIndex: 1000,
+                          background: "#fff",
+                          padding: "10px 20px",
+                          right: "2px",
+                          boxShadow: "0 5px 25px rgba(0, 0, 0, 0.3)",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center"
+                        }}>
+                          <button
+                            style={{
+                              borderRadius: 10,
+                              width: "100px",
+                              height: "35px",
+                              fontSize: "16px",
+                              color: "black",
+                              background: "white",
+                              border: "1px solid #b8b8bcff",
+                            }}
+                            onClick={() => {
+                              if (travellers.Children > 0 && selectedChildren.length > 0) {
+                                setSelectedChildren(prev =>
+                                  prev.filter(a => disabledChild.includes(a.key))
+                                );
+                              }
+                              setSelectedAdults(prev =>
+                                prev.filter(a => disabledAdults.includes(a.key))
+                              );
+
+                              setExistingModal(false);
+                            }}
+
+                          >
+                            SKIP
+                          </button>
+                          <button
+                            style={{
+                              background: "#ff7a00",
+                              border: "none",
+                              borderRadius: 10,
+                              width: "100px",
+                              height: "35px",
+                              fontSize: "16px",
+                              color: "white",
+                            }}
+                            onClick={() => {
+                              if (travellers.Children > 0 && selectedChildren.length > 0) {
+                                setDisabledChild(prev => [
+                                  ...prev,
+                                  ...selectedChildren.map(a => a.key)
+                                ]);
+
+
+
+
+
+                                setTempChildArray(prev => [
+                                  ...prev,
+                                  ...selectedChildren
+                                    .filter(a => a && !disabledChild.includes(a.key))
+                                    .map((a, idx) => ({
+                                      key: prev.length + idx,
+                                      firstName: a.firstName || "",
+                                      lastName: a.lastName || "",
+                                      DOBValue: a?.DOBValue || "",
+                                      genderValue: a?.genderValue || "Male",
+                                    }))
+                                ]);
+
+                              }
+
+                              //Adult
+                              setDisabledAdults(prev => [
+                                ...prev,
+                                ...selectedAdults.map(a => a.key)
+                              ]);
+
+
+                              setExistingModal(false);
+
+
+                              settempArray(prev => [
+                                ...prev,
+                                ...selectedAdults
+                                  .filter(a => a && !disabledAdults.includes(a.key))
+                                  .map((a, idx) => ({
+                                    key: prev.length + idx,
+                                    firstName: a.firstName || "",
+                                    lastName: a.lastName || "",
+                                    DOBValue: a.DOBValue || "",
+                                    genderValue: a?.genderValue || "Male",
+                                  }))
+                              ]);
+
+
+
+
+                            }}
+
+                          >
+                            SELECT
+                          </button>
+                        </div>
+
+                      </div>
+                    </Drawer>
+                    <LoginPage />
+                  </div>
+                </>
+              )}
+
+
+
+
+            </>
+          )
+      }
     </>
   )
 

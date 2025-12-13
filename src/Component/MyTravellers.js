@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import dayjs from 'dayjs';
 import duration from "dayjs/plugin/duration";
 import { setDobCheckValue } from "../Redux/Slices/TravellerSlice";
+import useScreenSize from "./UseScreenSize";
 dayjs.extend(duration);
 
 const {Text} = Typography;
@@ -15,7 +16,7 @@ const MyTravellers = () =>{
     const {add,added,dobCheckValue} = useSelector((state) => state.traveller);
     const dispatch = useDispatch();
 
-
+    const {isMobile} = useScreenSize();
     
   console.log("todayyyyyy",dobCheckValue)
 
@@ -31,7 +32,7 @@ const MyTravellers = () =>{
     >
       <div
         style={{
-          width: "50%",
+          width:isMobile ? "100%" : "50%",
           backgroundColor: "#fff",
           overflow: "hidden",
           boxShadow: "0 6px 18px rgba(0,0,0,0.1)",

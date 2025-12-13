@@ -350,7 +350,7 @@ const MobileFlightSearch = () => {
     return (
       <div style={{
 
-        width: isMobile? 350:500, 
+        width: 350, 
         background: "#fff",
         borderRadius: 10,
         boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
@@ -863,7 +863,7 @@ const MobileFlightSearch = () => {
               }}>
                 <Dropdown
                     trigger={["click"]}
-                    placement="bottom"
+                    placement="center"
                     arrow
                     open={openTC}
                     onOpenChange={(v) => setOpenTC(v)}
@@ -875,7 +875,7 @@ const MobileFlightSearch = () => {
                     {/* ✅ Must be ONE element */}
                     <div
                       style={{
-                        borderRight: "3px solid white",
+
                         position: "relative",
                       
                         cursor: "pointer", 

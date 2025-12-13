@@ -9,12 +9,14 @@ import {
   setPhoneNo,
 } from "../Redux/Slices/ProfileSlice";
 import { useDispatch, useSelector } from "react-redux";
+import useScreenSize from "./UseScreenSize";
 
 const {Text} =Typography;
 
 const EditProfile = () =>{
     const navigate = useNavigate();
     const dispatch = useDispatch(); 
+    const {isMobile} = useScreenSize();
 
   const {
     openDrawer,
@@ -55,7 +57,7 @@ const EditProfile = () =>{
     >
       <div
         style={{
-          width: "50%",
+          width: isMobile ? "100%" : "50%",
           backgroundColor: "#fff",
           overflow: "hidden",
           boxShadow: "0 6px 18px rgba(0,0,0,0.1)",
@@ -164,7 +166,7 @@ const EditProfile = () =>{
                 footer={null}
                 open={emailModalOpen}
                 closable
-                width={"23%"}
+                width={isMobile ? "100%" : "23%"}
                 style={{
                     marginTop:100
                 }}
@@ -296,7 +298,7 @@ const EditProfile = () =>{
                     footer={null}
                     open={phoneModalOpen}
                     closable
-                    width={"23%"}
+                    width={isMobile ? "100%" : "23%"}
                     style={{ marginTop: 100 }}
                     onCancel={() => setPhoneModalOpen(false)}
                     

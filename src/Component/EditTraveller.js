@@ -8,6 +8,7 @@ import { useLocation,useParams } from "react-router-dom";
 import "./AddTraveller.css";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import useScreenSize from "./UseScreenSize";
 dayjs.extend(customParseFormat);
 
 const {Text} =Typography;
@@ -17,7 +18,7 @@ const EditTraveller = () =>{
      const {add,added} = useSelector((state) => state.traveller);
      const location = useLocation();
   const { index } = location.state || {}; 
-  
+   const {isMobile} = useScreenSize();
 
   const traveller = add?.[index] || {};
     console.log("Editing traveller index:", index);
@@ -77,7 +78,7 @@ const EditTraveller = () =>{
             >
               <div
                 style={{
-                  width: "50%",
+                  width: isMobile ? "100%" : "50%",
                   backgroundColor: "#fff",
                   overflow: "hidden",
                   boxShadow: "0 6px 18px rgba(0,0,0,0.1)",
@@ -139,7 +140,7 @@ const EditTraveller = () =>{
                                         footer={null}
                                         open={openSample}
                                         closable
-                                        width={"50%"}
+                                        width={isMobile ? "100%" : "50%"}
                                         onCancel={() => setOpenSample(false)}
                                         style={{
                                             marginTop:-50
@@ -271,7 +272,7 @@ const EditTraveller = () =>{
                                             flexDirection: "row",
                                             padding: "5px 0",
                                             justifyContent: "space-between",
-                                            width: 395
+                                            width: isMobile ? "100%" : 395
                                             }}>
                                             <>
                                                 <style>
@@ -392,7 +393,7 @@ const EditTraveller = () =>{
                 <Modal footer={null}
                                         open={openDelete}
                                         closable
-                                        width={"20%"}
+                                        width={isMobile ? "100%" : "20%"}
                                         onCancel={() => setOpenDelete(false)}
                                         style={{
                                             marginTop:150
@@ -413,7 +414,7 @@ const EditTraveller = () =>{
                         height:40,
                         alignItems:"center",background:"transparent",
                         cursor:"pointer",color:"#ec5b24",fontSize:16,textTransform:"uppercase",
-                        width:80
+                        width:isMobile ? "100%" : 80
                       }}
                       onClick={() => setOpenDelete(false)}>
                         Cancel
