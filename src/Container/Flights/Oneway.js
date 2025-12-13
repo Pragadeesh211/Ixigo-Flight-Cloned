@@ -142,8 +142,7 @@ const convertedDate = formatToLocalDateString(departure);
   
   const result = [];
   const today = new Date(); 
-  const yesterday = new Date(today) 
-  yesterday.setDate(yesterday.getDate() -1)                 
+  today.setDate(today.getDate() -1)                 
   const start = convertedDate;       
   console.log("todaysss",today)
 
@@ -272,6 +271,17 @@ useEffect(() => {
   //   setStartPrice(formatCurrency(7499)); 
   //   setEndPrice(formatCurrency(inputValue)); 
   // }, [inputValue]);
+
+
+  useEffect(() => {
+                  const minReturnDate = dayjs(selectedDate).add(1, "day").format("YYYY-MM-DD");
+  
+                  
+                  if (dayjs(returnDate).isBefore(minReturnDate)) {
+ 
+                    dispatch(setReturnDate(minReturnDate));
+                  }
+                }, [selectedDate]);
 
   const cardOfferData = [
     {id:1,image:"https://www.ixigo.com/vimaan/_next/image?url=https%3A%2F%2Fimages.ixigo.com%2Fimage%2Fupload%2Foffers_and_deals%2Fcc010d785f911bb56ca68b6a67ccc816-nkpvm.webp&w=640&q=75"},
@@ -2412,7 +2422,7 @@ useEffect(() => {
   </div>
 
   {/* Flight From Timings */}
-  <div style={{ textAlign: "center",position:"relative",left:20 }}>
+  <div style={{ textAlign: "center",position:"relative",left:15 }}>
     <Text  style={{ fontSize: 18,fontWeight:700 }}>
       {item.departureTime}
     </Text>
@@ -2423,7 +2433,7 @@ useEffect(() => {
   </div>
 
   {/* Duration & Stops 1 */}
-  <div style={{ textAlign: "center", flex: 1,position:"relative",left:55,bottom:3 }}>
+  <div style={{ textAlign: "center", flex: 1,position:"relative",left:40,bottom:3 }}>
     <Text strong type="secondary">{item.durations}</Text>
     <br />
     <div style={{
@@ -2445,7 +2455,7 @@ useEffect(() => {
 
   
   {/* Flight To Timings */}
-  <div style={{ textAlign: "center",position:"relative",left:80 }}>
+  <div style={{ textAlign: "center",position:"relative",left:60 }}>
     <Text  style={{ fontSize: 18,fontWeight:700 }}>
       {item.arrivalTime}
     </Text>

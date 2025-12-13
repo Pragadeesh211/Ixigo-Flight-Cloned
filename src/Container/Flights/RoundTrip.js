@@ -154,8 +154,7 @@ const RoundTrip = () =>{
         
         const result = [];
         const today = new Date(); 
-        const yesterday = new Date(today) 
-        yesterday.setDate(yesterday.getDate() -1)                 
+        today.setDate(today.getDate() -1)                 
         const start = convertedDate;       
         console.log("todaysss",today)
       
@@ -3452,7 +3451,7 @@ useEffect(() => {
           </div>
         </div>
         <div style={{
-          marginTop:88,
+          marginTop:87.2,
           position: "fixed",
           top: 0,             
           zIndex: 1000,       
@@ -3511,7 +3510,7 @@ useEffect(() => {
           </div>
         </div>
         <div style={{      
-              marginTop: 160,
+              marginTop: 159,
               position: "fixed",
               top: 0,
               zIndex: 1000,
@@ -3529,7 +3528,7 @@ useEffect(() => {
           
 
   <Divider type="vertical" style={{
-    border:"1px solid grey",position:"relative",right:"5%",height:66
+    border:"1px solid grey",position:"relative",right:"6.5%",height:71.5
   }}/>
           <Text style={{fontSize:16,fontWeight:500,
             position:"relative",right:"10%"
@@ -3657,7 +3656,7 @@ useEffect(() => {
                                   justifyContent:"space-between"
                                 }}>
                                      {/* Flight From Timings */}
-                      <div style={{ textAlign: "center", flex: 1,position:"relative",left:"10px" }}>
+                      <div style={{ textAlign: "center", flex: 1,position:"relative" }}>
                         <Text  style={{ fontSize: 18,fontWeight:700 }}>
                           {item.departureTime}
                         </Text>
@@ -3690,7 +3689,7 @@ useEffect(() => {
                     
                       
                       {/* Flight To Timings */}
-                      <div style={{ textAlign: "center", flex: 1 }}>
+                      <div style={{ textAlign: "center", flex: 1,left:"5px",position:"relative" }}>
                         <Text  style={{ fontSize: 18,fontWeight:700 }}>
                           {item.arrivalTime}
                           <Text>
@@ -3753,10 +3752,11 @@ useEffect(() => {
                                   flexDirection:"column",
                                   fontFamily:"Roboto",
                                   transition: "all 0.3s ease",
-                                  
+                                  position:"relative",
+                                  left:"3px"
                                 }}
                                 bodyStyle={{
-                                padding: "10px"   // <=== Reduce padding here
+                                padding: "10px"   
                               }}
                                 onMouseEnter={(e) => {
                                   e.currentTarget.style.boxShadow = "0 6px 16px rgba(0,0,0,0.15)";
@@ -3847,7 +3847,7 @@ useEffect(() => {
                                   justifyContent:"space-between"
                                 }}>
                                      {/* Flight From Timings */}
-                      <div style={{ textAlign: "center", flex: 1,position:"relative",left:"10px" }}>
+                      <div style={{ textAlign: "center", flex: 1,position:"relative", }}>
                         <Text  style={{ fontSize: 18,fontWeight:700 }}>
                           {item.departureTime}
                         </Text>
@@ -3880,7 +3880,7 @@ useEffect(() => {
                     
                       
                       {/* Flight To Timings */}
-                      <div style={{ textAlign: "center", flex: 1 }}>
+                      <div style={{ textAlign: "center", flex: 1,position:"relative",left:"5px" }}>
                         <Text  style={{ fontSize: 18,fontWeight:700 }}>
                           {item.arrivalTime}
                           <Text>

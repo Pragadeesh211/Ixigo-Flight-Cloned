@@ -4,6 +4,7 @@ import { Typography,Input,Modal,Radio, Space,ConfigProvider,DatePicker } from "a
 import {  CloseOutlined } from "@ant-design/icons";
 import {addTraveller,setadded,setDobCheckValue} from "../Redux/Slices/TravellerSlice";
 import { useDispatch, useSelector } from "react-redux";
+import useScreenSize from "./UseScreenSize";
 import "./AddTraveller.css";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -13,6 +14,7 @@ const {Text} =Typography;
 
 const AddTraveller = () =>{
      const navigate = useNavigate();
+     const {isMobile} = useScreenSize(); 
      const {add,added,dobCheckValue} = useSelector((state) => state.traveller);
      const dispatch = useDispatch();
      const [openSample,setOpenSample] = useState(false);
@@ -26,6 +28,7 @@ const AddTraveller = () =>{
      const [noFirstError,setNoFirstError] = useState(false);
      const [noLastError,setNoLastError] = useState(false);
      const [noDOBError,setNoDOBError] = useState(false);
+      
 
      const gender = ["Male","Female"]
 
@@ -72,7 +75,7 @@ const AddTraveller = () =>{
             >
               <div
                 style={{
-                  width: "50%",
+                  width:isMobile ? "100%" : "50%", 
                   backgroundColor: "#fff",
                   overflow: "hidden",
                   boxShadow: "0 6px 18px rgba(0,0,0,0.1)",
@@ -127,7 +130,7 @@ const AddTraveller = () =>{
                                         footer={null}
                                         open={openSample}
                                         closable
-                                        width={"50%"}
+                                        width={isMobile ? "100%" : "50%"}
                                         onCancel={() => setOpenSample(false)}
                                         style={{
                                             marginTop:-50
@@ -259,7 +262,7 @@ const AddTraveller = () =>{
                                             flexDirection: "row",
                                             padding: "5px 0",
                                             justifyContent: "space-between",
-                                            width: 395
+                                            width:isMobile ? "100%" : 395
                                             }}>
                                             <>
                                                 <style>
